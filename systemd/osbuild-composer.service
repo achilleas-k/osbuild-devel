@@ -1,0 +1,23 @@
+[Unit]
+Description=OSBuild Composer
+After=multi-user.target
+
+# Weldr API needs a local worker by default.
+# Run `systemctl mask osbuild-worker@1.service`
+# to disable it.
+Wants=osbuild-worker@1.service
+
+[Service]
+Type=simple
+ExecStart=/run/user/1000/osbuild/bin/osbuild-composer -v
+CacheDirectory=osbuild-composer
+StateDirectory=osbuild-composer
+WorkingDirectory=/run/user/1000/osbuild/bin
+Restart=on-failure
+
+# systemd >= 240 sets this, but osbuild-composer runs on earlier versions
+Environment="CACHE_DIRECTORY=/run/user/1000/osbuild/cache/osbuild-composer"
+Environment="STATE_DIRECTORY=/run/user/1000/osbuild/lib/osbuild-composer"
+
+[Install]
+WantedBy=multi-user.target

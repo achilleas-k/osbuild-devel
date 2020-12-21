@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+loc=$(cd $(dirname $0); pwd)
+
+export XDG_CONFIG_DIRS=${loc}:${XDG_CONFIG_DIRS}
+
+cleanup() {
+    systemctl --user stop "osbuild*"
+    systemctl --user disable ${loc}/systemd/*.{service,socket}
+}
+
+trap cleanup EXIT
+
+devdirbase=/run/user/1000/osbuild
+
+mkdir -pv ${devdirbase}/bin ${devdirbase}/{cache,lib}/osbuild-composer ${devdirbase}/{osbuild-compser,weldr}
+ln -sfv ${loc}/../osbuild-composer/build/osbuild-{composer,worker} /run/user/1000/osbuild/bin
+
+systemctl --user link ${loc}/systemd/*.{service,socket}
+systemctl --user start osbuild-composer.socket osbuild-local-worker.socket
+systemctl --user status osbuild-composer.socket osbuild-local-worker.socket
+# read -p "Press enter to stop and clean up... "
+journalctl --user -f -u "osbuild*"

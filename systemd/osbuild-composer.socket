@@ -1,0 +1,9 @@
+[Unit]
+Description=OSBuild Composer Weldr API socket
+
+[Socket]
+ListenStream=/run/user/1000/osbuild/weldr/api.socket
+SocketMode=660
+
+[Install]
+WantedBy=sockets.target
