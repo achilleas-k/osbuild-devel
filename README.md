@@ -52,7 +52,7 @@ docker cp request.json osbuild_composer_1:.
 ```
 to copy the `request.json` file into the composer container and then run:
 ```
-docker exec -it osbuild_composer_1 curl --cert /etc/osbuild-composer/client-crt.pem --cacert /etc/osbuild-composer/ca-crt.pem --key /etc/osbuild-composer/client-key.pem https://composer/api/composer/v1/compose --data @request.json --header 'Content-Type: application/json'
+docker exec -it osbuild_composer_1 curl --cert /etc/osbuild-composer/client-crt.pem --cacert /etc/osbuild-composer/ca-crt.pem --key /etc/osbuild-composer/client-key.pem https://composer:9196/api/composer/v1/compose --data @request.json --header 'Content-Type: application/json'
 ```
 to send the request with the data to the composer API.
 
