@@ -1,0 +1,28 @@
+version: '2.4'
+services:
+  composer:
+    image: local/osbuild-composer
+    volumes:
+      - ./composer-config:/etc/osbuild-composer
+    networks:
+      net:
+        ipv4_address: 172.30.0.10
+  worker:
+    image: local/osbuild-worker
+    entrypoint: /usr/libexec/osbuild-composer/osbuild-worker composer:8700
+    volumes:
+      - ./composer-config:/etc/osbuild-composer
+    environment:
+      - CACHE_DIRECTORY=/var/cache/osbuild-worker
+    networks:
+      net:
+        ipv4_address: 172.30.0.20
+    depends_on:
+      - "composer"
+
+networks:
+  net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.0.0/16
