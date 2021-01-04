@@ -14,6 +14,11 @@ services:
       - ./composer-config:/etc/osbuild-composer
     environment:
       - CACHE_DIRECTORY=/var/cache/osbuild-worker
+    privileged: true
+    cap_add:
+      - MKNOD
+      - SYS_ADMIN
+      - NET_ADMIN
     networks:
       net:
         ipv4_address: 172.30.0.20
