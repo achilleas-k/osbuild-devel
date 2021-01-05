@@ -46,18 +46,10 @@ The [`makedata.sh`](./makedata.sh) script is a copy of the request data generati
 
 ### Submit request
 
-To submit a compose job, first run:
+To submit a compose job, run:
 ```
-docker cp request.json osbuild_composer_1:.
-```
-to copy the `request.json` file into the composer container and then run:
-```
-docker exec -it osbuild_composer_1 curl --cert /etc/osbuild-composer/client-crt.pem --cacert /etc/osbuild-composer/ca-crt.pem --key /etc/osbuild-composer/client-key.pem https://composer:9196/api/composer/v1/compose --data @request.json --header 'Content-Type: application/json'
+curl -k --cert ./docker/composer-config/client-crt.pem --cacert ./docker/composer-config/ca-crt.pem --key ./docker/composer-config/client-key.pem https://172.30.0.10:9196/api/composer/v1/compose --data @request.json --header 'Content-Type: application/json'
 ```
 to send the request with the data to the composer API.
 
-Note that this doesn't necessarily need to be sent from inside the `composer` container. The main issue is that the request needs to be sent to the composer API at the hostname `composer`, which matches the SSL certs we generated earlier. Any container in the same network will do, since the internal docker-compose resolver will use that hostname to point to the `composer` container. Other solutions for this could be:
-- Using the `worker` container instead (not really any difference, practically).
-- Using a dedicated *client* container that also has access to the certs (i.e., also maps `./composer-config` to `/etc/osbuild-composer`).
-- Configuring the host machine to resolve the name `composer` to the IP address of the composer container: `172.30.0.10` (e.g., by setting it in `/etc/hosts`).
-- Generating the certificates so that they are valid for both `composer` and `localhost`, publishing the `composer` container port to the host machine, and using the address `https://localhost:<hostport>` to send the request.
+The `-k` flag is necessary to make curl ignore the certificate mismatch for the hostname (`172.30.0.10`).
