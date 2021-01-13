@@ -4,7 +4,7 @@ services:
     image: local/osbuild-composer
     container_name: org.osbuild.composer
     build:
-      context: $OSBUILD_PROJECT_ROOT/osbuild-composer
+      context: $OSBUILD_COMPOSER_SOURCE
       dockerfile: ./distribution/Dockerfile-ubi
     volumes:
       - ./config:/etc/osbuild-composer
@@ -16,7 +16,7 @@ services:
     image: local/osbuild-worker
     container_name: org.osbuild.worker
     build:
-      context: $OSBUILD_PROJECT_ROOT/osbuild-composer
+      context: $OSBUILD_COMPOSER_SOURCE
       dockerfile: ./distribution/Dockerfile-worker
     # override the entrypoint to specify composer hostname and port
     entrypoint: /usr/libexec/osbuild-composer/osbuild-worker org.osbuild.composer:8700
