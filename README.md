@@ -10,21 +10,23 @@ This document describes how to set up and run multiple containers for developing
 4. [Generate request data](#generate-request-data)
 5. [Submit request](#submit-request)
 
+### Source directory
+
+The setup requires defining the path to the osbuild-composer source repository. This should be defined in the [`./docker/.env`](./docker/.env) file (as `$OSBUILD_COMPOSER_SOURCE`).
+
 ### Generate SSL certs
 
-The [mkcerts.sh](./docker/mkcerts.sh) script is a copy of the certificate generation part of the `provision.sh` script from *osbuild-composer*. Run:
+The [gen-certs.sh](./docker/gen-certs.sh) script is a copy of the certificate generation part of the `provision.sh` script from *osbuild-composer*. Run:
 ```
-./docker/mkcerts.sh ./docker/composer-config
+./docker/gen-certs.sh ./docker/openssl.cnf ./docker/config ./docker/config/ca
 ```
-to generate cert files and place them into the `composer-config` directory. This directory already contains configuration files for *osbuild-composer* and it will be mounted into both containers.
+to generate cert files and place them into the [`config`](./docker/config) directory. This directory already contains configuration files for *osbuild-composer* and it will be mounted into the containers that need it.
 
 ### Build container images
 
 To build the two container images, from the [*osbuild-composer*](https://github.com/osbuild/osbuild-composer) repository root, run:
 ```
-docker build -f ./distribution/Dockerfile-worker . --tag local/osbuild-worker
-
-docker build -f ./distribution/Dockerfile-ubi . --tag local/osbuild-composer
+docker-compose build
 ```
 
 *The worker Dockerfile isn't in the main repository. For now, check out [the dockerfile-worker branch on my fork](https://github.com/achilleas-k/osbuild-composer/blob/docker-compose/distribution/Dockerfile-worker).*
@@ -35,10 +37,12 @@ Note that the container for *osbuild-worker* clones *osbuild* from GitHub and in
 
 To start both containers, from the [`./docker`](./docker) directory of this repository, run:
 ```
-docker-compose up
+docker-compose up composer worker
 ```
 
-This will set up both containers with access to the [`./docker/composer-config`](./docker/composer-config) directory for configurations and certs. It will also set an internal network where the two containers can communicate via their service names. This is important for the certificates that are issued for the hostname `composer`.
+*The [`docker-compose.yml`](./docker/docker-composer.yml) file defines some more containers which aren't documented yet.*
+
+This will set up both containers with access to the [`./docker/config`](./docker/config) directory for configurations and certs. It will also set an internal network where the two containers can communicate via their service names. This is important for the certificates that are issued for the hostname `org.osbuild.composer`.
 
 ### Generate request data
 
