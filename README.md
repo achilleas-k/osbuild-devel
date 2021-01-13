@@ -27,7 +27,7 @@ docker build -f ./distribution/Dockerfile-worker . --tag local/osbuild-worker
 docker build -f ./distribution/Dockerfile-ubi . --tag local/osbuild-composer
 ```
 
-*The worker Dockerfile isn't in the main repository. For now, check out [the dockerfile-worker branch on my fork](https://github.com/achilleas-k/osbuild-composer/tree/dockerfile-worker).*
+*The worker Dockerfile isn't in the main repository. For now, check out [the dockerfile-worker branch on my fork](https://github.com/achilleas-k/osbuild-composer/blob/docker-compose/distribution/Dockerfile-worker).*
 
 Note that the container for *osbuild-worker* clones *osbuild* from GitHub and installs it in the container. If you want to work on *osbuild* and test your local version with this method, you will have to change the Dockerfile to copy the sources from your local clone.
 
