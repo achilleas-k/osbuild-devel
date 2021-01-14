@@ -4,13 +4,14 @@ This document describes how to set up and run multiple containers for developing
 
 ## Overview
 
-1. [Generate SSL certs](#generate-ssl-certs)
-2. [Build container images](#build-container-images)
-3. [Start multi-container environment](#start-multi-container-environment)
-4. [Generate request data](#generate-request-data)
-5. [Submit request](#submit-request)
+1. [Configure source directory](#configure-source-directory)
+2. [Generate SSL certs](#generate-ssl-certs)
+3. [Build container images](#build-container-images)
+4. [Start multi-container environment](#start-multi-container-environment)
+5. [Generate request data](#generate-request-data)
+6. [Submit request](#submit-request)
 
-### Source directory
+### Configure source directory
 
 The setup requires defining the path to the osbuild-composer source repository. This should be defined in the [`./docker/.env`](./docker/.env) file (as `$OSBUILD_COMPOSER_SOURCE`).
 
