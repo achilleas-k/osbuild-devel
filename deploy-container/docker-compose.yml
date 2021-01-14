@@ -1,0 +1,36 @@
+version: '2.4'
+services:
+
+  rpm:
+    image: local/osbuild-composer-rpm
+    container_name: org.osbuild.rpm
+    build:
+      context: $OSBUILD_COMPOSER_SOURCE
+      dockerfile: ${PWD}/rpm.Dockerfile
+    networks:
+      net:
+
+  testrunner:
+    image: local/osbuild-composer-testrunner
+    build:
+      context: .
+      dockerfile: ${PWD}/testrunner.Dockerfile
+    privileged: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    cap_add:
+      - MKNOD
+      - SYS_ADMIN
+      - NET_ADMIN
+    depends_on:
+      - "rpm"
+    networks:
+      net:
+        ipv4_address: 172.30.0.10
+
+networks:
+  net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.0.0/16
