@@ -24,14 +24,12 @@ to generate cert files and place them into the [`config`](./docker/config) direc
 
 ### Build container images
 
-To build the two container images, from the [*osbuild-composer*](https://github.com/osbuild/osbuild-composer) repository root, run:
+To build the two container images, from the [./docker](./docker) directory, run:
 ```
 docker-compose build
 ```
 
 *The worker Dockerfile isn't in the main repository. For now, check out [the dockerfile-worker branch on my fork](https://github.com/achilleas-k/osbuild-composer/blob/docker-compose/distribution/Dockerfile-worker).*
-
-Note that the container for *osbuild-worker* clones *osbuild* from GitHub and installs it in the container. If you want to work on *osbuild* and test your local version with this method, you will have to change the Dockerfile to copy the sources from your local clone.
 
 ### Start multi-container environment
 
