@@ -35,6 +35,29 @@ services:
     depends_on:
       - "composer"
 
+  worker-socket:
+    image: local/osbuild-worker
+    container_name: org.osbuild.worker-socket
+    build:
+      context: $OSBUILD_COMPOSER_SOURCE
+      dockerfile: ./distribution/Dockerfile-worker
+    # override the entrypoint to specify weldr API socket
+    entrypoint: /usr/libexec/osbuild-composer/osbuild-worker -unix /run/weldr/api.socket
+    volumes:
+      - ./config:/etc/osbuild-composer
+    environment:
+      - CACHE_DIRECTORY=/var/cache/osbuild-worker
+    privileged: true
+    cap_add:
+      - MKNOD
+      - SYS_ADMIN
+      - NET_ADMIN
+    networks:
+      net:
+        ipv4_address: 172.30.0.30
+    depends_on:
+      - "composer"
+
   koji:
     image: quay.io/osbuild/koji:v1
     container_name: org.osbuild.koji.koji
