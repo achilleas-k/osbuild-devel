@@ -7,6 +7,8 @@ services:
     build:
       context: $OSBUILD_COMPOSER_SOURCE
       dockerfile: ${PWD}/rpm.Dockerfile
+    ports:
+      - 8000:8000
     networks:
       net:
 
