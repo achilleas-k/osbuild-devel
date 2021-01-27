@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+set -o pipefail
+
+usage() {
+    echo "Usage: $0 BLUEPRINT TYPE"
+    echo
+    echo "Start a compose job in the VM."
+}
+
+list_blueprints() {
+    echo ":: Available blueprints"
+    ssh -q localvm composer-cli blueprints list
+}
+
+list_types() {
+    echo ":: Available types"
+    ssh -q localvm composer-cli compose types
+}
+
+
+if (( $# != 2 )); then
+    usage
+    list_blueprints
+    list_types
+    exit 1
+fi
+
+bp="$1"
+imgtype="$2"
+
+if ! jobid=$(ssh -q localvm composer-cli --json compose start "${bp}" "${imgtype}" | jq '.build_id'); then
+    list_blueprints
+    list_types
+    exit 1
+fi
+
+echo ":: Job submitted: ${jobid}"
+echo ":: Job info:"
+ssh -q localvm composer-cli compose info "${jobid}"

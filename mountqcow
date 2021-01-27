@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+usage() {
+    echo "Usage: $0 FILE MOUNTPOINT"
+    echo
+    echo "Mount a QCOW image using QEMU Network Block Device Utility"
+    echo "Mounts read-only and blocks. Unmounts on exit."
+}
+
+if (( $# != 2 )); then
+    usage
+    exit 1
+fi
+
+imgfile="$1"
+mountpoint="$2"
+
+
+if [[ ! -e "$mountpoint" ]]; then
+    mkdir "$mountpoint"
+    cleandir() {
+        rmdir "$mountpoint"
+    }
+else
+    cleandir() {
+        true  # noop
+    }
+fi
+
+set -eu
+sudo qemu-nbd -c /dev/nbd0 --read-only "$imgfile"
+sudo mount -o ro /dev/nbd0p1 "$mountpoint"
+set +e
+
+cleanup() {
+    sudo umount "$mountpoint"
+    sudo qemu-nbd -d /dev/nbd0
+    cleandir
+}
+
+trap cleanup EXIT
+
+echo "Mounted ${imgfile} at ${mountpoint}"
+echo "Hit return or interrupt to unmount"
+read -r
