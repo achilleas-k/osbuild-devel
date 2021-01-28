@@ -3,10 +3,11 @@
 set -uo pipefail
 
 usage() {
-    echo "Usage: $0 UUID [destination]"
+    echo "Usage: $0 [UUID | all] [destination]"
     echo
     echo "Download the results of a (finished) compose to [destination]
     (current working directory by default)
+    Specify \"all\" as the ID to download all finished jobs.
     "
 }
 
@@ -30,13 +31,23 @@ case $# in
         ;;
 esac
 
-uuid="$1"
+uuidarg="$1"
 
-if ! ssh -q localvm composer-cli compose results "${uuid}"; then
-    list_finished
-    exit 1
+dl() {
+    uuid="$1"
+    if ! ssh -q localvm composer-cli compose results "${uuid}"; then
+        list_finished
+        exit 1
+    fi
+
+    echo ":: Downloading results for "${uuid}""
+    scp localvm:"${uuid}.tar" "$destination"
+}
+
+if [[ "$uuidarg" == "all" ]]; then
+    for id in $(ssh -q localvm composer-cli --json compose list finished | jq  -r '.[].id'); do
+        dl "${id}"
+    done
+else
+    dl "${uuidarg}"
 fi
-
-scp localvm:"${uuid}.tar" "$destination"
-
-echo ":: Results for ${uuid} "
