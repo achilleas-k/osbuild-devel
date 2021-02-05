@@ -1,0 +1,21 @@
+name = "kernel-double"
+description = "Test image with two Kernel packages — installs \"kernel\" and specifies \"kernel-debug\" in customizations — should fail for ostree builds"
+version = "0.0.1"
+modules = []
+groups = []
+
+[customizations]
+hostname = "FailTest"
+
+[[packages]]
+name = "kernel"
+version = "*"
+
+[[customizations.user]]
+name = "admin"
+description = "admin user"
+key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAYU2wzSk9r1l3iOwsvaJXCsfQIUga3xzShZJAM1zHv achilleas@Ruby"
+groups = ["wheel"]
+
+[customizations.kernel]
+name = "kernel-debug"

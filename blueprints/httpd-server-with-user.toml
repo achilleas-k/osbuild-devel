@@ -1,0 +1,24 @@
+name = "httpd-server-with-user"
+description = "httpd server with user account image"
+version = "0.0.2"
+modules = []
+groups = []
+
+[[packages]]
+name = "httpd"
+version = "*"
+
+[[packages]]
+name = "tmux"
+version = "*"
+
+[[packages]]
+name = "vim-enhanced"
+version = "*"
+
+[customizations]
+
+[[customizations.user]]
+name = "auser"
+description = "admin user"
+groups = ["wheel"]
