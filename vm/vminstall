@@ -9,7 +9,7 @@ fi
 vmimg="$1"
 
 startvm() {
-    vm --memory 4G "$vmimg" &
+    vm --verbose --memory 4G "$vmimg" &
 }
 
 startvm
