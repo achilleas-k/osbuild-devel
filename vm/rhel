@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+
+rundir="${XDG_RUNTIME_DIR}/osbuild-vm"
+
+lowhost="$(hostname | tr "[:upper:]" "[:lower:]")"
+pubkey="$(cat "${HOME}/.ssh/${lowhost}.pub")"
+
+mkcloudinit() {
+    # Adapted from gicmo's vm script
+    genisoimage -input-charset utf-8 -output "${rundir}/${1}" -volid cidata -joliet -rock -quiet "${rundir}/data/user-data" "${rundir}/data/meta-data"
+}
+
+mkuserdata() {
+    mkdir -p "${rundir}/data"
+    cat > "${rundir}/data/user-data" << EOF
+#cloud-config
+users:
+  - default
+  - name: ${USER}
+    gecos: AK
+    sudo: 'ALL=(ALL) NOPASSWD:ALL'
+    ssh_pwauth: True
+    ssh_authorized_keys:
+      - ${pubkey}
+  - name: root
+    gecos: AK
+    ssh_pwauth: True
+    ssh_authorized_keys:
+      - ${pubkey}
+chpasswd:
+  list: |
+    root:r
+    ${USER}:password123
+  expire: False
+yum_repos:
+  baseos:
+      name: baseos
+      baseurl: "http://download.devel.redhat.com/rhel-8/rel-eng/RHEL-8/latest-RHEL-8/compose/BaseOS/x86_64/os/"
+      enabled: true
+      gpgcheck: false
+  appstream:
+      name: appstream
+      baseurl: "http://download.devel.redhat.com/rhel-8/rel-eng/RHEL-8/latest-RHEL-8/compose/AppStream/x86_64/os/"
+      enabled: true
+      gpgcheck: false
+  osbuild-composer:
+    name: "osbuild-composer"
+    # v25
+    baseurl: "http://osbuild-composer-repos.s3-website.us-east-2.amazonaws.com/osbuild-composer/rhel-8.3/x86_64/2dff7d05298349ef59adf94a4de7a3dd289c06d3"
+    enabled: true
+    gpgcheck: false
+  osbuild:
+    name: "osbuild"
+    # This is a non-released version of osbuild slighly newer than v23.
+    # We need this because it contains the fix for platform-python.
+    baseurl: "http://osbuild-composer-repos.s3-website.us-east-2.amazonaws.com/osbuild/rhel-8.3/x86_64/83caf800e52524b414f7f5bf5ae0d3c912c89192"
+    enabled: true
+    gpgcheck: false
+
+EOF
+}
+
+mkmetadata() {
+    mkdir -p "${rundir}/data"
+    cat > "${rundir}/data/meta-data" << EOF
+instance-id: nocloud
+local-hostname: ${1}
+EOF
+}
+
+macbase="FE:0B:6E:22:3D"
+sshbase=2222
+vmidx=0
+
+startvm() {
+    mac="${macbase}:$(printf %02d "${vmidx}")"
+    initiso="${rundir}/${2}"
+    sshport=$((sshbase+vmidx))
+    # NOTE: Bridge doesn't work with (my) wireless adapter or driver
+    # https://www.linux-kvm.org/page/Networking
+    # qemu-system-x86_64 -enable-kvm -snapshot -m 4G -drive file="${1}" -cdrom "${initiso}" -net nic -net bridge,br=virbr0
+    qemu-system-x86_64 -enable-kvm -snapshot -m 4G -drive file="${1}" -cdrom "${initiso}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::8700-:8700  &
+    ((vmidx++))
+}
+
+waitfor() {
+    while ! ssh -q localvm -p "${1}" exit; do
+        sleep 1
+    done
+}
+
+installcomposer() {
+    port="${1}"
+    ssh -q -p "${port}" root@localvm dnf install -y osbuild osbuild-composer composer-cli
+
+    ssh -q -p "${port}" root@localvm usermod -aG weldr achilleas
+    ssh -q -p "${port}" root@localvm systemctl start osbuild-composer.socket
+
+    ssh -q -p "${port}" localvm composer-cli status show
+
+    # copy source from host, compile binaries, and replace
+    scp -q -P "${port}" -R ../osbuild-composer localvm:
+
+    # ssh -p "${port}" root@localvm journalctl -f -u "*osbuild*"
+}
+
+fixdns() {
+    ssh -q -p "${1}" root@localvm "cat > /etc/resolv.conf" << EOF
+nameserver 10.38.5.26
+nameserver 10.0.2.3
+EOF
+}
+
+# 1. Composer VM
+image=/scratch/VMs/rhel-guest-image-8.4-587.x86_64.qcow2
+mkuserdata
+mkmetadata composer-vm
+mkcloudinit composer-init.iso
+startvm "${image}" composer-init.iso
+port1=${sshport}
+
+# 2. Worker VM
+# mkmetadata worker-vm
+# mkcloudinit worker-init.iso
+# startvm "${image}" worker-init.iso
+# port2=${sshport}
+
+waitfor "${port1}"
+echo "VM 1 started"
+
+fixdns "${port1}"
+# waitfor "${port2}"
+# echo "VM 2 started"
+
+installcomposer "${port1}"
+# installcomposer "${port2}"
+
+wait

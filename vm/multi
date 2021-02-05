@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+
+cd "$(dirname "$0")" || exit
+
+rundir="${XDG_RUNTIME_DIR}/osbuild-vm"
+
+lowhost="$(hostname | tr "[:upper:]" "[:lower:]")"
+pubkey="$(cat "${HOME}/.ssh/${lowhost}.pub")"
+
+mkcloudinit() {
+    # Adapted from gicmo's vm script
+    genisoimage -input-charset utf-8 -output "${rundir}/${1}" -volid cidata -joliet -rock -quiet "${rundir}/data/user-data" "${rundir}/data/meta-data"
+}
+
+mkuserdata() {
+    mkdir -p "${rundir}/data"
+    cat > "${rundir}/data/user-data" << EOF
+#cloud-config
+users:
+  - default
+  - name: ${USER}
+    gecos: AK
+    sudo: 'ALL=(ALL) NOPASSWD:ALL'
+    ssh_pwauth: True
+    ssh_authorized_keys:
+      - ${pubkey}
+  - name: root
+    gecos: AK
+    ssh_pwauth: True
+    ssh_authorized_keys:
+      - ${pubkey}
+chpasswd:
+  list: |
+    root:r
+    ${USER}:password123
+  expire: False
+EOF
+}
+
+mkmetadata() {
+    mkdir -p "${rundir}/data"
+    cat > "${rundir}/data/meta-data" << EOF
+instance-id: nocloud
+local-hostname: ${1}
+EOF
+}
+
+macbase="FE:0B:6E:22:3D"
+sshbase=2222
+vmidx=0
+
+startvm() {
+    mac="${macbase}:$(printf %02d "${vmidx}")"
+    initiso="${rundir}/${2}"
+    sshport=$((sshbase+vmidx))
+    # NOTE: Bridge doesn't work with (my) wireless adapter or driver
+    # https://www.linux-kvm.org/page/Networking
+    # qemu-system-x86_64 -enable-kvm -snapshot -m 4G -drive file="${1}" -cdrom "${initiso}" -net nic -net bridge,br=virbr0
+    qemu-system-x86_64 -enable-kvm -snapshot -m 4G -drive file="${1}" -cdrom "${initiso}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::8700-:8700 &
+    ((vmidx++))
+}
+
+waitfor() {
+    echo "Waiting for localvm:${1}"
+    while ! ssh -q localvm -p "${1}" exit; do
+        sleep 1
+    done
+}
+
+installcomposer() {
+    port="${1}"
+    ssh -q -p "${port}" root@localvm mkdir /rpm
+    scp -q -P "${port}" ../../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-??-*.rpm root@localvm:/rpm
+    scp -q -P "${port}" ../../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-core-??-*.rpm root@localvm:/rpm
+    scp -q -P "${port}" ../../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-worker-??-*.rpm root@localvm:/rpm
+    scp -q -P "${port}" ../../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-tests-??-*.rpm root@localvm:/rpm
+    scp -q -P "${port}" ../../osbuild/rpmbuild/RPMS/noarch/osbuild-??-*.rpm root@localvm:/rpm
+    scp -q -P "${port}" ../../osbuild/rpmbuild/RPMS/noarch/osbuild-ostree-??-*.rpm root@localvm:/rpm
+    scp -q -P "${port}" ../../osbuild/rpmbuild/RPMS/noarch/osbuild-selinux-??-*.rpm root@localvm:/rpm
+    scp -q -P "${port}" ../../osbuild/rpmbuild/RPMS/noarch/python3-osbuild-??-*.rpm root@localvm:/rpm
+
+    ssh -q -p "${port}" root@localvm dnf install -y /rpm/*
+
+    mkdir -p "${rundir}/config"
+    ./gen-certs.sh openssl.cnf "${rundir}/config" "${rundir}/config/ca"
+    ssh -q -p "${port}" root@localvm mkdir -p /etc/osbuild-composer
+    scp -q -P "${port}" -r config/* root@localvm:/etc/osbuild-composer/.
+
+    ssh -q -p "${port}" root@localvm usermod -aG weldr achilleas
+    ssh -q -p "${port}" root@localvm systemctl start osbuild-composer.socket
+
+    ssh -q -p "${port}" localvm composer-cli status show
+
+    # ssh -p "${port}" root@localvm journalctl -f -u "*osbuild*"
+}
+
+# 1. Composer VM
+image=/scratch/VMs/Fedora-Cloud-Base-33-1.2.x86_64-devel.qcow2
+mkuserdata
+mkmetadata composer-vm
+mkcloudinit composer-init.iso
+startvm "${image}" "composer-init.iso"
+port1=${sshport}
+
+# 2. Worker VM
+# mkmetadata worker-vm
+# mkcloudinit worker-init.iso
+# startvm "${image}" worker-init.iso
+# port2=${sshport}
+
+waitfor "${port1}"
+echo "VM 1 started"
+# waitfor "${port2}"
+# echo "VM 2 started"
+
+installcomposer "${port1}"
+# installcomposer "${port2}"
+
+echo "Starting RHEL worker"
+./rhel-worker
+
+wait
