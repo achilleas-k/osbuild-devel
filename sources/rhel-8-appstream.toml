@@ -1,0 +1,7 @@
+id = "rhel-8-appstream"
+name = "rhel-8-appstream"
+type = "yum-baseurl"
+url = "http://download.devel.redhat.com/rhel-8/rel-eng/RHEL-8/latest-RHEL-8/compose/AppStream/x86_64/os/"
+check_gpg = false
+check_ssl = false
+system = false
