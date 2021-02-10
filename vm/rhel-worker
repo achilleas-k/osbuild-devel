@@ -88,11 +88,12 @@ waitfor() {
     done
 }
 
-installcomposer() {
+installworker() {
     port="${1}"
-    ssh -q -p "${port}" root@localvm dnf install -y osbuild osbuild-composer composer-cli
+    ssh -q -p "${port}" root@localvm dnf install -y osbuild osbuild-composer-worker
     ssh -q -p "${port}" root@localvm mkdir -p /etc/osbuild-composer
-    scp -q -P "${port}" -r config/* root@localvm:/etc/osbuild-composer/.
+    scp -P "${port}" -r "${rundir}"/config/* root@localvm:/etc/osbuild-composer/.
+    scp -q -P "${port}" ./config/*.toml root@localvm:/etc/osbuild-composer/.
 
     ssh -q -p "${port}" root@localvm systemctl enable --now osbuild-remote-worker@10.0.2.2:8700
     ssh -q -p "${port}" root@localvm systemctl status osbuild-remote-worker@10.0.2.2:8700
@@ -123,3 +124,4 @@ fixdns "${sshport}"
 # echo "VM 2 started"
 
 installcomposer "${sshport}"
+wait
