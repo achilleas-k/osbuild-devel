@@ -1,0 +1,10 @@
+name = "kernel-append"
+description = ""
+version = "0.0.1"
+modules = []
+groups = []
+
+[customizations]
+
+[customizations.kernel]
+append = "systemd.unified_cgroup_hierarchy=0"

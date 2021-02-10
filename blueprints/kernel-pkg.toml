@@ -1,5 +1,5 @@
-name = "kernel-test"
-description = "Test image with alt Kernel"
+name = "kernel-pkg"
+description = "Test image with alt Kernel package (not customization)"
 version = "0.0.1"
 modules = []
 groups = []
