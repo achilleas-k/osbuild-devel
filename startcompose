@@ -29,11 +29,13 @@ fi
 bp="$1"
 imgtype="$2"
 
-if ! jobid=$(ssh -q localvm composer-cli --json compose start "${bp}" "${imgtype}" | jq '.build_id'); then
+if ! jobout=$(ssh -q localvm composer-cli --json compose start "${bp}" "${imgtype}"); then
+    echo "${jobout}"
     list_blueprints
     list_types
     exit 1
 fi
+jobid=$(jq '.build_id' <<< "${jobout}")
 
 echo ":: Job submitted: ${jobid}"
 echo ":: Job info:"
