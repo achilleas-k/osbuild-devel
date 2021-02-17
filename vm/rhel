@@ -35,27 +35,24 @@ chpasswd:
 yum_repos:
   baseos:
       name: baseos
-      baseurl: "http://download.devel.redhat.com/rhel-8/rel-eng/RHEL-8/latest-RHEL-8/compose/BaseOS/x86_64/os/"
+      baseurl: "https://rpmrepo.osbuild.org/v1/psi/el8/el8-x86_64-baseos-8.4.0.n-20210214"
       enabled: true
       gpgcheck: false
   appstream:
       name: appstream
-      baseurl: "http://download.devel.redhat.com/rhel-8/rel-eng/RHEL-8/latest-RHEL-8/compose/AppStream/x86_64/os/"
+      baseurl: "https://rpmrepo.osbuild.org/v1/psi/el8/el8-x86_64-appstream-8.4.0.n-20210214"
       enabled: true
       gpgcheck: false
-  osbuild-composer:
-    name: "osbuild-composer"
-    # v25
-    baseurl: "http://osbuild-composer-repos.s3-website.us-east-2.amazonaws.com/osbuild-composer/rhel-8.3/x86_64/2dff7d05298349ef59adf94a4de7a3dd289c06d3"
-    enabled: true
-    gpgcheck: false
-  osbuild:
-    name: "osbuild"
-    # This is a non-released version of osbuild slighly newer than v23.
-    # We need this because it contains the fix for platform-python.
-    baseurl: "http://osbuild-composer-repos.s3-website.us-east-2.amazonaws.com/osbuild/rhel-8.3/x86_64/83caf800e52524b414f7f5bf5ae0d3c912c89192"
-    enabled: true
-    gpgcheck: false
+  brew:
+      name: brew
+      baseurl: "https://rpmrepo.osbuild.org/v1/psi/el8/el8-x86_64-brew-8-stage-20210214"
+      enabled: true
+      gpgcheck: false
+  rt:
+      name: rt
+      baseurl: "https://rpmrepo.osbuild.org/v1/psi/el8/el8-x86_64-rt-8.4.0.n-20210214"
+      enabled: true
+      gpgcheck: false
 
 EOF
 }
@@ -79,8 +76,11 @@ startvm() {
     # NOTE: Bridge doesn't work with (my) wireless adapter or driver
     # https://www.linux-kvm.org/page/Networking
     # qemu-system-x86_64 -enable-kvm -snapshot -m 4G -drive file="${1}" -cdrom "${initiso}" -net nic -net bridge,br=virbr0
-    qemu-system-x86_64 -enable-kvm -snapshot -m 4G -drive file="${1}" -cdrom "${initiso}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::8700-:8700  &
     ((vmidx++))
+    echo "Startig VM ${vmidx}..."
+    qemu-system-x86_64 -enable-kvm -snapshot -m 4G -drive file="${1}" -cdrom "${initiso}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::8700-:8700  &
+    waitfor "${sshport}"
+    echo "VM 1 started"
 }
 
 waitfor() {
@@ -94,14 +94,20 @@ installcomposer() {
     ssh -q -p "${port}" root@localvm dnf install -y osbuild osbuild-composer composer-cli
 
     ssh -q -p "${port}" root@localvm usermod -aG weldr achilleas
+
+    ssh -q -p "${port}" root@localvm mkdir -p /etc/osbuild-composer/repositories/
+    scp -q -P "${port}" ../osbuild-composer/test/data/repositories/rhel-84.json root@localvm:/etc/osbuild-composer/repositories/rhel-8.json
+    ssh -q -p "${port}" root@localvm ln -sf /etc/osbuild-composer/repositories/rhel-8.json /etc/osbuild-composer/repositories/rhel-8-beta.json
+
     ssh -q -p "${port}" root@localvm systemctl start osbuild-composer.socket
 
     ssh -q -p "${port}" localvm composer-cli status show
+}
 
-    # copy source from host, compile binaries, and replace
-    scp -q -P "${port}" -R ../osbuild-composer localvm:
-
-    # ssh -p "${port}" root@localvm journalctl -f -u "*osbuild*"
+installbuildtools() {
+    port="${1}"
+    # for building updated binaries later
+    ssh -q -p "${port}" root@localvm dnf install -y go
 }
 
 fixdns() {
@@ -112,7 +118,7 @@ EOF
 }
 
 # 1. Composer VM
-image=/scratch/VMs/rhel-guest-image-8.4-587.x86_64.qcow2
+image=/scratch/VMs/rhel-guest-image-8.4-645.x86_64.qcow2
 mkuserdata
 mkmetadata composer-vm
 mkcloudinit composer-init.iso
@@ -125,14 +131,12 @@ port1=${sshport}
 # startvm "${image}" worker-init.iso
 # port2=${sshport}
 
-waitfor "${port1}"
-echo "VM 1 started"
-
 fixdns "${port1}"
 # waitfor "${port2}"
 # echo "VM 2 started"
 
+installbuildtools "${port1}"
 installcomposer "${port1}"
 # installcomposer "${port2}"
 
-wait
+ssh -q -p "${port1}" root@localvm journalctl -f -u "*osbuild*"
