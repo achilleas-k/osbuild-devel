@@ -1,7 +1,0 @@
-id = "planetccrma"
-name = "planetccrma"
-type = "yum-baseurl"
-url = "http://ccrma.stanford.edu/planetccrma/mirror/fedora/linux/planetcore/33/x86_64/"
-check_gpg = false
-check_ssl = false
-system = false
