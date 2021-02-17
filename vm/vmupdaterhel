@@ -1,0 +1,19 @@
+#!/usr/bin/bash
+
+set -eu
+
+
+echo "Stopping services"
+ssh -q root@localvm systemctl stop "osbuild*"
+
+echo "Copying osbuild-composer sources to VM"
+rsync -aP ../osbuild-composer localvm:
+
+echo "Building binaries"
+ssh -q localvm 'cd osbuild-composer && mkdir -p bin && go build -o bin/ ./cmd/osbuild-{composer,worker}'
+
+echo "Installing"
+ssh -q localvm sudo cp osbuild-composer/bin/osbuild-{composer,worker} /usr/libexec/osbuild-composer/.
+
+echo "Restarting services"
+ssh -q root@localvm systemctl restart osbuild-composer.socket
