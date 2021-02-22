@@ -27,6 +27,7 @@ users:
     ssh_pwauth: True
     ssh_authorized_keys:
       - ${pubkey}
+timezone: CET
 chpasswd:
   list: |
     root:r
@@ -106,8 +107,11 @@ installcomposer() {
 
 installbuildtools() {
     port="${1}"
-    # for building updated binaries later
-    ssh -q -p "${port}" root@localvm dnf install -y go
+    # for building updated binaries and osbuild rpm packages
+    ssh -q -p "${port}" root@localvm dnf install -y go make git rpm-build
+
+    ssh -q -p "${port}" localvm git config --global user.email "testvm@osbuild.org"
+    ssh -q -p "${port}" localvm git config --global user.name "vm"
 }
 
 fixdns() {
