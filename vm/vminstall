@@ -21,23 +21,23 @@ done
 echo "Connected"
 
 ssh root@localvm mkdir /rpm
-scp ../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-??-*.rpm root@localvm:/rpm
-scp ../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-core-??-*.rpm root@localvm:/rpm
-scp ../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-worker-??-*.rpm root@localvm:/rpm
-scp ../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-tests-??-*.rpm root@localvm:/rpm
-scp ../osbuild/rpmbuild/RPMS/noarch/osbuild-??-*.rpm root@localvm:/rpm
-scp ../osbuild/rpmbuild/RPMS/noarch/osbuild-ostree-??-*.rpm root@localvm:/rpm
-scp ../osbuild/rpmbuild/RPMS/noarch/osbuild-selinux-??-*.rpm root@localvm:/rpm
-scp ../osbuild/rpmbuild/RPMS/noarch/python3-osbuild-??-*.rpm root@localvm:/rpm
+scp -q ../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-??-*.rpm root@localvm:/rpm
+scp -q ../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-core-??-*.rpm root@localvm:/rpm
+scp -q ../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-worker-??-*.rpm root@localvm:/rpm
+scp -q ../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-tests-??-*.rpm root@localvm:/rpm
+scp -q ../osbuild/rpmbuild/RPMS/noarch/osbuild-??-*.rpm root@localvm:/rpm
+scp -q ../osbuild/rpmbuild/RPMS/noarch/osbuild-ostree-??-*.rpm root@localvm:/rpm
+scp -q ../osbuild/rpmbuild/RPMS/noarch/osbuild-selinux-??-*.rpm root@localvm:/rpm
+scp -q ../osbuild/rpmbuild/RPMS/noarch/python3-osbuild-??-*.rpm root@localvm:/rpm
 
-ssh root@localvm dnf install -y /rpm/*
+ssh -q root@localvm dnf install -y /rpm/*
 
-ssh root@localvm usermod -aG weldr achilleas
-ssh root@localvm systemctl start osbuild-composer.socket
+ssh -q root@localvm usermod -aG weldr achilleas
+ssh -q root@localvm systemctl start osbuild-composer.socket
 
-ssh localvm composer-cli status show
+ssh -q localvm composer-cli status show
 
-ssh root@localvm journalctl -f -u "*osbuild*"
+ssh -q root@localvm journalctl -f -u "*osbuild*"
 
 echo "Ready"
 wait
