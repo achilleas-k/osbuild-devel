@@ -18,7 +18,7 @@ echo "Building RPMs"
 ssh -q localvm 'cd osbuild && git commit . -m "wip" --allow-empty && sudo dnf -y builddep ./osbuild.spec && make rpm'
 
 echo "Installing"
-ssh -q localvm sudo cp osbuild-composer/bin/osbuild-{composer,worker} /usr/libexec/osbuild-composer/.
+ssh -q localvm 'cd osbuild-composer && sudo make install'
 ssh -q localvm sudo dnf install -y osbuild/rpmbuild/RPMS/noarch/*.rpm
 
 echo "Restarting services"
