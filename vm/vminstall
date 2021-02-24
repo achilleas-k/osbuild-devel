@@ -12,6 +12,13 @@ startvm() {
     vm --verbose --memory 4G "$vmimg" &
 }
 
+fixdns() {
+    ssh -q root@localvm "cat > /etc/resolv.conf" << EOF
+nameserver 10.38.5.26
+nameserver 10.0.2.3
+EOF
+}
+
 startvm
 
 while ! ssh -q localvm exit; do
@@ -19,6 +26,8 @@ while ! ssh -q localvm exit; do
 done
 
 echo "Connected"
+
+fixdns
 
 ssh root@localvm mkdir /rpm
 scp -q ../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-??-*.rpm root@localvm:/rpm
