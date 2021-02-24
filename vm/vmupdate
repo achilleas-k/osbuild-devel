@@ -21,14 +21,15 @@ ssh -q root@localvm systemctl stop "osbuild*"
 
 echo "Copying osbuild-composer binaries to VM"
 scp -q ../osbuild-composer/bin/osbuild-{composer,worker} root@localvm:/usr/libexec/osbuild-composer/.
+scp -q ../osbuild-composer/bin/osbuild-image-tests root@localvm:/usr/libexec/osbuild-composer-test/osbuild-image-tests
 
 echo "Copying osbuild RPMs to VM"
 ssh -q root@localvm rm -rf /rpm
 ssh -q root@localvm mkdir /rpm
-scp ../osbuild/rpmbuild/RPMS/noarch/osbuild-??-*.rpm root@localvm:/rpm
-scp ../osbuild/rpmbuild/RPMS/noarch/osbuild-ostree-??-*.rpm root@localvm:/rpm
-scp ../osbuild/rpmbuild/RPMS/noarch/osbuild-selinux-??-*.rpm root@localvm:/rpm
-scp ../osbuild/rpmbuild/RPMS/noarch/python3-osbuild-??-*.rpm root@localvm:/rpm
+scp -q ../osbuild/rpmbuild/RPMS/noarch/osbuild-??-*.rpm root@localvm:/rpm
+scp -q ../osbuild/rpmbuild/RPMS/noarch/osbuild-ostree-??-*.rpm root@localvm:/rpm
+scp -q ../osbuild/rpmbuild/RPMS/noarch/osbuild-selinux-??-*.rpm root@localvm:/rpm
+scp -q ../osbuild/rpmbuild/RPMS/noarch/python3-osbuild-??-*.rpm root@localvm:/rpm
 
 echo "Installing osbuild"
 # ssh -q root@localvm dnf -y remove osbuild
