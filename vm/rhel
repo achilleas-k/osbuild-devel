@@ -36,22 +36,17 @@ chpasswd:
 yum_repos:
   baseos:
       name: baseos
-      baseurl: "https://rpmrepo.osbuild.org/v1/psi/el8/el8-x86_64-baseos-8.4.0.n-20210214"
+      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.4/compose/BaseOS/x86_64/os/"
       enabled: true
       gpgcheck: false
   appstream:
       name: appstream
-      baseurl: "https://rpmrepo.osbuild.org/v1/psi/el8/el8-x86_64-appstream-8.4.0.n-20210214"
-      enabled: true
-      gpgcheck: false
-  brew:
-      name: brew
-      baseurl: "https://rpmrepo.osbuild.org/v1/psi/el8/el8-x86_64-brew-8-stage-20210214"
+      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.4/compose/AppStream/x86_64/os/"
       enabled: true
       gpgcheck: false
   rt:
       name: rt
-      baseurl: "https://rpmrepo.osbuild.org/v1/psi/el8/el8-x86_64-rt-8.4.0.n-20210214"
+      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.4/compose/RT/x86_64/os/"
       enabled: true
       gpgcheck: false
 
