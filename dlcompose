@@ -12,8 +12,8 @@ usage() {
 }
 
 list_finished() {
-    echo ":: Available composes (finished only)"
-    ssh -q localvm composer-cli compose list finished
+    echo ":: Available composes (finished/failed only)"
+    ssh -q localvm composer-cli compose list finished failed
 }
 
 
