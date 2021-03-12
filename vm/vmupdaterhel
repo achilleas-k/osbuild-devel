@@ -20,6 +20,8 @@ ssh -q localvm 'cd osbuild && git commit . -m "wip" --allow-empty && sudo dnf -y
 echo "Installing"
 ssh -q localvm 'cd osbuild-composer && sudo make install'
 ssh -q localvm sudo dnf install -y osbuild/rpmbuild/RPMS/noarch/*.rpm
+ssh -q localvm sudo rm /etc/osbuild-composer/repositories/*
+ssh -q localvm sudo cp -v osbuild-composer/test/data/repositories/rhel-84.json /etc/osbuild-composer/repositories/rhel-8-beta.json
 
 echo "Restarting services"
 ssh -q root@localvm systemctl restart osbuild-composer.socket
