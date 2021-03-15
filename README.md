@@ -1,8 +1,12 @@
-# OSBuild container setup
+# Development environment scripts for osbuild and osbuild-composer
 
-This document describes how to set up and run multiple containers for developing and testing *osbuild-composer* and *osbuild*. This setup requires running two containers, one for *osbuild-composer* and other for *osbuild-worker* and *osbuild* together.
+## OSBuild container setup
 
-## Overview
+This section describes how to set up and run multiple containers for developing and testing *osbuild-composer* and *osbuild*. This setup requires running two containers, one for *osbuild-composer* and other for *osbuild-worker* and *osbuild* together.
+
+**NB:** The container setup is going through a bit of a redesign right now, so some paths may differ, but the setup should still work as described.
+
+### Overview
 
 1. [Configure source directory](#configure-source-directory)
 2. [Generate SSL certs](#generate-ssl-certs)
@@ -11,11 +15,11 @@ This document describes how to set up and run multiple containers for developing
 5. [Generate request data](#generate-request-data)
 6. [Submit request](#submit-request)
 
-### Configure source directory
+#### Configure source directory
 
 The setup requires defining the path to the osbuild-composer source repository. This should be defined in the [`./docker/.env`](./docker/.env) file (as `$OSBUILD_COMPOSER_SOURCE`).
 
-### Generate SSL certs
+#### Generate SSL certs
 
 The [gen-certs.sh](./docker/gen-certs.sh) script is a copy of the certificate generation part of the `provision.sh` script from *osbuild-composer*. Run:
 ```
@@ -23,7 +27,7 @@ The [gen-certs.sh](./docker/gen-certs.sh) script is a copy of the certificate ge
 ```
 to generate cert files and place them into the [`config`](./docker/config) directory. This directory already contains configuration files for *osbuild-composer* and it will be mounted into the containers that need it.
 
-### Build container images
+#### Build container images
 
 To build the two container images, from the [./docker](./docker) directory, run:
 ```
@@ -32,7 +36,7 @@ docker-compose build
 
 *The worker Dockerfile isn't in the main repository. For now, check out [the dockerfile-worker branch on my fork](https://github.com/achilleas-k/osbuild-composer/blob/docker-compose/distribution/Dockerfile-worker).*
 
-### Start multi-container environment
+#### Start multi-container environment
 
 To start both containers, from the [`./docker`](./docker) directory of this repository, run:
 ```
@@ -43,11 +47,11 @@ docker-compose up composer worker
 
 This will set up both containers with access to the [`./docker/config`](./docker/config) directory for configurations and certs. It will also set an internal network where the two containers can communicate via their service names. This is important for the certificates that are issued for the hostname `org.osbuild.composer`.
 
-### Generate request data
+#### Generate request data
 
 The [`makedata.sh`](./makedata.sh) script is a copy of the request data generation section section of the `test/cases/api.sh` script from *osbuild-composer*. Running it will generate a file called `request.json` that can be used to submit a request to *osbuild-composer*. Note that the values in the `upload_requests` block are not valid and will cause the final upload steps to fail unless modified.
 
-### Submit request
+#### Submit request
 
 To submit a compose job, run:
 ```
