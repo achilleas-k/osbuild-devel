@@ -1,0 +1,166 @@
+#!/usr/bin/env bash
+
+set -eu
+lowhost="$(hostname | tr "[:upper:]" "[:lower:]")"
+pubkeyfile="${HOME}/.ssh/${lowhost}.pub"
+sshport=2222
+
+usage() {
+    echo "$0 DISTRO"
+    echo
+    echo "Start a DISTRO vm, install osbuild and osbuild-composer, and start the services."
+    echo "Creates a user account with:"
+    echo "  Username: $USER"
+    echo "  Password: password42"
+    echo "  Public key from:"
+    echo "    - ${pubkeyfile}"
+    echo
+    echo "DISTRO should be one of:"
+    echo "  fedora    Fedora 33"
+    echo "  rhel      RHEL 8.4"
+    exit 1
+}
+
+if (( $# != 1 )); then
+    usage
+fi
+
+distro="$1"
+
+case "${distro}" in
+    rhel)
+        image=/scratch/VMs/rhel-guest-image-8.4-645.x86_64.qcow2
+        echo "Setting up RHEL VM using ${image}"
+        ;;
+    fedora)
+        image=/scratch/VMs/Fedora-Cloud-Base-33-1.2.x86_64.qcow2
+        echo "Setting up Fedora VM using ${image}"
+        ;;
+    *)
+        usage
+        ;;
+esac
+
+
+rundir="${XDG_RUNTIME_DIR}/osbuild-vm"
+
+mkcloudinit() {
+    # Adapted from gicmo's vm script
+    genisoimage -input-charset utf-8 -output "${rundir}/${1}" -volid cidata -joliet -rock -quiet "${rundir}/data/user-data" "${rundir}/data/meta-data"
+}
+
+pubkey="$(cat "${pubkeyfile}")"
+mkuserdata() {
+    mkdir -p "${rundir}/data"
+    cat > "${rundir}/data/user-data" << EOF
+#cloud-config
+users:
+  - default
+  - name: ${USER}
+    gecos: AK
+    sudo: 'ALL=(ALL) NOPASSWD:ALL'
+    ssh_pwauth: True
+    ssh_authorized_keys:
+      - ${pubkey}
+  - name: root
+    gecos: AK
+    ssh_pwauth: True
+    ssh_authorized_keys:
+      - ${pubkey}
+timezone: CET
+chpasswd:
+  list: |
+    root:r
+    ${USER}:password42
+  expire: False
+EOF
+
+if [[ "${distro}" == "rhel" ]]; then
+    cat >> "${rundir}/data/user-data" << EOF
+yum_repos:
+  baseos:
+      name: baseos
+      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.4/compose/BaseOS/x86_64/os/"
+      enabled: true
+      gpgcheck: false
+  appstream:
+      name: appstream
+      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.4/compose/AppStream/x86_64/os/"
+      enabled: true
+      gpgcheck: false
+  rt:
+      name: rt
+      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.4/compose/RT/x86_64/os/"
+      enabled: true
+      gpgcheck: false
+
+EOF
+fi
+}
+
+mkmetadata() {
+    mkdir -p "${rundir}/data"
+    cat > "${rundir}/data/meta-data" << EOF
+instance-id: nocloud
+local-hostname: ${1}
+EOF
+}
+
+startvm() {
+    mac="FE:0B:6E:22:3D:00"
+    initiso="${rundir}/${2}"
+    # NOTE: Bridge doesn't work with (my) wireless adapter or driver
+    # https://www.linux-kvm.org/page/Networking
+    # qemu-system-x86_64 -enable-kvm -snapshot -m 4G -drive file="${1}" -cdrom "${initiso}" -net nic -net bridge,br=virbr0
+    qemu-system-x86_64 -enable-kvm -snapshot -smp 4 -m 12G -drive file="${1}" -cdrom "${initiso}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22 &
+    waitfor "${sshport}"
+    echo "VM started"
+}
+
+waitfor() {
+    while ! ssh -q localvm -p "${1}" exit; do
+        sleep 1
+    done
+}
+
+installcomposer() {
+    port="${1}"
+    ssh -q -p "${port}" root@localvm dnf install -y osbuild osbuild-composer composer-cli
+
+    ssh -q -p "${port}" root@localvm usermod -aG weldr "${USER}"
+
+    ssh -q -p "${port}" root@localvm mkdir -p /etc/osbuild-composer/repositories/
+    scp -q -P "${port}" ../osbuild-composer/test/data/repositories/rhel-84.json root@localvm:/etc/osbuild-composer/repositories/rhel-8.json
+    ssh -q -p "${port}" root@localvm ln -sf /etc/osbuild-composer/repositories/rhel-8.json /etc/osbuild-composer/repositories/rhel-8-beta.json
+
+    ssh -q -p "${port}" root@localvm systemctl start osbuild-composer.socket
+
+    ssh -q -p "${port}" localvm composer-cli status show
+}
+
+installbuildtools() {
+    port="${1}"
+    # for building updated binaries and osbuild rpm packages
+    ssh -q -p "${port}" root@localvm dnf install -y go make git rpm-build krb5-devel
+
+    ssh -q -p "${port}" localvm git config --global user.email "testvm@osbuild.org"
+    ssh -q -p "${port}" localvm git config --global user.name "${USER}"
+}
+
+fixdns() {
+    ssh -q -p "${1}" root@localvm "cat > /etc/resolv.conf" << EOF
+nameserver 10.38.5.26
+nameserver 10.0.2.3
+EOF
+}
+
+mkuserdata
+mkmetadata composer-vm
+mkcloudinit composer-init.iso
+startvm "${image}" composer-init.iso
+fixdns "${sshport}"
+
+installbuildtools "${sshport}"
+installcomposer "${sshport}"
+
+ssh -q -p "${sshport}" root@localvm journalctl -f -u "*osbuild*"
