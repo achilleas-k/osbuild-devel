@@ -68,6 +68,13 @@ The `-k` flag is necessary to make curl ignore the certificate mismatch for the 
 
 The [vm](./vm) directory contains scripts for setting up a VM for developing and testing *osbuild-composer* and *osbuild*.  This setup is meant for testing local setups (i.e., non-cloud APIs) though the Weldr API.  Some scripts use the [composer-cli](https://weldr.io/lorax/composer-cli.html), which is included in the VM too for convenience.
 
+### Overview
+
+1. [Setting up](#setting-up)
+2. [Starting](#starting)
+3. [Updating](#updating)
+4. [Convenience scripts](#convenience-scripts)
+
 ### Setting up
 
 Some things to note (and potentially change) before running:
