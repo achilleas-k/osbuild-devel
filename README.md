@@ -1,5 +1,8 @@
 # Development environment scripts for osbuild and osbuild-composer
 
+1. [Container setup](#osbuild-container-setup)
+2. [VM setup](#osbuild-vm-setup)
+
 ## OSBuild container setup
 
 This section describes how to set up and run multiple containers for developing and testing *osbuild-composer* and *osbuild*. This setup requires running two containers, one for *osbuild-composer* and other for *osbuild-worker* and *osbuild* together.
