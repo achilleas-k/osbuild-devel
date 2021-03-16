@@ -2,6 +2,8 @@
 
 set -eu
 
+cd "$(dirname "$0")"
+
 echo ":: Copying blueprints to VM"
 scp -r blueprints localvm:
 
