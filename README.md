@@ -78,6 +78,14 @@ The [vm](./vm) directory contains scripts for setting up a VM for developing and
 ### Setting up
 
 Some things to note (and potentially change) before running:
+- All the scripts in this section assume that the VM is reachable at `localvm`.  The following host configuration is assumed.  Add and/or adjust in `$HOME/.ssh/config` as necessary:
+```
+Host localvm
+    Hostname localhost
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+    Port 2222
+```
 - The script creates a user with the same username as the user running the script.  A public key is added to the user account, taken from `$HOME/.ssh/<hostname>.pub`.  This can be changed in the [vm/start](vm/start) script.
 - The locations of the images to run for each VM should be set in the [vm/start](vm/start) script.
 - Similarly, the locations of the sources for *osbuild* and *osbuild-composer* should be set in the [vm/update](vm/update) script.
