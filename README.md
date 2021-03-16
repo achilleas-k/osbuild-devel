@@ -60,3 +60,32 @@ curl -k --cert ./docker/composer-config/client-crt.pem --cacert ./docker/compose
 to send the request with the data to the composer API.
 
 The `-k` flag is necessary to make curl ignore the certificate mismatch for the hostname (`172.30.0.10`).
+
+## OSBuild VM setup
+
+The [vm](./vm) directory contains scripts for setting up a VM for developing and testing *osbuild-composer* and *osbuild*.  This setup is meant for testing local setups (i.e., non-cloud APIs) though the Weldr API.  Some scripts use the [composer-cli](https://weldr.io/lorax/composer-cli.html), which is included in the VM too for convenience.
+
+### Setting up
+
+Some things to note (and potentially change) before running:
+- The script creates a user with the same username as the user running the script.  A public key is added to the user account, taken from `$HOME/.ssh/<hostname>.pub`.  This can be changed in the [vm/start](vm/start) script.
+- The locations of the images to run for each VM should be set in the [vm/start](vm/start) script.
+- Similarly, the locations of the sources for *osbuild* and *osbuild-composer* should be set in the [vm/update](vm/update) script.
+
+### Starting
+
+The [vm/start](./vm/start) script starts the VM, installs *osbuild* and *osbuild-composer* from the distribution repositories, and starts the services.  It requires specifying a distro, either `rhel` (RHEL 8.4) or `fedora` (Fedora 33) must be specified on the command line. *The RHEL 8.4 repositories require a RH VPN connection to access.*
+
+### Updating
+
+The [vm/update](./vm/update) script stops the container services, copies the sources for the two projects into the VM, updates the projects, and restarts the services.
+
+For *osbuild*, it builds, packages, and installs RPMs.
+
+For *osbuild-composer*, it simply compiles the binaries for `osbuild-composer` and `osbuild-worker` and copies them to the system-wide path using `make install`.  This is much faster than building RPMs, but be aware it may not update other system-wide configurations.  Check the [osbuild-composer](https://github.com/osbuild/osbuild-composer) [Makefile](https://github.com/osbuild/osbuild-composer/blob/main/Makefile) to make sure the command updates the component you are developing and/or testing.
+
+### Convenience scripts
+
+- [pushbp](./pushbp) copies all blueprints from the [blueprints](./blueprints) directory of this repository into the container and pushes them to *osbuild-composer*.
+- [startcompose](./startcompose) takes two arguments, a blueprint name and a compose type, and starts a compose job in the VM.
+- [dlcompose](./dlcompose) takes two arguments, a UUID and a path, and downloads the result of the given compose (defined by the UUID) to the path as a single tarball.  Specifying `all` in place of the UUID will download the results of all *finished* and *failed* jobs.
