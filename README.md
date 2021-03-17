@@ -92,7 +92,7 @@ Host localvm
 
 ### Starting
 
-The [vm/start](./vm/start) script starts the VM, installs *osbuild* and *osbuild-composer* from the distribution repositories, and starts the services.  It requires specifying a distro, either `rhel` (RHEL 8.4) or `fedora` (Fedora 33) must be specified on the command line. *The RHEL 8.4 repositories require a RH VPN connection to access.*
+The [vm/start](./vm/start) script starts the VM, installs *osbuild* and *osbuild-composer* from the distribution repositories, and starts the services.  It requires specifying a distro, either `rhel` (RHEL 8.4) or `fedora` (Fedora 33), on the command line. *The RHEL 8.4 repositories require a RH VPN connection to access.*
 
 ### Updating
 
