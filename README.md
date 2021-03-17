@@ -98,9 +98,9 @@ The [vm/start](./vm/start) script starts the VM, installs *osbuild* and *osbuild
 
 The [vm/update](./vm/update) script stops the container services, copies the sources for the two projects into the VM, updates the projects, and restarts the services.
 
-For *osbuild*, it builds, packages, and installs RPMs.
+For *osbuild*, it builds, packages, and installs RPMs.  Before packaging with `make rpm`, it commits the working tree to make sure any uncommitted changes are also included.
 
-For *osbuild-composer*, it simply compiles the binaries for `osbuild-composer` and `osbuild-worker` and copies them to the system-wide path using `make install`.  This is much faster than building RPMs, but be aware it may not update other system-wide configurations.  Check the [osbuild-composer](https://github.com/osbuild/osbuild-composer) [Makefile](https://github.com/osbuild/osbuild-composer/blob/main/Makefile) to make sure the command updates the component you are developing and/or testing.
+For *osbuild-composer*, it simply compiles the binaries for `osbuild-composer` and `osbuild-worker` and copies them to the system-wide path using `make install`.  This is much faster than building RPMs, but be aware that it may not update everything and will not install new dependencies.  Check the [osbuild-composer](https://github.com/osbuild/osbuild-composer) [Makefile](https://github.com/osbuild/osbuild-composer/blob/main/Makefile) to make sure the command updates the component you are developing and/or testing.
 
 ### Convenience scripts
 
