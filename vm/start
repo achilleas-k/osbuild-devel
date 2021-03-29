@@ -16,8 +16,9 @@ usage() {
     echo "    - ${pubkeyfile}"
     echo
     echo "DISTRO should be one of:"
-    echo "  fedora    Fedora 33"
-    echo "  rhel      RHEL 8.4"
+    echo "  fedora33    Fedora 33"
+    echo "  rhel84      RHEL 8.4"
+    echo "  rhel85      RHEL 8.5"
     exit 1
 }
 
@@ -28,13 +29,17 @@ fi
 distro="$1"
 
 case "${distro}" in
-    rhel)
+    rhel84)
         image=/scratch/VMs/rhel-guest-image-8.4-645.x86_64.qcow2
-        echo "Setting up RHEL VM using ${image}"
+        echo "Setting up RHEL 8.4 VM using ${image}"
         ;;
-    fedora)
+    rhel85)
+        image=/scratch/VMs/rhel-guest-image-8.5-238.x86_64.qcow2
+        echo "Setting up RHEL 8.5 VM using ${image}"
+        ;;
+    fedora33)
         image=/scratch/VMs/Fedora-Cloud-Base-33-1.2.x86_64.qcow2
-        echo "Setting up Fedora VM using ${image}"
+        echo "Setting up Fedora 33 VM using ${image}"
         ;;
     *)
         usage
@@ -75,7 +80,7 @@ chpasswd:
   expire: False
 EOF
 
-if [[ "${distro}" == "rhel" ]]; then
+if [[ "${distro}" = rhel* ]]; then
     cat >> "${rundir}/data/user-data" << EOF
 yum_repos:
   baseos:
