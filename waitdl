@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+if (( $# != 2 )); then
+    echo "$0 UUID DESTINATION"
+    echo
+    echo "Wait for compose to finish and download to the specified directory"
+    exit 1
+fi
+
+cd "$(dirname "$0")" || exit
+
+composeid="$1"
+destination="$2"
+
+status() {
+    ssh -q localvm composer-cli --json compose info "${1}" | jq -r '.queue_status'
+}
+
+while [[ $(status "${composeid}") == "RUNNING" ]];  do
+    sleep 5
+done
+
+./dlcompose "${composeid}" "${destination}"
