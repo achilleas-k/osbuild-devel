@@ -140,7 +140,7 @@ installcomposer() {
 
     ssh -q -p "${port}" root@localvm systemctl start osbuild-composer.socket
 
-    ssh -q -p "${port}" localvm composer-cli status show
+    # ssh -q -p "${port}" localvm composer-cli status show
 }
 
 installbuildtools() {
@@ -168,4 +168,4 @@ fixdns "${sshport}"
 installbuildtools "${sshport}"
 installcomposer "${sshport}"
 
-ssh -q -p "${sshport}" root@localvm journalctl -f -u "*osbuild*"
+ssh -q -p "${sshport}" root@localvm journalctl -f -g osbuild
