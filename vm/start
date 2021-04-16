@@ -4,6 +4,10 @@ set -eu
 lowhost="$(hostname | tr "[:upper:]" "[:lower:]")"
 pubkeyfile="${HOME}/.ssh/${lowhost}.pub"
 sshport=2222
+rundir="${XDG_RUNTIME_DIR}/osbuild-vm"
+overlaydir=/scratch/VMs/overlays
+mkdir -p "${overlaydir}"
+
 
 usage() {
     echo "$0 DISTRO NAME"
@@ -45,9 +49,6 @@ case "${distro}" in
         usage
         ;;
 esac
-
-rundir="${XDG_RUNTIME_DIR}/osbuild-vm"
-
 
 mkoverlay() {
     baseimg="$1"
@@ -172,11 +173,8 @@ nameserver 10.0.2.3
 EOF
 }
 
-overlaydir=/scratch/VMs/overlays
-mkdir -p "${overlaydir}"
 baseimgfname=$(basename "${baseimg}")
 image="${overlaydir}/${baseimgfname%.*}-${imgname}.qcow2"
-
 
 if [[ -e "${image}" ]]; then
     echo "Resuming ${image}"
