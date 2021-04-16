@@ -152,7 +152,7 @@ installcomposer() {
     scp -q -P "${port}" ../osbuild-composer/test/data/repositories/rhel-84.json root@localvm:/etc/osbuild-composer/repositories/rhel-8.json
     ssh -q -p "${port}" root@localvm ln -sf /etc/osbuild-composer/repositories/rhel-8.json /etc/osbuild-composer/repositories/rhel-8-beta.json
 
-    ssh -q -p "${port}" root@localvm systemctl start osbuild-composer.socket
+    ssh -q -p "${port}" root@localvm systemctl enable --now osbuild-composer.socket
 
     # ssh -q -p "${port}" localvm composer-cli status show
 }
@@ -179,6 +179,7 @@ image="${overlaydir}/${baseimgfname%.*}-${imgname}.qcow2"
 if [[ -e "${image}" ]]; then
     echo "Resuming ${image}"
     resumevm "${image}"
+    fixdns "${sshport}"
 else
     echo "Setting up new VM using ${baseimg} -> ${image}"
     mkoverlay "${baseimg}" "${image}"
