@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#
+# Sets up and boots a rhel-edge-installer boot ISO with an empty drive to install to
+
+set -euo pipefail
+
+if (( $# != 1 )); then
+    echo "Provide path to a bootable image"
+    exit 1
+fi
+
+img="$(realpath "$1")"
+cd "$(dirname "$0")" || exit
+
+startvm() {
+    mac="FE:0B:6E:22:3D:13"
+    qemu-system-x86_64 -enable-kvm -m 4G -drive file="${1}" -cdrom "${2}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24
+}
+
+drive="$(mktemp -p /scratch/tests/ -t install-test-XXX.qcow2)"
+qemu-img create -f qcow2 "${drive}" 12G
+
+cleanup() {
+    echo "Keeping VM install disk ${drive}"
+}
+
+startvm "${drive}" "${img}"
