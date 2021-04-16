@@ -27,14 +27,15 @@ else
     }
 fi
 
+dev=/dev/nbd1
 set -eu
-sudo qemu-nbd -c /dev/nbd0 --read-only "$imgfile"
-sudo mount -o ro /dev/nbd0p1 "$mountpoint"
+sudo qemu-nbd -c "${dev}" --read-only "$imgfile"
+sudo mount -o ro "${dev}"p1 "$mountpoint"
 set +e
 
 cleanup() {
     sudo umount "$mountpoint"
-    sudo qemu-nbd -d /dev/nbd0
+    sudo qemu-nbd -d "${dev}"
     cleandir
 }
 
