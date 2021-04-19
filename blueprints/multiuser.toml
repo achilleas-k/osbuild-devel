@@ -1,0 +1,21 @@
+name = "multiuser"
+description = "Plain blueprint with two users"
+version = "0.0.1"
+modules = []
+groups = []
+
+[customizations]
+hostname = "multiuser.test"
+
+[[customizations.user]]
+name = "achilleas"
+description = "admin user"
+key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAYU2wzSk9r1l3iOwsvaJXCsfQIUga3xzShZJAM1zHv achilleas@Ruby"
+home = "/home/achilleas"
+groups = ["wheel"]
+
+[[customizations.user]]
+name = "test"
+description = "test user (second)"
+key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAYU2wzSk9r1l3iOwsvaJXCsfQIUga3xzShZJAM1zHv test@test"
+home = "/home/test"

@@ -1,0 +1,23 @@
+name = "mine"
+description = "My own personal blueprint"
+version = "0.0.1"
+modules = []
+groups = []
+
+[[packages]]
+name = "vim-enhanced"
+version = "*"
+
+[[packages]]
+name = "tmux"
+version = "*"
+
+[customizations]
+hostname = "ruby.vm"
+
+[[customizations.user]]
+name = "achilleas"
+description = "admin user"
+key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAYU2wzSk9r1l3iOwsvaJXCsfQIUga3xzShZJAM1zHv achilleas@Ruby"
+home = "/home/achilleas"
+groups = ["wheel"]
