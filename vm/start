@@ -8,7 +8,6 @@ rundir="${XDG_RUNTIME_DIR}/osbuild-vm"
 overlaydir=/scratch/VMs/overlays
 mkdir -p "${overlaydir}"
 
-
 usage() {
     echo "$0 DISTRO NAME"
     echo
@@ -34,6 +33,11 @@ fi
 
 distro="$1"
 imgname="$2"
+
+while echo 1 > "/dev/tcp/localhost/${sshport}"; do
+    ((sshport++))
+done
+echo "Using port ${sshport}"
 
 case "${distro}" in
     rhel84)
