@@ -20,6 +20,7 @@ usage() {
     echo
     echo "DISTRO should be one of:"
     echo "  fedora33    Fedora 33"
+    echo "  fedora34    Fedora 34"
     echo "  rhel84      RHEL 8.4"
     echo "  rhel85      RHEL 8.5"
     echo
@@ -48,6 +49,9 @@ case "${distro}" in
         ;;
     fedora33)
         baseimg=/scratch/VMs/Fedora-Cloud-Base-33-1.2.x86_64.qcow2
+        ;;
+    fedora34)
+        baseimg=/scratch/VMs/Fedora-Cloud-Base-34-1.2.x86_64.qcow2
         ;;
     *)
         usage
