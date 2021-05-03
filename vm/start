@@ -101,17 +101,17 @@ if [[ "${distro}" = rhel* ]]; then
 yum_repos:
   baseos:
       name: baseos
-      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-finished-RHEL-8/compose/BaseOS/x86_64/os/"
+      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5/compose/BaseOS/x86_64/os/"
       enabled: true
       gpgcheck: false
   appstream:
       name: appstream
-      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-finished-RHEL-8/compose/AppStream/x86_64/os/"
+      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5/compose/AppStream/x86_64/os/"
       enabled: true
       gpgcheck: false
   rt:
       name: rt
-      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-finished-RHEL-8/compose/RT/x86_64/os/"
+      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5/compose/RT/x86_64/os/"
       enabled: true
       gpgcheck: false
 

@@ -26,7 +26,7 @@ ssh -q localvm 'cd osbuild-composer && sudo make install'
 echo "Installing osbuild"
 ssh -q localvm sudo dnf install -y osbuild/rpmbuild/RPMS/noarch/*.rpm
 
-ssh -q localvm sudo rm /etc/osbuild-composer/repositories/*
+ssh -q localvm sudo rm -f /etc/osbuild-composer/repositories/*
 osversion=$(ssh -q localvm "grep -oP '(?<=VERSION_ID=\")[0-9.]+' /etc/os-release")
 if [[ "${osversion}" == "8.5" ]]; then
     echo "Setting repo sources for RHEL 8.5"
