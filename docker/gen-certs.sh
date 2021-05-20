@@ -46,7 +46,7 @@ pushd "$CADIR"
         -new -nodes \
         -out /tmp/composer-csr.pem \
         -subj "/CN=org.osbuild.composer/emailAddress=osbuild@example.com" \
-        -addext "subjectAltName=DNS:org.osbuild.composer"
+        -addext "subjectAltName=DNS:org.osbuild.composer, IP:172.30.0.10"
 
     openssl ca -batch -config "$OPENSSL_CONFIG" \
         -extensions osbuild_server_ext \
@@ -59,7 +59,7 @@ pushd "$CADIR"
         -new -nodes \
         -out /tmp/worker-csr.pem \
         -subj "/CN=org.osbuild.worker/emailAddress=osbuild@example.com" \
-        -addext "subjectAltName=DNS:org.osbuild.worker"
+        -addext "subjectAltName=DNS:org.osbuild.worker, IP:172.30.0.20"
 
     openssl ca -batch -config "$OPENSSL_CONFIG" \
         -extensions osbuild_client_ext \
@@ -72,7 +72,7 @@ pushd "$CADIR"
         -new -nodes \
         -out /tmp/client-csr.pem \
         -subj "/CN=client.osbuild.org/emailAddress=osbuild@example.com" \
-        -addext "subjectAltName=DNS:client.osbuild.org"
+        -addext "subjectAltName=DNS:client.osbuild.org, IP:172.30.0.1"
 
     openssl ca -batch -config "$OPENSSL_CONFIG" \
         -extensions osbuild_client_ext \
