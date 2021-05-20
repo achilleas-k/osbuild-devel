@@ -12,6 +12,10 @@ version = "*"
 name = "tmux"
 version = "*"
 
+[[packages]]
+name = "sudo"
+version = "*"
+
 [customizations]
 hostname = "ruby.vm"
 
