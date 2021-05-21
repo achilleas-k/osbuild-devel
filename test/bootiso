@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Sets up and boots a rhel-edge-installer boot ISO with an empty drive to install to
+# Sets up and boots an installer ISO with an empty drive to install to
 
 set -euo pipefail
 
