@@ -22,6 +22,7 @@ services:
     entrypoint: /usr/libexec/osbuild-composer/osbuild-worker org.osbuild.composer:8700
     volumes:
       - ./config:/etc/osbuild-composer
+      - /dev:/dev
     environment:
       - CACHE_DIRECTORY=/var/cache/osbuild-worker
     privileged: true
