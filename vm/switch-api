@@ -14,8 +14,8 @@ mkdir -p "${rundir}/config"
 
 # Copy into VM
 ssh -q root@localvm mkdir -p /etc/osbuild-composer
+cp "${develroot}"/vm/config/*.toml "${rundir}"/config/.
 scp -q -r "${rundir}"/config/* root@localvm:/etc/osbuild-composer/.
-scp -q "${develroot}"/vm//config/*.toml root@localvm:/etc/osbuild-composer/.
 ssh -q root@localvm chmod ugo+rX -R /etc/osbuild-composer/
 
 ssh -q localvm sudo systemctl start osbuild-composer-api.socket osbuild-remote-worker.socket
