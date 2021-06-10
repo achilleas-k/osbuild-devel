@@ -31,8 +31,12 @@ services:
       - OSBUILD_CA_PATH=/etc/osbuild-composer/ca-crt.pem
       - OSBUILD_AWS_REGION=eu-central-1
       - DISTRIBUTIONS_DIR=/app/distributions
+      - OSBUILD_AWS_ACCESS_KEY_ID=$OSBUILD_AWS_ACCESS_KEY_ID
+      - OSBUILD_AWS_SECRET_ACCESS_KEY=$OSBUILD_AWS_SECRET_ACCESS_KEY
+      - OSBUILD_AWS_S3_BUCKET=$OSBUILD_AWS_S3_BUCKET
     volumes:
       - ${COMPOSER_CONFIG_DIR}/:/etc/osbuild-composer/
+      - ${rundir}/distributions:/app/distributions
     networks:
       net:
         ipv4_address: 172.31.0.40
