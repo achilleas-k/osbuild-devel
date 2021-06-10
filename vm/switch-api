@@ -8,13 +8,19 @@ rundir="${XDG_RUNTIME_DIR}/osbuild-vm"
 
 ssh -q localvm sudo systemctl stop '*osbuild*'
 
+set -eu
+
 # Gen certs
 mkdir -p "${rundir}/config"
 "${develroot}"/vm/gen-certs.sh "${develroot}/vm/openssl.cnf" "${rundir}/config" "${rundir}/config/ca"
 
+# Copy configs to rundir
+cp "${develroot}"/vm/config/*.toml "${rundir}"/config/.
+mkdir -p "${rundir}/distributions"
+rsync -aP --delete "${develroot}"/docker-image-builder/ib-distributions/. "${rundir}"/distributions
+
 # Copy into VM
 ssh -q root@localvm mkdir -p /etc/osbuild-composer
-cp "${develroot}"/vm/config/*.toml "${rundir}"/config/.
 rsync -aP --delete "${rundir}"/config/. root@localvm:/etc/osbuild-composer/.
 ssh -q root@localvm chmod ugo+rX -R /etc/osbuild-composer/
 
