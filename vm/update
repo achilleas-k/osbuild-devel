@@ -2,29 +2,56 @@
 
 set -eu
 
+usage() {
+    echo "$0 [composer|osbuild]"
+    echo
+    echo "Update osbuild and osbuild-composer in the runninv VM."
+    echo
+    echo "Specify either 'composer' or 'osbuild' to select which package to update."
+    echo "Without arguments, updates both."
+    exit 1
+}
+
+composer=0
+osbuild=0
+if (( $# == 0 )); then
+    composer=1
+    osbuild=1
+elif (( $# == 1 )) && [[ $1 == "composer" ]]; then
+    composer=1
+elif (( $# == 1 )) && [[ $1 == "osbuild" ]]; then
+    osbuild=1
+else
+    usage
+fi
+
 osbuildsrc=../osbuild
 composersrc=../osbuild-composer
 
 echo "Stopping services"
 ssh -q root@localvm systemctl stop "osbuild*"
 
-echo "Copying osbuild-composer sources to VM"
-rsync -aP --exclude build --exclude bin --exclude rpmbuild --delete-excluded --delete "${composersrc}" localvm:
+if [[ $composer == 1 ]]; then
+    echo "Copying osbuild-composer sources to VM"
+    rsync -aP --exclude build --exclude bin --exclude rpmbuild --delete-excluded --delete "${composersrc}" localvm:
+    echo "Building osbuild-composer binaries"
+    ssh -q localvm 'cd osbuild-composer && mkdir -p bin && go build -o bin/ ./cmd/osbuild-{composer,worker}'
+    echo "Installing osbuild-composer"
+    ssh -q localvm 'cd osbuild-composer && sudo make install'
+fi
 
-echo "Copying osbuild sources to VM"
-rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${osbuildsrc}" localvm:
+if [[ $osbuild == 1 ]]; then
+    echo "Copying osbuild sources to VM"
+    rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${osbuildsrc}" localvm:
 
-echo "Building binaries"
-ssh -q localvm 'cd osbuild-composer && mkdir -p bin && go build -o bin/ ./cmd/osbuild-{composer,worker}'
+    echo "Building osbuild RPMs"
+    ssh -q localvm 'cd osbuild && git commit . -m "wip" --allow-empty && sudo dnf -y builddep ./osbuild.spec && make rpm'
 
-echo "Building RPMs"
-ssh -q localvm 'cd osbuild && git commit . -m "wip" --allow-empty && sudo dnf -y builddep ./osbuild.spec && make rpm'
+    echo "Installing osbuild"
+    ssh -q localvm sudo dnf install -y osbuild/rpmbuild/RPMS/noarch/*.rpm
+fi
 
-echo "Installing osbuild-composer"
-ssh -q localvm 'cd osbuild-composer && sudo make install'
 
-echo "Installing osbuild"
-ssh -q localvm sudo dnf install -y osbuild/rpmbuild/RPMS/noarch/*.rpm
 
 ssh -q localvm sudo rm -f /etc/osbuild-composer/repositories/*
 ssh -q localvm sudo mkdir -p /etc/osbuild-composer/repositories
