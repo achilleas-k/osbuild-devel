@@ -36,5 +36,5 @@ fi
 jobid=$(jq '.build_id' <<< "${jobout}")
 
 echo ":: Job submitted: ${jobid}"
-echo ":: Job info:"
-ssh -q localvm composer-cli compose info "${jobid}"
+# echo ":: Job info:"
+# ssh -q localvm composer-cli compose info "${jobid}"
