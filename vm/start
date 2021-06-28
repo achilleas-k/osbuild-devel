@@ -192,7 +192,7 @@ else
     echo "Setting up new VM using ${baseimg} -> ${image}"
     mkoverlay "${baseimg}" "${image}"
     mkuserdata
-    mkmetadata composer-vm
+    mkmetadata "${distro}-${imgname}-vm"
     mkcloudinit composer-init.iso
     startvm "${image}" composer-init.iso
     fixdns "${sshport}"
