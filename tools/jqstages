@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+if [[ $# != 1 ]]; then
+    echo "Need an osbuild manifest"
+    exit 1
+fi
+
+manifest=$1
+
+if jq -e -r '.version' "${manifest}" > /dev/null; then
+    version=$(jq -r '.version' "${manifest}")
+else
+    version="1"
+fi
+
+echo "Manifest schema version: ${version}"
+
+if [[ "${version}" == "1" ]]; then
+    echo ":Build"
+    jq -r '"  " + .pipeline.build.pipeline.stages[].name' "${manifest}"
+    echo ":Stages"
+    jq -r '"  " + .pipeline.stages[].name' "${manifest}"
+    echo ":Assembler"
+    jq -r '"  " + .pipeline.assembler.name' "${manifest}"
+elif [[ "${version}" == "2" ]]; then
+    jq -r '.pipelines[] | .name, "  " + (.stages[].type)' "${manifest}"
+else
+    echo "Unsupported manifest version"
+    exit 1
+fi
