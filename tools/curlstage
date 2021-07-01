@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+if (( $# != 1 )); then
+    echo "Path?"
+    exit 1
+fi
+
+set -eu
+
+path="$1"
+
+cd "$(dirname "$0")/.." || exit
+pw=$(cat config/stagepw)
+
+echo curl -s --user "image-builder-achilleas:[password]" -k \
+    --proxy http://squid.corp.redhat.com:3128 \
+        https://cloud.stage.redhat.com/api/image-builder/v1/"${path}" 1>&2
+curl -s --user "image-builder-achilleas:${pw}" -k \
+    --proxy http://squid.corp.redhat.com:3128 \
+        https://cloud.stage.redhat.com/api/image-builder/v1/"${path}"
