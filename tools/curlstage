@@ -1,20 +1,54 @@
 #!/usr/bin/env bash
 
-if (( $# != 1 )); then
-    echo "Path?"
-    exit 1
-fi
-
 set -eu
 
-path="$1"
+usage() {
+    echo "Usage: $0 <path> [data]"
+    echo
+    echo "Positional arguments"
+    echo "  path   API path to query"
+    echo "  data   File containing data to send (POST)"
+    exit 1
+}
+
+nargs=$#
+data=""
+case $nargs in
+    0)
+        usage
+        ;;
+    1)
+        path="$1"
+        ;;
+    2)
+        path="$1"
+        data="$2"
+        ;;
+    *)
+        usage
+        ;;
+esac
+
 
 cd "$(dirname "$0")/.." || exit
 pw=$(cat config/stagepw)
 
-echo curl -s --user "image-builder-achilleas:[password]" -k \
-    --proxy http://squid.corp.redhat.com:3128 \
-        https://cloud.stage.redhat.com/api/image-builder/v1/"${path}" 1>&2
-curl -s --user "image-builder-achilleas:${pw}" -k \
-    --proxy http://squid.corp.redhat.com:3128 \
-        https://cloud.stage.redhat.com/api/image-builder/v1/"${path}"
+if [[ -z $data ]]; then
+    echo curl -s --user "image-builder-achilleas:[password]" -k \
+        --proxy http://squid.corp.redhat.com:3128 \
+            https://cloud.stage.redhat.com/api/image-builder/v1/"${path}" 1>&2
+    curl -s --user "image-builder-achilleas:${pw}" -k \
+        --header 'Content-Type: application/json' \
+        --proxy http://squid.corp.redhat.com:3128 \
+            https://cloud.stage.redhat.com/api/image-builder/v1/"${path}"
+else
+    echo curl -s --user "image-builder-achilleas:[password]" -k \
+        --proxy http://squid.corp.redhat.com:3128 \
+        --request POST --data @"${data}" \
+            https://cloud.stage.redhat.com/api/image-builder/v1/"${path}" 1>&2
+    curl -s --user "image-builder-achilleas:${pw}" -k \
+        --header 'Content-Type: application/json' \
+        --proxy http://squid.corp.redhat.com:3128 \
+        --request POST --data @"${data}" \
+            https://cloud.stage.redhat.com/api/image-builder/v1/"${path}"
+fi
