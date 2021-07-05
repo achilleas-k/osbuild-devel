@@ -21,16 +21,19 @@ fi
 
 echo "Manifest schema version: ${version}"
 
-if [[ "${version}" == "1" ]]; then
-    echo ":Build"
-    jq -r '"  " + .pipeline.build.pipeline.stages[].name' <<< "${manifest}"
-    echo ":Stages"
-    jq -r '"  " + .pipeline.stages[].name' <<< "${manifest}"
-    echo ":Assembler"
-    jq -r '"  " + .pipeline.assembler.name' <<< "${manifest}"
-elif [[ "${version}" == "2" ]]; then
-    jq -r '.pipelines[] | .name, "  " + (.stages[].type)' <<< "${manifest}"
-else
-    echo "Unsupported manifest version"
-    exit 1
-fi
+case "${version}" in
+    "1")
+        echo ":Build"
+        jq -r '"  " + .pipeline.build.pipeline.stages[].name' <<< "${manifest}"
+        echo ":Stages"
+        jq -r '"  " + .pipeline.stages[].name' <<< "${manifest}"
+        echo ":Assembler"
+        jq -r '"  " + .pipeline.assembler.name' <<< "${manifest}"
+        ;;
+    "2")
+        jq -r '.pipelines[] | .name, "  " + (.stages[].type)' <<< "${manifest}"
+        ;;
+    *)
+        echo "Unsupported manifest version"
+        exit 1
+esac
