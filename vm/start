@@ -9,7 +9,7 @@ overlaydir=/scratch/VMs/overlays
 mkdir -p "${overlaydir}"
 
 usage() {
-    echo "$0 DISTRO NAME"
+    echo "$0 DISTRO NAME [ARCH]"
     echo
     echo "Start a DISTRO vm, install osbuild and osbuild-composer, and start the services."
     echo "Creates a user account with:"
@@ -28,34 +28,72 @@ usage() {
     exit 1
 }
 
-if (( $# != 2 )); then
-    usage
-fi
+case $# in
+    2)
+        distro="$1"
+        imgname="$2"
+        arch="x86_64"
+        ;;
+    3)
+        distro="$1"
+        imgname="$2"
+        arch="$3"
+        ;;
+    *)
+        usage
+esac
 
-distro="$1"
-imgname="$2"
 
 while echo 1 > "/dev/tcp/localhost/${sshport}"; do
     ((sshport++))
 done
 echo "Using port ${sshport}"
 
-case "${distro}" in
-    rhel84)
-        baseimg=/scratch/VMs/rhel-guest-image-8.4-645.x86_64.qcow2
+case "${arch}" in
+    x86_64)
+        case "${distro}" in
+            rhel84)
+                baseimg=/scratch/VMs/rhel-guest-image-8.4-645.x86_64.qcow2
+                ;;
+            rhel85)
+                baseimg=/scratch/VMs/rhel-guest-image-8.5-238.x86_64.qcow2
+                ;;
+            fedora33)
+                baseimg=/scratch/VMs/Fedora-Cloud-Base-33-1.2.x86_64.qcow2
+                ;;
+            fedora34)
+                baseimg=/scratch/VMs/Fedora-Cloud-Base-34-1.2.x86_64.qcow2
+                ;;
+            *)
+                usage
+                ;;
+        esac
+        arch_args="-enable-kvm"
         ;;
-    rhel85)
-        baseimg=/scratch/VMs/rhel-guest-image-8.5-238.x86_64.qcow2
-        ;;
-    fedora33)
-        baseimg=/scratch/VMs/Fedora-Cloud-Base-33-1.2.x86_64.qcow2
-        ;;
-    fedora34)
-        baseimg=/scratch/VMs/Fedora-Cloud-Base-34-1.2.x86_64.qcow2
+    aarch64)
+        case "${distro}" in
+            rhel84)
+                baseimg=/scratch/VMs/rhel-guest-image-8.4-671.aarch64.qcow2
+                ;;
+            rhel85)
+                baseimg=/scratch/VMs/rhel-guest-image-8.5-713.aarch64.qcow2
+                ;;
+            fedora33)
+                baseimg=/scratch/VMs/Fedora-Cloud-Base-33-1.2.aarch64.qcow2
+                ;;
+            fedora34)
+                echo "Missing fedora 34 image for aarch64"
+                exit 1
+                ;;
+            *)
+                usage
+                ;;
+        esac
+        arch_args="-machine virt -bios /usr/share/edk2-armvirt/aarch64/QEMU_EFI.fd -boot efi -cpu cortex-a57"
         ;;
     *)
-        usage
-        ;;
+        echo "No base images for arch ${arch}"
+        exit 1
 esac
 
 mkoverlay() {
@@ -101,21 +139,24 @@ if [[ "${distro}" = rhel* ]]; then
 yum_repos:
   baseos:
       name: baseos
-      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5/compose/BaseOS/x86_64/os/"
+      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5/compose/BaseOS/${arch}/os/"
       enabled: true
       gpgcheck: false
   appstream:
       name: appstream
-      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5/compose/AppStream/x86_64/os/"
+      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5/compose/AppStream/${arch}/os/"
       enabled: true
       gpgcheck: false
-  rt:
-      name: rt
-      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5/compose/RT/x86_64/os/"
-      enabled: true
-      gpgcheck: false
-
 EOF
+    if [[ "${arch}" == "x86_64" ]]; then
+        cat >> "${rundir}/data/user-data" << EOF
+rt:
+  name: rt
+  baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5/compose/RT/${arch}/os/"
+  enabled: true
+  gpgcheck: false
+EOF
+    fi
 fi
 }
 
@@ -132,14 +173,14 @@ startvm() {
     initiso="${rundir}/${2}"
     # NOTE: Bridge doesn't work with (my) wireless adapter or driver
     # https://www.linux-kvm.org/page/Networking
-    qemu-system-x86_64 -enable-kvm -smp 4 -m 8G -drive file="${1}" -cdrom "${initiso}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::10443-:443 &
+    qemu-system-${arch} -smp 4 -m 8G -drive file="${1}" -cdrom "${initiso}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::10443-:443 ${arch_args} &
     waitfor "${sshport}"
     echo "VM started"
 }
 
 resumevm() {
     mac="FE:0B:6E:22:3D:00"
-    qemu-system-x86_64 -enable-kvm -smp 4 -m 8G -drive file="${1}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::10443-:443 &
+    qemu-system-${arch} -smp 4 -m 8G -drive file="${1}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::10443-:443 ${arch_args} &
     waitfor "${sshport}"
     echo "VM started"
 }
