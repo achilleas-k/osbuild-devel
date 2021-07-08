@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#
+# Build an osbuild-composer test manifest inside the currently running VM
+
+case $# in
+    0)
+        manifest=$(jq .manifest -)
+        ;;
+    1)
+        manifest=$(jq .manifest "$1")
+        ;;
+    *)
+        echo "$0: at most one argument is supported (test manifest)"
+        exit 1
+        ;;
+esac 
+
+if ! jq -e -r '.version' <<< "${manifest}" > /dev/null; then
+    echo "$0: only version 2 manifests are supported"
+    exit 1
+fi
+
+# get a list of all the pipeline names and add checkpoints
+checkpointargs=""
+for pipeline in $(jq -r .pipelines[].name <<< "${manifest}"); do
+    checkpointargs="${checkpointargs} --checkpoint ${pipeline}"
+done
+
+# export the last pipeline
+export=$(jq -r .pipelines[-1].name <<< "${manifest}")
+
+echo "${manifest}" | ssh -q localvm "sudo osbuild --store ~/osbuild-store --output-directory ~/osbuild-output ${checkpointargs[*]} --export ${export} -"
