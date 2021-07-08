@@ -226,7 +226,7 @@ baseimgfname=$(basename "${baseimg}")
 image="${overlaydir}/${baseimgfname%.*}-${imgname}.qcow2"
 
 if [[ -e "${image}" ]]; then
-    echo "Resuming ${image}"
+    echo "Booting existing VM ${image}"
     resumevm "${image}"
     fixdns "${sshport}"
 else
