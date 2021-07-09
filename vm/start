@@ -100,6 +100,7 @@ mkoverlay() {
     baseimg="$1"
     image="$2"
     qemu-img create -o backing_file="${baseimg}",backing_fmt=qcow2 -f qcow2 "${image}"
+    qemu-img resize "${image}" 50G
 }
 
 
