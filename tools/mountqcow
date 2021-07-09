@@ -28,6 +28,11 @@ else
 fi
 
 dev=/dev/nbd1
+if [[ ! -e "${dev}" ]]; then
+    echo "${dev} does not exist"
+    echo "Module loaded? (modprobe nbd)"
+    exit 1
+fi
 set -eu
 sudo qemu-nbd -c "${dev}" --read-only "$imgfile"
 sudo mount -o ro "${dev}"p1 "$mountpoint"
