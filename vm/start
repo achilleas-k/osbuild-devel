@@ -91,6 +91,52 @@ case "${arch}" in
         esac
         arch_args="-machine virt -bios /usr/share/edk2-armvirt/aarch64/QEMU_EFI.fd -boot efi -cpu cortex-a57"
         ;;
+    s390x)
+        case "${distro}" in
+            rhel84)
+                echo "Missing RHEL 8.4 image for ppc64le"
+                exit 1
+                ;;
+            rhel85)
+                baseimg=/scratch/VMs/rhel-guest-image-8.5-739.s390x.qcow2
+                ;;
+            fedora33)
+                echo "Missing fedora 33 image for aarch64"
+                exit 1
+                ;;
+            fedora34)
+                echo "Missing fedora 34 image for aarch64"
+                exit 1
+                ;;
+            *)
+                usage
+                ;;
+        esac
+        arch_args=""
+        ;;
+    ppc64le)
+        case "${distro}" in
+            rhel84)
+                echo "Missing RHEL 8.4 image for ppc64le"
+                exit 1
+                ;;
+            rhel85)
+                baseimg=/scratch/VMs/rhel-guest-image-8.5-739.ppc64le.qcow2
+                ;;
+            fedora33)
+                echo "Missing fedora 33 image for aarch64"
+                exit 1
+                ;;
+            fedora34)
+                echo "Missing fedora 34 image for aarch64"
+                exit 1
+                ;;
+            *)
+                usage
+                ;;
+        esac
+        arch_args=""
+        ;;
     *)
         echo "No base images for arch ${arch}"
         exit 1
