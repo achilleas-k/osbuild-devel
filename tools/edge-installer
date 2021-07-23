@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -o pipefail
+
+usage() {
+    echo "Usage: $0 CONTAINER_NAME BLUEPRINT TYPE REF"
+    echo
+    echo "Start an edge installer compose job in the VM."
+    echo "Requires a container to serve the commit loaded into podman."
+}
+
+list_blueprints() {
+    echo ":: Available blueprints"
+    ssh -q localvm composer-cli blueprints list
+}
+
+list_types() {
+    echo ":: Available types"
+    ssh -q localvm composer-cli compose types
+}
+
+
+if (( $# != 4 )); then
+    usage
+    list_blueprints
+    list_types
+    exit 1
+fi
+
+container="$1"
+bp="$2"
+imgtype="$3"
+ref="$4"
+
+port=8989
+podman stop commitsrv
+echo "Starting ${container} container (commitsrv)"
+podman run -d --rm -p${port}:80 --name commitsrv "${container}"
+
+ssh -q localvm composer-cli compose start-ostree --url "http://10.0.2.2:${port}/repo" --ref "${ref}" "${bp}" "${imgtype}"
+# if ! jobout=$(ssh -q localvm curl -s --unix-socket /run/weldr/api.socket -H 'Content-Type: application/json' --data "'${data}'" http://localhost/api/v1/compose); then
+#     echo "${jobout}"
+#     exit 1
+# fi
+# # jobid=$(jq '.build_id' <<< "${jobout}")
+# echo "${jobout}"
+
+# echo ":: Job submitted: ${jobid}"
+# echo ":: Job info:"
+# ssh -q localvm composer-cli compose info "${jobid}"
