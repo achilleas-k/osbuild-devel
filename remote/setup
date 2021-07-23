@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+#
+# Set up a remote machine with osbuild-composer
+
+set -eu
+
+usage() {
+    echo "$0 HOSTNAME"
+    exit 1
+}
+
+if [[ $# != 1 ]]; then
+    usage
+fi
+
+rhost="$1"
+
+sshcmd() {
+    ssh "root@${rhost}" "$@"
+}
+
+osbuilddir=projects/osbuild/osbuild
+composerdir=projects/osbuild/osbuild-composer
+
+echo "Installing base tools"
+sshcmd dnf -y install git rpm-build
+
+echo "Cloning osbuild and osbuild-composer"
+sshcmd mkdir -vp projects/osbuild
+sshcmd git clone https://github.com/osbuild/osbuild "${osbuilddir}" || true
+sshcmd git clone https://github.com/osbuild/osbuild-composer "${composerdir}" || true
+
+echo "Adding and pulling own fork"
+sshcmd git -C "${osbuilddir}" remote add achilleas https://github.com/achilleas-k/osbuild || true
+sshcmd git -C "${composerdir}" remote add achilleas https://github.com/achilleas-k/osbuild-composer || true
+sshcmd git -C "${osbuilddir}" fetch --all
+sshcmd git -C "${composerdir}" fetch --all
+
+echo "Installing build dependencies for osbuild"
+sshcmd dnf -y builddep "${osbuilddir}/osbuild.spec"
+
+echo "Installing build dependencies for osbuild-composer"
+sshcmd dnf -y builddep "${composerdir}/osbuild-composer.spec"
+
+echo "Building and installing RPMs"
+sshcmd make -C "${osbuilddir}" rpm
+sshcmd dnf -y install "${osbuilddir}/rpmbuild/RPMS/*/*.rpm"
+sshcmd make -C "${composerdir}" rpm
+sshcmd dnf -y install "${composerdir}/rpmbuild/RPMS/*/*.rpm"
