@@ -58,8 +58,7 @@ ssh -q localvm sudo mkdir -p /etc/osbuild-composer/repositories
 osversion=$(ssh -q localvm "grep -oP '(?<=VERSION_ID=\")[0-9.]+' /etc/os-release")
 if [[ "${osversion}" == "8.5" ]]; then
     echo "Setting repo sources for RHEL 8.5"
-    ssh -q localvm sudo cp -v osbuild-composer/test/data/repositories/rhel-85.json /etc/osbuild-composer/repositories/rhel-8-beta.json
-    ssh -q localvm sudo cp -v osbuild-composer/test/data/repositories/rhel-85.json /etc/osbuild-composer/repositories/rhel-8.json
+    ssh -q localvm sudo cp -v osbuild-composer/test/data/repositories/rhel-85.json /etc/osbuild-composer/repositories/rhel-85.json
 else
     echo "Setting repo sources for RHEL 8.4"
     ssh -q localvm sudo cp -v osbuild-composer/test/data/repositories/rhel-84.json /etc/osbuild-composer/repositories/rhel-8-beta.json
