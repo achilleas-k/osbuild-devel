@@ -88,8 +88,7 @@ case "${arch}" in
                 baseimg=/scratch/VMs/Fedora-Cloud-Base-33-1.2.aarch64.qcow2
                 ;;
             fedora34)
-                echo "Missing fedora 34 image for aarch64"
-                exit 1
+                baseimg=/scratch/VMs/Fedora-Cloud-Base-34-1.2.aarch64.qcow2
                 ;;
             *)
                 usage
