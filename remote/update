@@ -1,0 +1,65 @@
+#!/usr/bin/bash
+
+set -eu
+
+usage() {
+    echo "$0 HOSTNAME [composer|osbuild]"
+    echo
+    echo "Update osbuild and osbuild-composer in the runninv VM."
+    echo
+    echo "Specify either 'composer' or 'osbuild' to select which package to update."
+    echo "Without arguments, updates both."
+    exit 1
+}
+
+composer=0
+osbuild=0
+if (( $# == 1 )); then
+    composer=1
+    osbuild=1
+elif (( $# == 2 )) && [[ $2 == "composer" ]]; then
+    composer=1
+elif (( $# == 2 )) && [[ $2 == "osbuild" ]]; then
+    osbuild=1
+else
+    usage
+fi
+
+rhost="$1"
+
+sshcmd() {
+    ssh "root@${rhost}" "$@"
+}
+
+osbuildsrc=../osbuild
+composersrc=../osbuild-composer
+osbuilddir=projects/osbuild/osbuild
+composerdir=projects/osbuild/osbuild-composer
+
+echo "Stopping services"
+sshcmd systemctl stop "osbuild*"
+
+if [[ $composer == 1 ]]; then
+    echo "Copying osbuild-composer sources to VM"
+    rsync -aP --exclude build --exclude bin --exclude rpmbuild --delete-excluded --delete "${composersrc}" root@"${rhost}":"${composerdir}"
+    echo "Building osbuild-composer binaries"
+    sshcmd "cd ${composerdir} && mkdir -p bin && go build -o bin/ ./cmd/osbuild-{composer,worker}"
+    echo "Installing osbuild-composer"
+    sshcmd "make -C ${composerdir} install"
+fi
+
+if [[ $osbuild == 1 ]]; then
+    echo "Copying osbuild sources to VM"
+    rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${osbuildsrc}" root@"${rhost}":"${osbuilddir}"
+
+    echo "Building osbuild RPMs"
+    sshcmd git -C "${osbuilddir}" commit . -m wip --allow-empty
+    sshcmd dnf -y builddep "${osbuilddir}/osbuild.spec"
+    sshcmd make -C "${osbuilddir}" rpm
+
+    echo "Installing osbuild"
+    sshcmd dnf install -y "${osbuilddir}"/rpmbuild/RPMS/noarch/*.rpm
+fi
+
+echo "Restarting services"
+sshcmd systemctl restart osbuild-composer.socket
