@@ -35,7 +35,7 @@ osbuilddir=projects/osbuild/osbuild
 composerdir=projects/osbuild/osbuild-composer
 
 echo "Stopping services"
-ssh -q root@localvm systemctl stop "osbuild*"
+sshcmd sudo systemctl stop "osbuild*" || true
 
 if [[ $composer == 1 ]]; then
     sshcmd mkdir -p "${composerdir}"
@@ -53,7 +53,6 @@ if [[ $osbuild == 1 ]]; then
     rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${osbuildsrc}/." localvm:"${osbuilddir}/."
 
     echo "Building osbuild RPMs"
-    echo "Building osbuild RPMs"
     sshcmd git -C "${osbuilddir}" commit . -m wip --allow-empty
     sshcmd sudo dnf -y builddep "${osbuilddir}/osbuild.spec"
     sshcmd make -C "${osbuilddir}" rpm
@@ -62,19 +61,8 @@ if [[ $osbuild == 1 ]]; then
     sshcmd sudo dnf install -y "${osbuilddir}"/rpmbuild/RPMS/noarch/*.rpm
 fi
 
-
-
-ssh -q localvm sudo rm -f /etc/osbuild-composer/repositories/*
-ssh -q localvm sudo mkdir -p /etc/osbuild-composer/repositories
-osversion=$(ssh -q localvm "grep -oP '(?<=VERSION_ID=\")[0-9.]+' /etc/os-release")
-if [[ "${osversion}" == "8.5" ]]; then
-    echo "Setting repo sources for RHEL 8.5"
-    ssh -q localvm sudo cp -v "${composerdir}"/test/data/repositories/rhel-85.json /etc/osbuild-composer/repositories/rhel-85.json
-else
-    echo "Setting repo sources for RHEL 8.4"
-    ssh -q localvm sudo cp -v "${composerdir}"/test/data/repositories/rhel-84.json /etc/osbuild-composer/repositories/rhel-8-beta.json
-    ssh -q localvm sudo cp -v "${composerdir}"/test/data/repositories/rhel-84.json /etc/osbuild-composer/repositories/rhel-8.json
-fi
+sshcmd sudo rm -vf /etc/osbuild-composer/repositories/*
+sshcmd sudo mkdir -vp /etc/osbuild-composer/repositories
 
 echo "Restarting services"
-ssh -q root@localvm systemctl restart osbuild-composer.socket
+sshcmd sudo systemctl restart osbuild-composer.socket
