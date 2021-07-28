@@ -40,8 +40,9 @@ echo "Stopping services"
 sshcmd systemctl stop "osbuild*"
 
 if [[ $composer == 1 ]]; then
+    sshcmd mkdir -p "${composerdir}"
     echo "Copying osbuild-composer sources to VM"
-    rsync -aP --exclude build --exclude bin --exclude rpmbuild --delete-excluded --delete "${composersrc}" root@"${rhost}":"${composerdir}"
+    rsync -aP --exclude build --exclude bin --exclude rpmbuild --delete-excluded --delete "${composersrc}/." root@"${rhost}":"${composerdir}/."
     echo "Building osbuild-composer binaries"
     sshcmd "cd ${composerdir} && mkdir -p bin && go build -o bin/ ./cmd/osbuild-{composer,worker}"
     echo "Installing osbuild-composer"
@@ -49,8 +50,9 @@ if [[ $composer == 1 ]]; then
 fi
 
 if [[ $osbuild == 1 ]]; then
+    sshcmd mkdir -p "${osbuilddir}"
     echo "Copying osbuild sources to VM"
-    rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${osbuildsrc}" root@"${rhost}":"${osbuilddir}"
+    rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${osbuildsrc}/." root@"${rhost}":"${osbuilddir}/."
 
     echo "Building osbuild RPMs"
     sshcmd git -C "${osbuilddir}" commit . -m wip --allow-empty
