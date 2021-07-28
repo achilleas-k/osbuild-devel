@@ -44,7 +44,7 @@ if [[ $composer == 1 ]]; then
     echo "Building osbuild-composer binaries"
     sshcmd "cd ${composerdir} && mkdir -p bin && go build -o bin/ ./cmd/osbuild-{composer,worker}"
     echo "Installing osbuild-composer"
-    sshcmd "make -C ${composerdir} install"
+    sshcmd "sudo make -C ${composerdir} install"
 fi
 
 if [[ $osbuild == 1 ]]; then
@@ -55,11 +55,11 @@ if [[ $osbuild == 1 ]]; then
     echo "Building osbuild RPMs"
     echo "Building osbuild RPMs"
     sshcmd git -C "${osbuilddir}" commit . -m wip --allow-empty
-    sshcmd dnf -y builddep "${osbuilddir}/osbuild.spec"
+    sshcmd sudo dnf -y builddep "${osbuilddir}/osbuild.spec"
     sshcmd make -C "${osbuilddir}" rpm
 
     echo "Installing osbuild"
-    sshcmd dnf install -y "${osbuilddir}"/rpmbuild/RPMS/noarch/*.rpm
+    sshcmd sudo dnf install -y "${osbuilddir}"/rpmbuild/RPMS/noarch/*.rpm
 fi
 
 
