@@ -23,7 +23,7 @@ osbuilddir=projects/osbuild/osbuild
 composerdir=projects/osbuild/osbuild-composer
 
 echo "Installing base tools"
-sshcmd dnf -y install git rpm-build
+sshcmd dnf -y install git rpm-build rsync
 
 echo "Cloning osbuild and osbuild-composer"
 sshcmd mkdir -vp projects/osbuild
@@ -47,3 +47,6 @@ sshcmd make -C "${osbuilddir}" rpm
 sshcmd dnf -y install "${osbuilddir}/rpmbuild/RPMS/*/*.rpm"
 sshcmd make -C "${composerdir}" rpm
 sshcmd dnf -y install "${composerdir}/rpmbuild/RPMS/*/*.rpm"
+
+echo "Enabling osbuild-composer socket"
+sshcmd systemctl enable --now osbuild-composer.socket
