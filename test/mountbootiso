@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+if [[ $# != 1 ]]; then
+    echo "Need an iso image"
+    exit 1
+fi
+
+iso="$1"
+tmpdir=$(mktemp -d)
+
+mkdir "${tmpdir}"/{installer,liveimg,rootfs}
+
+echo "${iso} -> ${tmpdir}/installer"
+sudo mount "${iso}" "${tmpdir}/installer"
+
+echo "${tmpdir}/installer/images/install.img -> ${tmpdir}/liveimg"
+sudo mount "${tmpdir}/installer/images/install.img" "${tmpdir}/liveimg"
+
+echo "${tmpdir}/liveimg/LiveOS/rootfs.img -> ${tmpdir}/rootfs"
+sudo mount "${tmpdir}/liveimg/LiveOS/rootfs.img" "${tmpdir}/rootfs"
