@@ -199,6 +199,11 @@ yum_repos:
       baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5/compose/AppStream/${arch}/os/"
       enabled: true
       gpgcheck: false
+  crb:
+      name: crb
+      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5/compose/CRB/${arch}/os/"
+      enabled: true
+      gpgcheck: false
 EOF
     if [[ "${arch}" == "x86_64" ]]; then
         cat >> "${rundir}/data/user-data" << EOF
