@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+scriptloc=$(dirname "$0")
+develroot=$(dirname "${scriptloc}")
+imagebuidlersrc=../image-builder
+ibfrontendsrc=../image-builder-frontend
+
+echo "Copying image-builder source to VM"
+rsync -aP --exclude build --exclude bin --exclude rpmbuild --delete-excluded --delete "${imagebuidlersrc}" localvm:
+echo "Copying image-builder-frontend source to VM"
+rsync -aP --exclude build --exclude bin --exclude rpmbuild --delete-excluded --delete "${ibfrontendsrc}" localvm:
+
+
+echo "Installing podman"
+ssh -q localvm sudo dnf -y install podman
+# ssh -q localvm podman pull postgres:10.5
+
+if ! ssh -q localvm podman ps --format '{{.Names}}' | grep -qF postgres; then
+    echo "Starting postgres"
+    ssh -q localvm podman run \
+        -d \
+        --rm \
+        -p5432:5432 \
+        -e=POSTGRES_USER=postgres \
+        -e=POSTGRES_PASSWORD=postgres \
+        -v"${HOME}"/image-builder/internal/db/migrations/1_create_table_images.up.sql:/docker-entrypoint-initdb.d/create_tables.sql:exec,z \
+        --name postgres \
+        postgres:10.5
+fi
+
+scp -q "${develroot}/image-builder.env" localvm:image-builder
+
+ssh -q localvm podman build -f image-builder/distribution/Dockerfile-ubi image-builder -t image-builder
+ssh -q localvm podman run \
+    -d \
+    --rm \
+    --env-file=image-builder/image-builder.env \
+    -p8086:8086 \
+    image-builder
