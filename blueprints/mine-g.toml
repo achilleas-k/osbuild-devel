@@ -1,4 +1,4 @@
-name = "mine"
+name = "mine-g"
 description = "My own personal blueprint"
 version = "0.0.1"
 modules = []
@@ -17,11 +17,12 @@ name = "sudo"
 version = "*"
 
 [customizations]
-hostname = "ruby.vm"
+hostname = "gina.vm"
 
 [[customizations.user]]
 name = "achilleas"
 description = "admin user"
-key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAYU2wzSk9r1l3iOwsvaJXCsfQIUga3xzShZJAM1zHv achilleas@Ruby"
+key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPOhtpVJETA/FjglKi5cZo4AhcWnTS+9q6ON3MZ806i5 achilleas@Gina"
+password = "password42"
 home = "/home/achilleas"
 groups = ["wheel"]
