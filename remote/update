@@ -37,7 +37,7 @@ osbuilddir=projects/osbuild/osbuild
 composerdir=projects/osbuild/osbuild-composer
 
 echo "Stopping services"
-sshcmd systemctl stop "osbuild*"
+sshcmd systemctl stop "osbuild-*.service" || true
 
 if [[ $composer == 1 ]]; then
     sshcmd mkdir -p "${composerdir}"
