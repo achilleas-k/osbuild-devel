@@ -42,6 +42,7 @@ dl() {
 
     echo ":: Downloading results for "${uuid}""
     scp localvm:"${uuid}.tar" "$destination"
+    ssh -q localvm rm "${uuid}.tar"
 }
 
 if [[ "$uuidarg" == "all" ]]; then
