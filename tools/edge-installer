@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -o pipefail
+set -euo pipefail
 
 usage() {
     echo "Usage: $0 CONTAINER_NAME BLUEPRINT TYPE REF"
@@ -33,18 +33,14 @@ imgtype="$3"
 ref="$4"
 
 port=8989
-podman stop commitsrv
+podman stop commitsrv || true
 echo "Starting ${container} container (commitsrv)"
-podman run -d --rm -p${port}:8080 --name commitsrv "${container}"
+podman run -d --rm -p${port}:80 --name commitsrv "${container}"
 
-ssh -q localvm composer-cli compose start-ostree --url "http://10.0.2.2:${port}/repo" --ref "${ref}" "${bp}" "${imgtype}"
-# if ! jobout=$(ssh -q localvm curl -s --unix-socket /run/weldr/api.socket -H 'Content-Type: application/json' --data "'${data}'" http://localhost/api/v1/compose); then
-#     echo "${jobout}"
-#     exit 1
-# fi
-# # jobid=$(jq '.build_id' <<< "${jobout}")
-# echo "${jobout}"
+if ! jobout=$(ssh -q localvm composer-cli --json compose start-ostree --url "http://10.0.2.2:${port}/repo" --ref "${ref}" "${bp}" "${imgtype}"); then
+    echo "${jobout}"
+    exit 1
+fi
+jobid=$(jq -r '.build_id' <<< "${jobout}")
 
-# echo ":: Job submitted: ${jobid}"
-# echo ":: Job info:"
-# ssh -q localvm composer-cli compose info "${jobid}"
+echo "Started new job ${jobid}"
