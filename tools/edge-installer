@@ -35,7 +35,7 @@ ref="$4"
 port=8989
 podman stop commitsrv || true
 echo "Starting ${container} container (commitsrv)"
-podman run -d --rm -p${port}:80 --name commitsrv "${container}"
+podman run -d --rm -p${port}:8080 --name commitsrv "${container}"
 
 if ! jobout=$(ssh -q localvm composer-cli --json compose start-ostree --url "http://10.0.2.2:${port}/repo" --ref "${ref}" "${bp}" "${imgtype}"); then
     echo "${jobout}"
