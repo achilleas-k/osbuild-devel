@@ -1,0 +1,13 @@
+name = "installer-with-user"
+description = "User-only bp for install-time user creation (edge-installer)"
+version = "0.0.1"
+modules = []
+groups = []
+
+[[customizations.user]]
+name = "achilleas"
+description = "admin user"
+key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPOhtpVJETA/FjglKi5cZo4AhcWnTS+9q6ON3MZ806i5 achilleas@Gina"
+password = "password42"
+home = "/home/achilleas"
+groups = ["wheel"]
