@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+import json
+import sys
+
+
+def main():
+    fname = sys.argv[1]
+    with open(fname) as mfile:
+        manifest = json.load(mfile)
+
+    source_keys = set()
+    for source in manifest["sources"].values():
+        # source["items"] might be a list or a dictionary, but we only care about the keys
+        source_keys.update(source["items"])
+
+    input_keys = set()
+    for pipeline in manifest["pipelines"]:
+        for stage in pipeline["stages"]:
+            # only care about rpm stages for now, but should be extended to check for inputs to other stages as well
+            if stage["type"] == "org.osbuild.rpm":
+                input_keys.update(stage["inputs"]["packages"]["references"])
+
+    diff = source_keys - input_keys
+    print(len(source_keys), len(input_keys))
+    if diff:
+        print(f"{len(diff)} packages found in sources but are never used")
+
+
+if __name__ == "__main__":
+    main()
