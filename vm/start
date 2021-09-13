@@ -234,14 +234,14 @@ startvm() {
     initiso="${rundir}/${2}"
     # NOTE: Bridge doesn't work with (my) wireless adapter or driver
     # https://www.linux-kvm.org/page/Networking
-    qemu-system-${arch} -nographic -smp 4 -m 8G -drive file="${1}" -cdrom "${initiso}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::"${webport}"-:443 ${arch_args} &
+    qemu-system-${arch} -nographic -smp 8 -m 8G -drive file="${1}" -cdrom "${initiso}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::"${webport}"-:443 ${arch_args} &
     waitfor "${sshport}"
     echo "VM started"
 }
 
 resumevm() {
     mac="FE:0B:6E:22:3D:00"
-    qemu-system-${arch} -nographic -smp 4 -m 8G -drive file="${1}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::"${webport}"-:443 ${arch_args} &
+    qemu-system-${arch} -nographic -smp 8 -m 8G -drive file="${1}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::"${webport}"-:443 ${arch_args} &
     waitfor "${sshport}"
     echo "VM started"
 }
