@@ -117,7 +117,7 @@ EOF
 }
 
 # 1. Composer VM
-image=/scratch/VMs/rhel-guest-image-8.4-645.x86_64.qcow2
+image=/media/scratch/osbuild/VMs/rhel-guest-image-8.4-645.x86_64.qcow2
 mkuserdata
 mkmetadata composer-vm
 mkcloudinit composer-init.iso

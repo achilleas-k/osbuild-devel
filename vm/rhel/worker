@@ -110,7 +110,7 @@ nameserver 10.0.2.3
 EOF
 }
 
-image=/scratch/VMs/rhel-guest-image-8.4-587.x86_64.qcow2
+image=/media/scratch/osbuild/VMs/rhel-guest-image-8.4-587.x86_64.qcow2
 mkuserdata
 mkmetadata rhel-worker
 mkcloudinit rhel-worker-init.iso

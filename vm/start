@@ -6,7 +6,7 @@ pubkeyfile="${HOME}/.ssh/${lowhost}.pub"
 sshport=2222
 webport=10443
 rundir="${XDG_RUNTIME_DIR}/osbuild-vm"
-overlaydir=/scratch/VMs/overlays
+overlaydir=/media/scratch/osbuild/VMs/overlays
 mkdir -p "${overlaydir}"
 
 usage() {
@@ -60,19 +60,19 @@ case "${arch}" in
     x86_64)
         case "${distro}" in
             rhel84)
-                baseimg=/scratch/VMs/rhel-guest-image-8.4-645.x86_64.qcow2
+                baseimg=/media/scratch/osbuild/VMs/rhel-guest-image-8.4-645.x86_64.qcow2
                 ;;
             rhel85)
-                baseimg=/scratch/VMs/rhel-guest-image-8.5-238.x86_64.qcow2
+                baseimg=/media/scratch/osbuild/VMs/rhel-guest-image-8.5-238.x86_64.qcow2
                 ;;
             fedora33)
-                baseimg=/scratch/VMs/Fedora-Cloud-Base-33-1.2.x86_64.qcow2
+                baseimg=/media/scratch/osbuild/VMs/Fedora-Cloud-Base-33-1.2.x86_64.qcow2
                 ;;
             fedora34)
-                baseimg=/scratch/VMs/Fedora-Cloud-Base-34-1.2.x86_64.qcow2
+                baseimg=/media/scratch/osbuild/VMs/Fedora-Cloud-Base-34-1.2.x86_64.qcow2
                 ;;
             centos)
-                baseimg=/scratch/VMs/CentOS-Stream-GenericCloud-8-20210603.0.x86_64.qcow2
+                baseimg=/media/scratch/osbuild/VMs/CentOS-Stream-GenericCloud-8-20210603.0.x86_64.qcow2
                 ;;
             *)
                 usage
@@ -83,16 +83,16 @@ case "${arch}" in
     aarch64)
         case "${distro}" in
             rhel84)
-                baseimg=/scratch/VMs/rhel-guest-image-8.4-671.aarch64.qcow2
+                baseimg=/media/scratch/osbuild/VMs/rhel-guest-image-8.4-671.aarch64.qcow2
                 ;;
             rhel85)
-                baseimg=/scratch/VMs/rhel-guest-image-8.5-713.aarch64.qcow2
+                baseimg=/media/scratch/osbuild/VMs/rhel-guest-image-8.5-713.aarch64.qcow2
                 ;;
             fedora33)
-                baseimg=/scratch/VMs/Fedora-Cloud-Base-33-1.2.aarch64.qcow2
+                baseimg=/media/scratch/osbuild/VMs/Fedora-Cloud-Base-33-1.2.aarch64.qcow2
                 ;;
             fedora34)
-                baseimg=/scratch/VMs/Fedora-Cloud-Base-34-1.2.aarch64.qcow2
+                baseimg=/media/scratch/osbuild/VMs/Fedora-Cloud-Base-34-1.2.aarch64.qcow2
                 ;;
             *)
                 usage
@@ -107,7 +107,7 @@ case "${arch}" in
                 exit 1
                 ;;
             rhel85)
-                baseimg=/scratch/VMs/rhel-guest-image-8.5-739.s390x.qcow2
+                baseimg=/media/scratch/osbuild/VMs/rhel-guest-image-8.5-739.s390x.qcow2
                 ;;
             fedora33)
                 echo "Missing fedora 33 image for aarch64"
@@ -130,7 +130,7 @@ case "${arch}" in
                 exit 1
                 ;;
             rhel85)
-                baseimg=/scratch/VMs/rhel-guest-image-8.5-739.ppc64le.qcow2
+                baseimg=/media/scratch/osbuild/VMs/rhel-guest-image-8.5-739.ppc64le.qcow2
                 ;;
             fedora33)
                 echo "Missing fedora 33 image for aarch64"
@@ -259,7 +259,7 @@ installcomposer() {
     ssh -q -p "${port}" root@localvm usermod -aG weldr,systemd-journal "${USER}"
 
     ssh -q -p "${port}" root@localvm mkdir -p /etc/osbuild-composer/repositories/
-    scp -q -P "${port}" ../osbuild-composer/test/data/repositories/rhel-84.json root@localvm:/etc/osbuild-composer/repositories/rhel-8.json
+    scp -q -P "${port}" ../osbuild-composer/test/data/repositories/rhel-85.json root@localvm:/etc/osbuild-composer/repositories/rhel-8.json
     ssh -q -p "${port}" root@localvm ln -sf /etc/osbuild-composer/repositories/rhel-8.json /etc/osbuild-composer/repositories/rhel-8-beta.json
 
     ssh -q -p "${port}" root@localvm systemctl enable --now osbuild-composer.socket

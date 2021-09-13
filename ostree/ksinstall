@@ -37,7 +37,7 @@ startvm() {
     qemu-system-x86_64 -enable-kvm -m 4G -drive file="${1}" -cdrom "${2}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24
 }
 
-drive="$(mktemp -p /scratch/tests/ -t ostree-install-test-XXX.img)"
+drive="$(mktemp -p /media/scratch/osbuild/tests/ -t ostree-install-test-XXX.img)"
 qemu-img create -f qcow2 "${drive}" 5G
 
 cleanup() {
