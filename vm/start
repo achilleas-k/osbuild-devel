@@ -78,7 +78,7 @@ case "${arch}" in
                 usage
                 ;;
         esac
-        arch_args="-enable-kvm"
+        arch_args="-enable-kvm -cpu host"
         ;;
     aarch64)
         case "${distro}" in
