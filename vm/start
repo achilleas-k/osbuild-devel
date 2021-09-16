@@ -24,6 +24,7 @@ usage() {
     echo "  fedora34    Fedora 34"
     echo "  rhel84      RHEL 8.4"
     echo "  rhel85      RHEL 8.5"
+    echo "  rhel90      RHEL 9.0"
     echo "  centos      CentOS Stream"
     echo
     echo "NAME names the VM to start or resume"
@@ -64,6 +65,9 @@ case "${arch}" in
                 ;;
             rhel85)
                 baseimg=/media/scratch/osbuild/VMs/rhel-guest-image-8.5-238.x86_64.qcow2
+                ;;
+            rhel90)
+                baseimg=/media/scratch/osbuild/VMs/rhel-guest-image-9.0-20210914.4.x86_64.qcow2
                 ;;
             fedora33)
                 baseimg=/media/scratch/osbuild/VMs/Fedora-Cloud-Base-33-1.2.x86_64.qcow2
@@ -190,7 +194,8 @@ chpasswd:
   expire: False
 EOF
 
-if [[ "${distro}" = rhel* ]]; then
+case "${distro}" in
+    rhel8*)
     cat >> "${rundir}/data/user-data" << EOF
 yum_repos:
   baseos:
@@ -218,7 +223,28 @@ rt:
   gpgcheck: false
 EOF
     fi
-fi
+    ;;
+    rhel9*)
+    cat >> "${rundir}/data/user-data" << EOF
+yum_repos:
+  baseos:
+      name: baseos
+      baseurl: "http://download.devel.redhat.com/rhel-9/nightly/RHEL-9-Beta/latest-RHEL-9.0/compose/BaseOS/${arch}/os/"
+      enabled: true
+      gpgcheck: false
+  appstream:
+      name: appstream
+      baseurl: "http://download.devel.redhat.com/rhel-9/nightly/RHEL-9-Beta/latest-RHEL-9.0/compose/AppStream/${arch}/os/"
+      enabled: true
+      gpgcheck: false
+  crb:
+      name: crb
+      baseurl: "http://download.devel.redhat.com/rhel-9/nightly/RHEL-9-Beta/latest-RHEL-9.0/compose/CRB/${arch}/os/"
+      enabled: true
+      gpgcheck: false
+EOF
+    ;;
+esac
 }
 
 mkmetadata() {
