@@ -92,6 +92,9 @@ case "${arch}" in
             rhel85)
                 baseimg=/media/scratch/osbuild/VMs/rhel-guest-image-8.5-713.aarch64.qcow2
                 ;;
+            rhel90)
+                baseimg=/media/scratch/osbuild/VMs/rhel-guest-image-9.0-20210920.5.aarch64.qcow2
+                ;;
             fedora33)
                 baseimg=/media/scratch/osbuild/VMs/Fedora-Cloud-Base-33-1.2.aarch64.qcow2
                 ;;
