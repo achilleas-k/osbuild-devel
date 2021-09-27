@@ -82,7 +82,10 @@ case "${arch}" in
                 usage
                 ;;
         esac
-        arch_args="-enable-kvm -cpu host"
+        arch_args=(
+            "-enable-kvm"
+            "-cpu" "host"
+        )
         ;;
     aarch64)
         case "${distro}" in
@@ -105,7 +108,12 @@ case "${arch}" in
                 usage
                 ;;
         esac
-        arch_args="-machine virt -bios /usr/share/edk2-armvirt/aarch64/QEMU_EFI.fd -boot efi -cpu cortex-a57"
+        arch_args=(
+            "-machine" "virt"
+            "-bios" "/usr/share/edk2-armvirt/aarch64/QEMU_EFI.fd"
+            "-boot" "efi"
+            "-cpu" "cortex-a57"
+        )
         ;;
     s390x)
         case "${distro}" in
@@ -128,7 +136,7 @@ case "${arch}" in
                 usage
                 ;;
         esac
-        arch_args=""
+        arch_args=()
         ;;
     ppc64le)
         case "${distro}" in
@@ -151,7 +159,7 @@ case "${arch}" in
                 usage
                 ;;
         esac
-        arch_args=""
+        arch_args=()
         ;;
     *)
         echo "No base images for arch ${arch}"
@@ -263,14 +271,14 @@ startvm() {
     initiso="${rundir}/${2}"
     # NOTE: Bridge doesn't work with (my) wireless adapter or driver
     # https://www.linux-kvm.org/page/Networking
-    qemu-system-${arch} -nographic -smp 8 -m 8G -drive file="${1}" -cdrom "${initiso}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::"${webport}"-:443 ${arch_args} &
+    "qemu-system-${arch}" -nographic -smp 8 -m 8G -drive file="${1}" -cdrom "${initiso}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::"${webport}"-:443 "${arch_args[@]}" &
     waitfor "${sshport}"
     echo "VM started"
 }
 
 resumevm() {
     mac="FE:0B:6E:22:3D:00"
-    qemu-system-${arch} -nographic -smp 8 -m 8G -drive file="${1}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::"${webport}"-:443 ${arch_args} &
+    "qemu-system-${arch}" -nographic -smp 8 -m 8G -drive file="${1}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::"${webport}"-:443 "${arch_args[@]}" &
     waitfor "${sshport}"
     echo "VM started"
 }
