@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 
-ssh -q localvm sudo dnf -y install cockpit-composer
+if ! ssh -q localvm rpm -q cockpit-composer; then
+    ssh -q localvm sudo dnf -y install cockpit-composer
+fi
 ssh -q localvm sudo systemctl start cockpit.service
 ssh -q localvm sudo systemctl status cockpit.service
 echo "http://localhost:9099"
