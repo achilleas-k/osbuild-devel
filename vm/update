@@ -3,17 +3,18 @@
 set -eu
 
 usage() {
-    echo "$0 [composer|osbuild]"
+    echo "$0 [composer|osbuild|cockpit]"
     echo
-    echo "Update osbuild and osbuild-composer in the runninv VM."
+    echo "Build projects from source in the running VM."
     echo
-    echo "Specify either 'composer' or 'osbuild' to select which package to update."
-    echo "Without arguments, updates both."
+    echo "Specify the name of the project to select which package to update."
+    echo "Without arguments, updates only osbuild and composer."
     exit 1
 }
 
 composer=0
 osbuild=0
+cockpit=0
 if (( $# == 0 )); then
     composer=1
     osbuild=1
@@ -21,6 +22,8 @@ elif (( $# == 1 )) && [[ $1 == "composer" ]]; then
     composer=1
 elif (( $# == 1 )) && [[ $1 == "osbuild" ]]; then
     osbuild=1
+elif (( $# == 1 )) && [[ $1 == "cockpit" ]]; then
+    cockpit=1
 else
     usage
 fi
@@ -31,39 +34,58 @@ sshcmd() {
 
 osbuildsrc=../osbuild
 composersrc=../osbuild-composer
+cockpitsrc=../cockpit-composer
 osbuilddir=projects/osbuild/osbuild
 composerdir=projects/osbuild/osbuild-composer
+cockpitdir=projects/osbuild/cockpit-composer
 
-echo "Stopping services"
+echo ":: Stopping services"
 sshcmd sudo systemctl stop "osbuild-*.service" || true
 
 if [[ $composer == 1 ]]; then
     sshcmd mkdir -p "${composerdir}"
-    echo "Copying osbuild-composer sources to VM"
+    echo ":: Copying osbuild-composer sources to VM"
     rsync -aP --exclude build --exclude bin --exclude rpmbuild --delete-excluded --delete "${composersrc}/." localvm:"${composerdir}/."
     echo "Building osbuild-composer binaries"
     sshcmd "cd ${composerdir} && mkdir -p bin && go build -o bin/ ./cmd/osbuild-{composer,worker}"
-    echo "Installing osbuild-composer"
+    echo ":: Installing osbuild-composer"
     sshcmd "sudo make -C ${composerdir} install"
+
+    sshcmd sudo rm -vfr /etc/osbuild-composer/repositories/*
+    sshcmd sudo mkdir -vp /etc/osbuild-composer/repositories
+    sshcmd sudo cp -vr "${composerdir}/test/data/repositories/." "/etc/osbuild-composer/repositories"
 fi
 
 if [[ $osbuild == 1 ]]; then
     sshcmd mkdir -p "${osbuilddir}"
-    echo "Copying osbuild sources to VM"
+    echo ":: Copying osbuild sources to VM"
     rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${osbuildsrc}/." localvm:"${osbuilddir}/."
+    sshcmd git -C "${osbuilddir}" clean -xdf
 
-    echo "Building osbuild RPMs"
+    echo ":: Building osbuild RPMs"
     sshcmd git -C "${osbuilddir}" commit . -m wip --allow-empty
     sshcmd sudo dnf -y builddep "${osbuilddir}/osbuild.spec"
     sshcmd make -C "${osbuilddir}" rpm
 
-    echo "Installing osbuild"
+    echo ":: Installing osbuild"
     sshcmd sudo dnf install -y "${osbuilddir}"/rpmbuild/RPMS/noarch/*.rpm
 fi
 
-sshcmd sudo rm -vfr /etc/osbuild-composer/repositories/*
-sshcmd sudo mkdir -vp /etc/osbuild-composer/repositories
-sshcmd sudo cp -vr "${composerdir}/test/data/repositories/." "/etc/osbuild-composer/repositories"
+if [[ $cockpit == 1 ]]; then
+    sshcmd mkdir -p "${cockpitdir}"
+    echo ":: Copying cockpit sources to VM"
+    rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${cockpitsrc}/." localvm:"${cockpitdir}/."
 
-echo "Restarting services"
+    echo ":: Building cockpit RPM"
+    sshcmd git -C "${cockpitdir}" commit . -m wip --allow-empty
+    sshcmd sudo dnf -y install npm
+    sshcmd make -C "${cockpitdir}" cockpit-composer.spec
+    sshcmd sudo dnf -y builddep "${cockpitdir}/cockpit-composer.spec"
+    sshcmd make -C "${cockpitdir}" rpm
+
+    echo ":: Installing cockpit-composer"
+    sshcmd sudo dnf install -y "${cockpitdir}"/*.rpm
+fi
+
+echo ":: Restarting services"
 sshcmd sudo systemctl restart osbuild-composer.socket
