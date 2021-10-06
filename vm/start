@@ -272,17 +272,12 @@ EOF
 
 startvm() {
     mac="FE:0B:6E:22:3D:00"
-    initiso="${rundir}/${2}"
+    if (( $# == 2 )); then
+        cd_arg=("-cdrom" "${rundir}/${2}")
+    fi
     # NOTE: Bridge doesn't work with (my) wireless adapter or driver
     # https://www.linux-kvm.org/page/Networking
-    "qemu-system-${arch}" -nographic -smp 8 -m 8G -drive file="${1}" -cdrom "${initiso}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::"${webport}"-:443 "${arch_args[@]}" &
-    waitfor "${sshport}"
-    echo "VM started"
-}
-
-resumevm() {
-    mac="FE:0B:6E:22:3D:00"
-    "qemu-system-${arch}" -nographic -smp 8 -m 8G -drive file="${1}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::"${webport}"-:443 "${arch_args[@]}" &
+    "qemu-system-${arch}" -nographic -smp 8 -m 8G -drive file="${1}" -device virtio-net-pci,netdev=n0,mac="${mac}" -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::"${webport}"-:443 "${arch_args[@]}" "${cd_arg[@]}" &
     waitfor "${sshport}"
     echo "VM started"
 }
@@ -329,7 +324,7 @@ image="${overlaydir}/${baseimgfname%.*}-${imgname}.qcow2"
 
 if [[ -e "${image}" ]]; then
     echo "Booting existing VM ${image}"
-    resumevm "${image}"
+    startvm "${image}"
     fixdns "${sshport}"
 else
     echo "Setting up new VM using ${baseimg} -> ${image}"
