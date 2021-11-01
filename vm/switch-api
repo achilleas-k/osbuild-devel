@@ -27,3 +27,4 @@ ssh -q root@localvm chmod ugo+rX -R /etc/osbuild-composer/
 ssh -q localvm sudo systemctl start osbuild-composer-api.socket osbuild-remote-worker.socket
 
 curl -s -k --cert "${rundir}/config/client-crt.pem" --cacert "${rundir}/config/ca-crt.pem" --key "${rundir}/config/client-key.pem" https://localhost:10443/api/composer/v1/openapi.json | jq '.paths | keys'
+curl -s -k --cert "${rundir}/config/client-crt.pem" --cacert "${rundir}/config/ca-crt.pem" --key "${rundir}/config/client-key.pem" https://localhost:10443/api/composer/v2/openapi | jq '.paths | keys'
