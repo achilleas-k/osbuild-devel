@@ -219,17 +219,17 @@ case "${distro}" in
 yum_repos:
   baseos:
       name: baseos
-      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5/compose/BaseOS/${arch}/os/"
+      baseurl: "http://download.eng.brq.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.6/compose/BaseOS/${arch}/os/"
       enabled: true
       gpgcheck: false
   appstream:
       name: appstream
-      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5/compose/AppStream/${arch}/os/"
+      baseurl: "http://download.eng.brq.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.6/compose/AppStream/${arch}/os/"
       enabled: true
       gpgcheck: false
   crb:
       name: crb
-      baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5/compose/CRB/${arch}/os/"
+      baseurl: "http://download.eng.brq.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.6/compose/CRB/${arch}/os/"
       enabled: true
       gpgcheck: false
 EOF
@@ -237,7 +237,7 @@ EOF
         cat >> "${rundir}/data/user-data" << EOF
 rt:
   name: rt
-  baseurl: "http://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5/compose/RT/${arch}/os/"
+  baseurl: "http://download.eng.brq.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5/compose/RT/${arch}/os/"
   enabled: true
   gpgcheck: false
 EOF
@@ -248,17 +248,17 @@ EOF
 yum_repos:
   baseos:
       name: baseos
-      baseurl: "http://download.devel.redhat.com/rhel-9/nightly/RHEL-9-Beta/latest-RHEL-9.0/compose/BaseOS/${arch}/os/"
+      baseurl: "http://download.eng.brq.redhat.com/rhel-9/nightly/RHEL-9-Beta/latest-RHEL-9.0/compose/BaseOS/${arch}/os/"
       enabled: true
       gpgcheck: false
   appstream:
       name: appstream
-      baseurl: "http://download.devel.redhat.com/rhel-9/nightly/RHEL-9-Beta/latest-RHEL-9.0/compose/AppStream/${arch}/os/"
+      baseurl: "http://download.eng.brq.redhat.com/rhel-9/nightly/RHEL-9-Beta/latest-RHEL-9.0/compose/AppStream/${arch}/os/"
       enabled: true
       gpgcheck: false
   crb:
       name: crb
-      baseurl: "http://download.devel.redhat.com/rhel-9/nightly/RHEL-9-Beta/latest-RHEL-9.0/compose/CRB/${arch}/os/"
+      baseurl: "http://download.eng.brq.redhat.com/rhel-9/nightly/RHEL-9-Beta/latest-RHEL-9.0/compose/CRB/${arch}/os/"
       enabled: true
       gpgcheck: false
 EOF
