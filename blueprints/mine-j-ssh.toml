@@ -1,5 +1,5 @@
-name = "mine-j"
-description = "My own personal blueprint"
+name = "mine-j-ssh"
+description = "My own personal blueprint (with SSH)"
 version = "0.0.1"
 modules = []
 groups = []
@@ -14,6 +14,10 @@ version = "*"
 
 [[packages]]
 name = "sudo"
+version = "*"
+
+[[packages]]
+name = "openssh-server"
 version = "*"
 
 [customizations]
