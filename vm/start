@@ -26,7 +26,8 @@ usage() {
     echo "  rhel85      RHEL 8.5"
     echo "  rhel86      RHEL 8.6"
     echo "  rhel90      RHEL 9.0"
-    echo "  centos      CentOS Stream"
+    echo "  centos8     CentOS 8 Stream"
+    echo "  centos9     CentOS 9 Stream"
     echo
     echo "NAME names the VM to start or resume"
     exit 1
@@ -79,8 +80,11 @@ case "${arch}" in
             fedora34)
                 baseimg=/media/scratch/osbuild/VMs/Fedora-Cloud-Base-34-1.2.x86_64.qcow2
                 ;;
-            centos)
+            centos8)
                 baseimg=/media/scratch/osbuild/VMs/CentOS-Stream-GenericCloud-8-20210603.0.x86_64.qcow2
+                ;;
+            centos9)
+                baseimg=/media/scratch/osbuild/VMs/CentOS-Stream-GenericCloud-9-20211027.1.x86_64.qcow2
                 ;;
             *)
                 usage
