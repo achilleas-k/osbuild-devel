@@ -318,6 +318,10 @@ installcomposer() {
 
 installbuildtools() {
     port="${1}"
+    
+    # enable crb repo (in case it's disabled, e.g., for CentOS)
+    ssh -q -p "${port}" root@localvm dnf config-manager --set-enabled crb
+
     # for building updated binaries and osbuild rpm packages
     ssh -q -p "${port}" root@localvm dnf install -y go make git rpm-build krb5-devel jq vim
 
