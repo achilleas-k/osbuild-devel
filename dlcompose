@@ -46,7 +46,7 @@ dl() {
 }
 
 if [[ "$uuidarg" == "all" ]]; then
-    for id in $(ssh -q localvm composer-cli --json compose list finished failed | jq  -r '.[].id'); do
+    for id in $(ssh -q localvm composer-cli --json compose list | jq  -r '.body.finished[].id'); do
         dl "${id}"
     done
 else
