@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+set -eu
+
+usage() {
+    echo "$0 <distro> <arch> <image types>..."
+    echo
+    echo "Run the test case generator in the currently running VM and copy out the manifests."
+    exit 1
+}
+
+if (( $# < 3 )); then
+    usage
+fi
+
+distro="$1"
+shift
+arch="$1"
+shift
+image_types="$*"
+
+output_dir="${HOME}/projects/osbuild/osbuild-composer/test/data/manifests"
+
+sshcmd() {
+    ssh -q localvm "$@"
+}
+
+gencmd() {
+    sshcmd "cd ./projects/osbuild/osbuild-composer && sudo ./tools/test-case-generators/generate-test-cases $*"
+}
+
+gencmd --distro "${distro}" --arch "${arch}"  --image-types "${image_types[@]}" --output "${output_dir}" --store /tmp
+
+echo "Done"
+echo "Copying test manifests to ./test-manifests"
+mkdir -p ./test-manifests
+rsync -aP --delete localvm:"${output_dir}/." ./test-manifests/.
