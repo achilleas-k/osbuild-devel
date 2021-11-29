@@ -14,14 +14,12 @@ set -eu
 mkdir -p "${rundir}/config"
 "${develroot}"/vm/gen-certs.sh "${develroot}/vm/openssl.cnf" "${rundir}/config" "${rundir}/config/ca"
 
-# Copy configs to rundir
-cp "${develroot}"/config/*.toml "${rundir}"/config/.
-mkdir -p "${rundir}/distributions"
-rsync -aP --delete "${develroot}"/docker-image-builder/ib-distributions/. "${rundir}"/distributions
-
-# Copy into VM
-ssh -q root@localvm mkdir -p /etc/osbuild-composer
+# Copy configs into VM
+ssh -q root@localvm mkdir -p /etc/osbuild-composer /etc/osbuild-worker
 rsync -aP --delete "${rundir}"/config/. root@localvm:/etc/osbuild-composer/.
+rsync -aP "${develroot}"/config/osbuild-composer/. root@localvm:/etc/osbuild-composer/.
+rsync -aP "${develroot}"/config/osbuild-worker/. root@localvm:/etc/osbuild-worker/.
+
 ssh -q root@localvm chown root:root -R /etc/osbuild-composer/
 ssh -q root@localvm chmod ugo+rX -R /etc/osbuild-composer/
 
