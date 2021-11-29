@@ -15,13 +15,14 @@ mkdir -p "${rundir}/config"
 "${develroot}"/vm/gen-certs.sh "${develroot}/vm/openssl.cnf" "${rundir}/config" "${rundir}/config/ca"
 
 # Copy configs to rundir
-cp "${develroot}"/vm/config/*.toml "${rundir}"/config/.
+cp "${develroot}"/config/*.toml "${rundir}"/config/.
 mkdir -p "${rundir}/distributions"
 rsync -aP --delete "${develroot}"/docker-image-builder/ib-distributions/. "${rundir}"/distributions
 
 # Copy into VM
 ssh -q root@localvm mkdir -p /etc/osbuild-composer
 rsync -aP --delete "${rundir}"/config/. root@localvm:/etc/osbuild-composer/.
+ssh -q root@localvm chown root:root -R /etc/osbuild-composer/
 ssh -q root@localvm chmod ugo+rX -R /etc/osbuild-composer/
 
 ssh -q localvm sudo systemctl start osbuild-composer-api.socket osbuild-remote-worker.socket
