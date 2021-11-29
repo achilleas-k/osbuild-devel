@@ -7,6 +7,7 @@ sshport=2222
 webport=10443
 rundir="${XDG_RUNTIME_DIR}/osbuild-vm"
 overlaydir=/media/scratch/osbuild/VMs/overlays
+composerdir="${HOME}/projects/osbuild/osbuild-composer"
 mkdir -p "${overlaydir}"
 
 usage() {
@@ -174,6 +175,10 @@ case "${arch}" in
         exit 1
 esac
 
+sshcmd() {
+    ssh -q -p "${sshport}" localvm "$*"
+}
+
 mkoverlay() {
     baseimg="$1"
     image="$2"
@@ -302,35 +307,24 @@ waitfor() {
 }
 
 installcomposer() {
-    port="${1}"
-    ssh -q -p "${port}" root@localvm dnf install -y osbuild osbuild-composer composer-cli
-
-    ssh -q -p "${port}" root@localvm usermod -aG weldr,systemd-journal "${USER}"
-
-    ssh -q -p "${port}" root@localvm mkdir -p /etc/osbuild-composer/repositories/
-    scp -q -P "${port}" ../osbuild-composer/test/data/repositories/rhel-85.json root@localvm:/etc/osbuild-composer/repositories/rhel-8.json
-    ssh -q -p "${port}" root@localvm ln -sf /etc/osbuild-composer/repositories/rhel-8.json /etc/osbuild-composer/repositories/rhel-8-beta.json
-
-    ssh -q -p "${port}" root@localvm systemctl enable --now osbuild-composer.socket
-
-    # ssh -q -p "${port}" localvm composer-cli status show
+    sshcmd sudo dnf install -y osbuild osbuild-composer composer-cli
+    sshcmd sudo usermod -aG weldr,systemd-journal "${USER}"
+    sshcmd sudo systemctl enable --now osbuild-composer.socket
 }
 
 installbuildtools() {
-    port="${1}"
-    
     # enable crb repo (in case it's disabled, e.g., for CentOS)
-    ssh -q -p "${port}" root@localvm dnf config-manager --set-enabled crb
+    sshcmd sudo dnf config-manager --set-enabled crb
 
     # for building updated binaries and osbuild rpm packages
-    ssh -q -p "${port}" root@localvm dnf install -y go make git rpm-build krb5-devel jq vim
+    sshcmd sudo dnf install -y go make git rpm-build krb5-devel jq vim
 
-    ssh -q -p "${port}" localvm git config --global user.email "testvm@osbuild.org"
-    ssh -q -p "${port}" localvm git config --global user.name "${USER}"
+    sshcmd git config --global user.email "testvm@osbuild.org"
+    sshcmd git config --global user.name "${USER}"
 }
 
 fixdns() {
-    ssh -q -p "${1}" root@localvm "cat > /etc/resolv.conf" << EOF
+    sshcmd "sudo tee /etc/resolv.conf" << EOF
 nameserver 10.38.5.26
 nameserver 10.0.2.3
 EOF
@@ -342,7 +336,7 @@ image="${overlaydir}/${baseimgfname%.*}-${imgname}.qcow2"
 if [[ -e "${image}" ]]; then
     echo "Booting existing VM ${image}"
     startvm "${image}"
-    fixdns "${sshport}"
+    fixdns
 else
     echo "Setting up new VM using ${baseimg} -> ${image}"
     mkoverlay "${baseimg}" "${image}"
@@ -350,10 +344,10 @@ else
     mkmetadata "${distro}-${imgname}-vm"
     mkcloudinit composer-init.iso
     startvm "${image}" composer-init.iso
-    fixdns "${sshport}"
+    fixdns
 
-    installbuildtools "${sshport}"
-    installcomposer "${sshport}"
+    installbuildtools
+    installcomposer
 fi
 
-ssh -q -p "${sshport}" root@localvm journalctl -fa
+sshcmd sudo journalctl -fa
