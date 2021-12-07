@@ -1,0 +1,20 @@
+{
+  "module_platform_id": "platform:el8",
+  "distribution": {
+    "name": "centos-8",
+    "description": "CentOS Stream 8"
+  },
+  "x86_64": {
+    "image_types": [ "aws", "gcp", "azure", "ami", "vhd" ],
+    "repositories": [{
+      "baseurl": "http://mirror.centos.org/centos/8-stream/BaseOS/x86_64/os/",
+      "rhsm": false
+    }, {
+      "baseurl": "http://mirror.centos.org/centos/8-stream/AppStream/x86_64/os/",
+      "rhsm": false
+    }, {
+      "baseurl": "http://mirror.centos.org/centos/8-stream/extras/x86_64/os/",
+      "rhsm": false
+    }]
+  }
+}

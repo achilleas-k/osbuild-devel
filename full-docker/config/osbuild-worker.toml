@@ -1,0 +1,6 @@
+[aws]
+credentials = "/etc/osbuild-worker/aws-credentials.toml"
+
+[koji."org.osbuild.koji.koji".kerberos]
+principal = "osbuild-krb@org.osbuild.koji.kdc"
+keytab = "/etc/osbuild-worker/client.keytab"

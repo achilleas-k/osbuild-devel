@@ -1,0 +1,120 @@
+version: '2.4'
+services:
+  composer:
+    image: local/osbuild-composer
+    build:
+      context: ${osbuild_composer_source}
+      dockerfile: ./distribution/Dockerfile-ubi
+    volumes:
+      - ${container_config_dir}/:/etc/osbuild-composer
+      - /run/weldr:/run/weldr
+    networks:
+      net:
+        ipv4_address: 172.31.0.10
+    entrypoint: ["python3", "/opt/entrypoint.py", "--remote-worker-api", "--composer-api", "--composer-api-port", "8080", "--weldr-api"]
+
+  worker:
+    image: local/osbuild-worker
+    build:
+      context: ${osbuild_composer_source}
+      dockerfile: ./distribution/Dockerfile-worker
+    # override the entrypoint to specify composer hostname and port
+    entrypoint: ["/usr/libexec/osbuild-composer/osbuild-worker", "composer:8700"]
+    volumes:
+      - ${container_config_dir}/:/etc/osbuild-worker
+      - ${container_config_dir}/:/etc/osbuild-composer
+      - /dev:/dev
+    environment:
+      - CACHE_DIRECTORY=/var/cache/osbuild-worker
+    privileged: true
+    cap_add:
+      - MKNOD
+      - SYS_ADMIN
+      - NET_ADMIN
+    networks:
+      net:
+        ipv4_address: 172.31.0.20
+    depends_on:
+      - "composer"
+
+
+  postgres:
+    image: postgres:10.5
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ../../image-builder/internal/db/migrations/1_create_table_images.up.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    networks:
+      net:
+        ipv4_address: 172.31.0.30
+
+  backend:
+    image: local/image-builder
+    build:
+      context: ../../image-builder
+      dockerfile: ./distribution/Dockerfile-ubi
+    environment:
+      - LISTEN_ADDRESS=backend:8086
+      - LOG_LEVEL=DEBUG
+      - ALLOWED_ORG_IDS=*
+      - PGHOST=postgres
+      - PGPORT=5432
+      - PGDATABASE=postgres
+      - PGUSER=postgres
+      - PGPASSWORD=postgres
+      - OSBUILD_URL=https://172.31.0.1:10443
+      - OSBUILD_CERT_PATH=/etc/osbuild-composer/client-crt.pem
+      - OSBUILD_KEY_PATH=/etc/osbuild-composer/client-key.pem
+      - OSBUILD_CA_PATH=/etc/osbuild-composer/ca-crt.pem
+      - OSBUILD_AWS_REGION=$OSBUILD_AWS_REGION
+      - DISTRIBUTIONS_DIR=/app/distributions
+      - OSBUILD_AWS_ACCESS_KEY_ID=$OSBUILD_AWS_ACCESS_KEY_ID
+      - OSBUILD_AWS_SECRET_ACCESS_KEY=$OSBUILD_AWS_SECRET_ACCESS_KEY
+      - OSBUILD_AWS_S3_BUCKET=$OSBUILD_AWS_S3_BUCKET
+      - COMPOSER_TOKEN_URL=https://172.31.0.1:10443
+      - COMPOSER_OFFLINE_TOKEN=token
+      - COMPOSER_CA_PATH=/etc/osbuild-composer/
+    volumes:
+      - ${COMPOSER_CONFIG_DIR}:/etc/osbuild-composer/
+      - ${DISTRIBUTIONS_DIR}:/app/distributions
+    networks:
+      net:
+        ipv4_address: 172.31.0.40
+    depends_on:
+      - "postgres"
+
+  frontend:
+    image: local/image-builder-frontend
+    build:
+      context: ../../image-builder-frontend
+      dockerfile: ./distribution/Dockerfile
+    environment:
+      - HOST=frontend
+    networks:
+      net:
+        ipv4_address: 172.31.0.50
+  insightsproxy:
+    image: redhatinsights/insights-proxy:latest
+    security_opt:
+      - label=disable
+    environment:
+      - CUSTOM_CONF=true
+    volumes:
+      - ${SPANDX_CONFIG}:/config/spandx.config.js
+    networks:
+      net:
+        ipv4_address: 172.31.0.60
+    ports:
+      - 1337:1337
+    depends_on:
+     - "backend"
+     - "frontend"
+
+networks:
+  net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.31.0.0/16
+          gateway: 172.31.0.1

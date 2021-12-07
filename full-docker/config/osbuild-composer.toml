@@ -1,0 +1,9 @@
+[koji]
+allowed_domains = ["org.osbuild.koji.koji", "172.31.0.1"]
+ca = "/etc/osbuild-composer/ca-crt.pem"
+enable_tls = true
+
+[worker]
+allowed_domains = ["worker", "172.31.0.1"]
+ca = "/etc/osbuild-composer/ca-crt.pem"
+enable_tls = true
