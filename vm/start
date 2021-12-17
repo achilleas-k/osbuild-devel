@@ -111,6 +111,9 @@ case "${arch}" in
             fedora34)
                 baseimg=/media/scratch/osbuild/VMs/Fedora-Cloud-Base-34-1.2.aarch64.qcow2
                 ;;
+            centos9)
+                baseimg=/media/scratch/osbuild/VMs/CentOS-Stream-GenericCloud-9-20210830.0.aarch64.qcow2
+                ;;
             *)
                 echo "No ${distro} image for ${arch}"
                 exit 1
