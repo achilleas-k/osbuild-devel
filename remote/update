@@ -67,5 +67,10 @@ sshcmd sudo rm -vfr /etc/osbuild-composer/repositories/*
 sshcmd sudo mkdir -vp /etc/osbuild-composer/repositories
 sshcmd sudo cp -vr "${composerdir}/test/data/repositories/." "/etc/osbuild-composer/repositories"
 
-echo "Restarting services"
-sshcmd systemctl restart osbuild-composer.socket
+echo ":: Labelling image-info"
+osbuildcon=$(sshcmd matchpathcon -n /usr/bin/osbuild)
+sshcmd sudo chcon "${osbuildcon}" "${composerdir}/tools/image-info"
+
+echo ":: Restarting services"
+sshcmd sudo systemctl restart osbuild-composer.socket
+sshcmd sudo systemctl restart osbuild-dnf-json.socket

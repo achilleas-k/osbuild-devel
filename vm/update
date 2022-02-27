@@ -87,5 +87,10 @@ if [[ $cockpit == 1 ]]; then
     sshcmd sudo dnf install -y "${cockpitdir}"/*.rpm
 fi
 
+echo ":: Labelling image-info"
+osbuildcon=$(sshcmd matchpathcon -n /usr/bin/osbuild)
+sshcmd sudo chcon "${osbuildcon}" "${composerdir}/tools/image-info"
+
 echo ":: Restarting services"
 sshcmd sudo systemctl restart osbuild-composer.socket
+sshcmd sudo systemctl restart osbuild-dnf-json.socket
