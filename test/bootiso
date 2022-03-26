@@ -12,6 +12,20 @@ fi
 img="$(realpath "$1")"
 cd "$(dirname "$0")" || exit
 
+startvmaarch64() {
+    mac="FE:0B:6E:22:3D:13"
+    qemu-system-aarch64 \
+        -machine virt \
+        -boot efi \
+        -cpu cortex-a57 \
+        -m 8G \
+        -drive file="${1}" \
+        -cdrom "${2}" \
+        -device virtio-net-pci,netdev=n0,mac="${mac}" \
+        -netdev user,id=n0,net=10.0.2.0/24 \
+        -bios /usr/share/edk2-armvirt/aarch64/QEMU_EFI.fd
+}
+
 startvm() {
     mac="FE:0B:6E:22:3D:13"
     qemu-system-x86_64 \
