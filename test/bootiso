@@ -25,8 +25,9 @@ startvm() {
         -bios /usr/share/edk2-ovmf/x64/OVMF.fd
 }
 
-mkdir -p /media/scratch/osbuild/tests
-drive="$(mktemp -p /media/scratch/osbuild/tests/ -t install-test-XXX.qcow2)"
+imgdir=/media/slow.scratch/osbuild/tests
+mkdir -p "${imgdir}"
+drive="$(mktemp -p "${imgdir}" -t install-test-XXX.qcow2)"
 qemu-img create -f qcow2 "${drive}" 12G
 
 cleanup() {
