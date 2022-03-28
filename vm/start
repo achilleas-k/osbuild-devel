@@ -258,7 +258,27 @@ yum_repos:
       enabled: true
       gpgcheck: false
 EOF
-    ;;
+;;
+centos9)
+    cat >> "${rundir}/data/user-data" << EOF
+yum_repos:
+  baseos:
+      name: baseos
+      baseurl: "https://composes.stream.centos.org/development/latest-CentOS-Stream/compose/BaseOS/${arch}/os/"
+      enabled: true
+      gpgcheck: false
+  appstream:
+      name: appstream
+      baseurl: "https://composes.stream.centos.org/development/latest-CentOS-Stream/compose/AppStream/${arch}/os/"
+      enabled: true
+      gpgcheck: false
+  crb:
+      name: crb
+      baseurl: "https://composes.stream.centos.org/development/latest-CentOS-Stream/compose/CRB/${arch}/os/"
+      enabled: true
+      gpgcheck: false
+EOF
+;;
 esac
 }
 
