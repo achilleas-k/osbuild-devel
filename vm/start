@@ -297,9 +297,12 @@ startvm() {
     fi
     # NOTE: Bridge doesn't work with (my) wireless adapter or driver
     # https://www.linux-kvm.org/page/Networking
+    if [[ "${arch}" == "ppc64le" ]]; then
+        arch="ppc64"
+    fi
     "qemu-system-${arch}"  \
         -nographic \
-        -smp 8 \
+        -smp cpus=16 \
         -m 8G \
         -drive file="${1}" \
         -device virtio-net-pci,netdev=n0,mac="${mac}" \
