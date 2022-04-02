@@ -6,7 +6,7 @@ pubkeyfile="${HOME}/.ssh/${lowhost}.pub"
 sshport=2222
 webport=10443
 rundir="${XDG_RUNTIME_DIR}/osbuild-vm"
-overlaydir=/media/slow.scratch/VMs/overlays
+overlaydir=/media/scratch/VMs/overlays
 mkdir -p "${overlaydir}"
 
 usage() {
@@ -63,28 +63,28 @@ case "${arch}" in
     x86_64)
         case "${distro}" in
             rhel84)
-                baseimg=/media/slow.scratch/VMs/rhel-8.4-x86_64-kvm.qcow2
+                baseimg=/media/scratch/VMs/rhel-8.4-x86_64-kvm.qcow2
                 ;;
             rhel85)
-                baseimg=/media/slow.scratch/VMs/rhel-8.5-x86_64-kvm.qcow2
+                baseimg=/media/scratch/VMs/rhel-8.5-x86_64-kvm.qcow2
                 ;;
             rhel86)
-                baseimg=/media/slow.scratch/VMs/rhel-guest-image-8.6-386.x86_64.qcow2
+                baseimg=/media/scratch/VMs/rhel-guest-image-8.6-386.x86_64.qcow2
                 ;;
             rhel90)
-                baseimg=/media/slow.scratch/VMs/rhel-guest-image-9.0-20210914.4.x86_64.qcow2
+                baseimg=/media/scratch/VMs/rhel-guest-image-9.0-20210914.4.x86_64.qcow2
                 ;;
             fedora34)
-                baseimg=/media/slow.scratch/VMs/Fedora-Cloud-Base-34-1.2.x86_64.qcow2
+                baseimg=/media/scratch/VMs/Fedora-Cloud-Base-34-1.2.x86_64.qcow2
                 ;;
             fedora35)
-                baseimg=/media/slow.scratch/VMs/Fedora-Cloud-Base-35-1.2.x86_64.qcow2
+                baseimg=/media/scratch/VMs/Fedora-Cloud-Base-35-1.2.x86_64.qcow2
                 ;;
             centos8)
-                baseimg=/media/slow.scratch/VMs/CentOS-Stream-GenericCloud-8-20210603.0.x86_64.qcow2
+                baseimg=/media/scratch/VMs/CentOS-Stream-GenericCloud-8-20210603.0.x86_64.qcow2
                 ;;
             centos9)
-                baseimg=/media/slow.scratch/VMs/CentOS-Stream-GenericCloud-9-20220126.0.x86_64.qcow2
+                baseimg=/media/scratch/VMs/CentOS-Stream-GenericCloud-9-20220126.0.x86_64.qcow2
                 ;;
             *)
                 echo "No ${distro} image for ${arch}"
@@ -99,25 +99,25 @@ case "${arch}" in
     aarch64)
         case "${distro}" in
             rhel84)
-                baseimg=/media/slow.scratch/VMs/rhel-guest-image-8.4-671.aarch64.qcow2
+                baseimg=/media/scratch/VMs/rhel-guest-image-8.4-671.aarch64.qcow2
                 ;;
             rhel85)
-                baseimg=/media/slow.scratch/VMs/rhel-guest-image-8.5-713.aarch64.qcow2
+                baseimg=/media/scratch/VMs/rhel-guest-image-8.5-713.aarch64.qcow2
                 ;;
             rhel86)
-                baseimg=/media/slow.scratch/VMs/rhel-guest-image-8.6-1356.aarch64.qcow2
+                baseimg=/media/scratch/VMs/rhel-guest-image-8.6-1356.aarch64.qcow2
                 ;;
             rhel90)
-                baseimg=/media/slow.scratch/VMs/rhel-guest-image-9.0-20210920.5.aarch64.qcow2
+                baseimg=/media/scratch/VMs/rhel-guest-image-9.0-20210920.5.aarch64.qcow2
                 ;;
             fedora34)
-                baseimg=/media/slow.scratch/VMs/Fedora-Cloud-Base-34-1.2.aarch64.qcow2
+                baseimg=/media/scratch/VMs/Fedora-Cloud-Base-34-1.2.aarch64.qcow2
                 ;;
             fedora35)
-                baseimg=/media/slow.scratch/VMs/Fedora-Cloud-Base-35-1.2.aarch64.qcow2
+                baseimg=/media/scratch/VMs/Fedora-Cloud-Base-35-1.2.aarch64.qcow2
                 ;;
             centos9)
-                baseimg=/media/slow.scratch/VMs/CentOS-Stream-GenericCloud-9-20220126.0.aarch64.qcow2
+                baseimg=/media/scratch/VMs/CentOS-Stream-GenericCloud-9-20220126.0.aarch64.qcow2
                 ;;
             *)
                 echo "No ${distro} image for ${arch}"
@@ -134,10 +134,10 @@ case "${arch}" in
     s390x)
         case "${distro}" in
             rhel85)
-                baseimg=/media/slow.scratch/VMs/rhel-guest-image-8.5-739.s390x.qcow2
+                baseimg=/media/scratch/VMs/rhel-guest-image-8.5-739.s390x.qcow2
                 ;;
             fedora35)
-                baseimg=/media/slow.scratch/VMs/Fedora-Cloud-Base-35-1.2.s390x.qcow2
+                baseimg=/media/scratch/VMs/Fedora-Cloud-Base-35-1.2.s390x.qcow2
                 ;;
             *)
                 echo "No ${distro} image for ${arch}"
@@ -149,10 +149,10 @@ case "${arch}" in
     ppc64le)
         case "${distro}" in
             rhel85)
-                baseimg=/media/slow.scratch/VMs/rhel-guest-image-8.5-739.ppc64le.qcow2
+                baseimg=/media/scratch/VMs/rhel-guest-image-8.5-739.ppc64le.qcow2
                 ;;
             fedora35)
-                baseimg=/media/slow.scratch/VMs/Fedora-Cloud-Base-35-1.2.ppc64le.qcow2
+                baseimg=/media/scratch/VMs/Fedora-Cloud-Base-35-1.2.ppc64le.qcow2
                 ;;
             *)
                 echo "No ${distro} image for ${arch}"
