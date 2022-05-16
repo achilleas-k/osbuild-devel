@@ -1,0 +1,21 @@
+name = "installer-user"
+description = "User for edge-installer"
+version = "0.0.1"
+modules = []
+groups = []
+
+[[customizations.user]]
+name = "achilleas2"
+description = "admin user"
+key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPqEtsCdSozq0DT8sOazpizsBP65Ni6SMqrQA85Wnfs1 achilleas@Jack"
+password = "password43"
+home = "/home/achilleas2"
+groups = ["wheel"]
+
+[[customizations.user]]
+name = "achilleas"
+description = "admin user"
+key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPqEtsCdSozq0DT8sOazpizsBP65Ni6SMqrQA85Wnfs1 achilleas@Jack"
+password = "password42"
+home = "/home/achilleas"
+groups = ["wheel"]

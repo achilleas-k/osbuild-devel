@@ -1,0 +1,10 @@
+name = "bug-test-2027204"
+description = "rhbz2027204"
+version = "0.0.1"
+modules = []
+groups = []
+distro = "rhel-90-beta"
+
+[[packages]]
+name = "podman"
+version = "*"

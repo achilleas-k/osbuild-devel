@@ -1,5 +1,5 @@
-name = "mine-no-user"
-description = "My own personal blueprint without user. For testing user creation during install time via kickstart."
+name = "mine-nouser"
+description = "My BP without user (for edge)"
 version = "0.0.1"
 modules = []
 groups = []
@@ -17,7 +17,8 @@ name = "sudo"
 version = "*"
 
 [[packages]]
-name = "jq"
+name = "openssh-server"
+version = "*"
 
 [customizations]
-hostname = "no-user.test"
+hostname = "crusty"

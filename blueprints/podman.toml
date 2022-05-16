@@ -1,0 +1,11 @@
+name = "podman"
+version = "0.0.1"
+modules = []
+
+[[packages]]
+name = "podman"
+version = "*"
+
+[[packages]]
+name = "selinux-policy-targeted"
+version = "*"

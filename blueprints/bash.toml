@@ -1,0 +1,12 @@
+name = "bash"
+version = "0.0.1"
+modules = []
+[[groups]]
+name = "core"
+
+[[packages]]
+name = "bash"
+version = "*"
+
+[customizations.timezone]
+timezone = "Europe/Berlin"

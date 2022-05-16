@@ -1,0 +1,15 @@
+name = "rhel-85"
+description = "RHEL 8.5 Base Image"
+version = "0.0.1"
+distro = "rhel-85"
+
+[customizations]
+hostname = "rhel85vm"
+
+[[customizations.user]]
+name = "achilleas"
+description = "admin user"
+key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPqEtsCdSozq0DT8sOazpizsBP65Ni6SMqrQA85Wnfs1 achilleas@Jack"
+password = "password42"
+home = "/home/achilleas"
+groups = ["wheel"]
