@@ -1,6 +1,0 @@
-name = "edge-device"
-description = "Includes installation device customization"
-version = "0.0.1"
-
-[customizations]
-installation_device = "/dev/sda"
