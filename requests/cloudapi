@@ -20,9 +20,11 @@ for line in $(cat ./config/secrets.env); do
 done
 
 
+echo "Reading repos"
 repos=$(jq ".\"$arch\"" ../osbuild-composer/test/data/repositories/"$DISTRO".json)
 request_file=$(mktemp -d)/osbuild-request.json
 
+echo "Creating request data in ${request_file}"
 cat > "${request_file}" << EOF
 {
   "distribution": "${DISTRO}",

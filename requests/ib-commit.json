@@ -1,0 +1,23 @@
+{
+  "distribution": "rhel-84",
+    "customizations": {
+      "packages": [
+        "vim",
+        "tmux",
+        "zsh"
+      ]
+    },
+    "image_requests": [
+      {
+        "architecture": "x86_64",
+        "image_type": "rhel-edge-commit",
+        "ostree": {
+          "ref": "rhel8/edge/test"
+        },
+        "upload_request": {
+          "type": "aws.s3",
+          "options": {}
+        }
+      }
+    ]
+}

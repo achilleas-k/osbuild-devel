@@ -1,0 +1,17 @@
+{
+  "distribution": "rhel-84",
+    "image_requests": [
+      {
+        "architecture": "x86_64",
+        "image_type": "rhel-edge-installer",
+        "ostree": {
+          "ref": "rhel/8/x86_64/edge/dev",
+          "url": "https://achinet.com/ostree/repo"
+        },
+        "upload_request": {
+          "type": "aws.s3",
+          "options": {}
+        }
+      }
+    ]
+}

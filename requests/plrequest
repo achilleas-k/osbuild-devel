@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+import os
+import sys
+import json
+import toml
+
+
+def json_load(fname):
+    with open(fname, encoding="utf-8") as filep:
+        return json.load(filep)
+
+
+def toml_load(fname):
+    with open(fname, encoding="utf-8") as filep:
+        return toml.load(filep)
+
+
+def main():
+    if len(sys.argv) not in (3, 4):
+        print(f"USAGE: {sys.argv[0]} <distro> <image-type> [arch]")
+        sys.exit(1)
+    distro = sys.argv[1]
+    image_type = sys.argv[2]
+    arch = "x86_64"
+    if len(sys.argv) == 4:
+        arch = sys.argv[3]
+    bp_file = "blueprints/mine-j-ssh.toml"
+
+    repos_path = "../osbuild-composer/test/data/repositories"
+    # repos = json_load("../osbuild-composer/tools/test-case-generators/repos.json")
+
+    distro_repos = json_load(os.path.join(repos_path, distro + ".json"))
+    # distro_repos = repos[distro]
+    repos = distro_repos[arch]
+
+    blueprint = toml_load(bp_file)
+    ostree = {
+        "url": "http://ostree.example.com",
+        "ref": "whatever",
+        "parent": "whatever",
+    }
+
+    request = {
+        "distro": distro,
+        "arch": arch,
+        "image-type": image_type,
+        "blueprint": blueprint,
+        "repositories": repos,
+        "ostree": ostree,
+    }
+
+    print(json.dumps(request))
+
+
+if __name__ == "__main__":
+    main()
