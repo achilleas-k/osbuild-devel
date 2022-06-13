@@ -54,6 +54,7 @@ if [[ $composer == 1 ]]; then
     sshcmd sudo rm -vfr /etc/osbuild-composer/repositories/*
     sshcmd sudo mkdir -vp /etc/osbuild-composer/repositories
     sshcmd sudo cp -vr "${composerdir}/test/data/repositories/." "/etc/osbuild-composer/repositories"
+    sshcmd sudo cp -v "${composerdir}/dnf-json" "/usr/libexec/osbuild-composer/dnf-json"
 fi
 
 if [[ $osbuild == 1 ]]; then
