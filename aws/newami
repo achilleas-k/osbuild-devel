@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+filepath="$1"
+imgname="$2"
+cliprofile="osbuild-devel"
+bucket="akoutsou"
+
+filename=$(basename "${filepath}")
+
+tmpdir=$(mktemp -d)
+cleanup() {
+    rm -r "${tmpdir}"
+}
+trap cleanup EXIT
+
+awsp() {
+    aws --profile ${cliprofile} "${@}"
+}
+
+echo "Checking if file has already been uploaded"
+if awsp s3 ls "${bucket}/${filename}"; then
+    echo "File found. Skipping upload."
+    echo -e "Run\n  aws --profile ${cliprofile} s3 rm ${bucket}/${filename}\nto delete for reupload."
+else
+    # upload file
+    echo "Uploading ${filepath} to s3://${bucket}"
+    awsp s3 cp "${filepath}" "s3://${bucket}/${filename}"
+fi
+
+echo "Setting s3://${bucket}/${filename} public"
+awsp s3api put-object-acl --bucket "${bucket}" --key "${filename}" --acl public-read
+
+# import snapshot
+echo "Importing snapshot from s3://${bucket}/${filename} as ${imgname}"
+cat > "${tmpdir}/import-snapshot.json" << EOF
+{
+    "Description": "${imgname}",
+    "Format": "raw",
+    "UserBucket": {
+      "S3Bucket": "${bucket}",
+      "S3Key": "${filename}"
+    }
+}
+EOF
+import_output=$(awsp ec2 import-snapshot --disk-container "file://${tmpdir}/import-snapshot.json" --description "${imgname} import")
+import_task_id=$(jq .ImportTaskId <<< "${import_output}")
+
+echo -e "Run\n  aws --profile ${cliprofile} ec2 describe-import-snapshot-tasks --import-task-ids ${import_task_id}\nto check status"
