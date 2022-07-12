@@ -81,7 +81,7 @@ case "${arch}" in
                 baseimg=/media/scratch/VMs/Fedora-Cloud-Base-35-1.2.x86_64.qcow2
                 ;;
             centos8)
-                baseimg=/media/scratch/VMs/CentOS-Stream-GenericCloud-8-20210603.0.x86_64.qcow2
+                baseimg=/media/scratch/VMs/CentOS-Stream-GenericCloud-8-20220125.1.x86_64.qcow2
                 ;;
             centos9)
                 baseimg=/media/scratch/VMs/CentOS-Stream-GenericCloud-9-20220126.0.x86_64.qcow2
