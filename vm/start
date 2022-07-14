@@ -69,7 +69,7 @@ case "${arch}" in
                 baseimg=/media/scratch/VMs/rhel-8.5-x86_64-kvm.qcow2
                 ;;
             rhel86)
-                baseimg=/media/scratch/VMs/rhel-guest-image-8.6-386.x86_64.qcow2
+                baseimg=/media/scratch/VMs/rhel-8.6-x86_64-ib-2022-07-14.qcow2
                 ;;
             rhel90)
                 baseimg=/media/scratch/VMs/rhel-guest-image-9.0-20210914.4.x86_64.qcow2
