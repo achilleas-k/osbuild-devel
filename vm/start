@@ -63,10 +63,10 @@ case "${arch}" in
     x86_64)
         case "${distro}" in
             rhel84)
-                baseimg=/media/scratch/VMs/rhel-8.4-x86_64-kvm.qcow2
+                baseimg=/media/scratch/VMs/rhel-8.4-x86_64-ib-2022-07-14.qcow2
                 ;;
             rhel85)
-                baseimg=/media/scratch/VMs/rhel-8.5-x86_64-kvm.qcow2
+                baseimg=/media/scratch/VMs/rhel-8.5-x86_64-ib-2022-07-14.qcow2
                 ;;
             rhel86)
                 baseimg=/media/scratch/VMs/rhel-8.6-x86_64-ib-2022-07-14.qcow2
