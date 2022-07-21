@@ -1,0 +1,4 @@
+name = "f36"
+description = "No customizations"
+version = "0.0.1"
+distro = "fedora-36"
