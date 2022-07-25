@@ -40,7 +40,7 @@ dl() {
         exit 1
     fi
 
-    echo ":: Downloading results for "${uuid}""
+    echo ":: Downloading results for ${uuid}"
     scp localvm:"${uuid}.tar" "$destination"
     ssh -q localvm rm "${uuid}.tar"
 }
