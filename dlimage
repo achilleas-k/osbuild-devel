@@ -41,8 +41,10 @@ dl() {
     fi
 
     echo ":: Downloading results for ${uuid}"
-    scp localvm:"${uuid}.*" "$destination"
-    ssh -q localvm rm "${uuid}.*"
+    # globbing because we don't know the name, but this can get weird if there
+    # are other results from the same compose in the directory
+    scp localvm:"${uuid}*" "$destination"
+    ssh -q localvm rm "${uuid}*"
 }
 
 if [[ "$uuidarg" == "all" ]]; then
