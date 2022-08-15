@@ -53,8 +53,19 @@ if [[ $composer == 1 ]]; then
 
     sshcmd sudo rm -vfr /etc/osbuild-composer/repositories/*
     sshcmd sudo mkdir -vp /etc/osbuild-composer/repositories
-    sshcmd sudo cp -vr "${composerdir}/test/data/repositories/." "/etc/osbuild-composer/repositories"
+    # sshcmd sudo cp -vr "${composerdir}/test/data/repositories/." "/etc/osbuild-composer/repositories"
     sshcmd sudo cp -v "${composerdir}/dnf-json" "/usr/libexec/osbuild-composer/dnf-json"
+
+    reposfile="${composerdir}/tools/test-case-generators/repos.json"
+    distros=$(sshcmd "jq -r 'to_entries | .[].key' ${reposfile}")
+    for distro in ${distros}; do
+        repos=$(sshcmd "jq '.[\"${distro}\"]' ${reposfile}")
+        distrofile="/etc/osbuild-composer/repositories/${distro}.json"
+        sshcmd sudo tee "${distrofile}" > /dev/null << EOF
+${repos}
+EOF
+        echo "> ${distrofile}"
+    done
 fi
 
 if [[ $osbuild == 1 ]]; then
