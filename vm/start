@@ -269,8 +269,9 @@ installbuildtools() {
     sshcmd sudo dnf config-manager --set-enabled crb || true
 
     # for building updated binaries and osbuild rpm packages
+    sshcmd sudo dnf install -y go-rpm-macros || echo "Failed to install go-rpm-macros. Ignoring."
+    sshcmd sudo dnf install -y go-srpm-macros || echo "Failed to install go-srpm-macros. Ignoring."
     sshcmd sudo dnf install -y go make git rpm-build krb5-devel gpgme-devel jq vim
-    ssshcmd sudo dnf install -y go-rpm-macros || echo "Failed to install go-rpm-macros. Ignoring."
 
     sshcmd git config --global user.email "testvm@osbuild.org"
     sshcmd git config --global user.name "${USER}"
