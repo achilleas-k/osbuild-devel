@@ -19,17 +19,8 @@ usage() {
     echo "  Public key from:"
     echo "    - ${pubkeyfile}"
     echo
-    echo "DISTRO should be one of:"
-    echo "  fedora34    Fedora 34"
-    echo "  fedora35    Fedora 35"
-    echo "  rhel84      RHEL 8.4"
-    echo "  rhel85      RHEL 8.5"
-    echo "  rhel86      RHEL 8.6"
-    echo "  rhel90      RHEL 9.0"
-    echo "  centos8     CentOS 8 Stream"
-    echo "  centos9     CentOS 9 Stream"
-    echo
-    echo "NAME names the VM to start or resume"
+    echo "DISTRO is a distribution name and version (no dashes or periods, e.g., rhel90)"
+    echo "NAME   names the VM to start or resume"
     exit 1
 }
 
@@ -62,29 +53,17 @@ echo "Forwarding port ${webport} for https"
 case "${arch}" in
     x86_64)
         case "${distro}" in
-            rhel84)
-                baseimg=/media/scratch/VMs/rhel-8.4-x86_64-ib-2022-07-14.qcow2
-                ;;
-            rhel85)
-                baseimg=/media/scratch/VMs/rhel-8.5-x86_64-ib-2022-07-14.qcow2
-                ;;
-            rhel86)
-                baseimg=/media/scratch/VMs/rhel-8.6-x86_64-ib-2022-07-14.qcow2
-                ;;
             rhel90)
                 baseimg=/media/scratch/VMs/rhel-guest-image-9.0-20210914.4.x86_64.qcow2
-                ;;
-            fedora34)
-                baseimg=/media/scratch/VMs/Fedora-Cloud-Base-34-1.2.x86_64.qcow2
-                ;;
-            fedora35)
-                baseimg=/media/scratch/VMs/Fedora-Cloud-Base-35-1.2.x86_64.qcow2
                 ;;
             centos8)
                 baseimg=/media/scratch/VMs/CentOS-Stream-GenericCloud-8-20220125.1.x86_64.qcow2
                 ;;
             centos9)
                 baseimg=/media/scratch/VMs/CentOS-Stream-GenericCloud-9-20220126.0.x86_64.qcow2
+                ;;
+            fedora36)
+                baseimg=/media/scratch/VMs/Fedora-Cloud-Base-36-1.5.x86_64.qcow2
                 ;;
             *)
                 echo "No ${distro} image for ${arch}"
@@ -98,23 +77,8 @@ case "${arch}" in
         ;;
     aarch64)
         case "${distro}" in
-            rhel84)
-                baseimg=/media/scratch/VMs/rhel-guest-image-8.4-671.aarch64.qcow2
-                ;;
-            rhel85)
-                baseimg=/media/scratch/VMs/rhel-guest-image-8.5-713.aarch64.qcow2
-                ;;
-            rhel86)
-                baseimg=/media/scratch/VMs/rhel-guest-image-8.6-1356.aarch64.qcow2
-                ;;
             rhel90)
                 baseimg=/media/scratch/VMs/rhel-guest-image-9.0-20210920.5.aarch64.qcow2
-                ;;
-            fedora34)
-                baseimg=/media/scratch/VMs/Fedora-Cloud-Base-34-1.2.aarch64.qcow2
-                ;;
-            fedora35)
-                baseimg=/media/scratch/VMs/Fedora-Cloud-Base-35-1.2.aarch64.qcow2
                 ;;
             centos9)
                 baseimg=/media/scratch/VMs/CentOS-Stream-GenericCloud-9-20220126.0.aarch64.qcow2
@@ -133,11 +97,8 @@ case "${arch}" in
         ;;
     s390x)
         case "${distro}" in
-            rhel85)
-                baseimg=/media/scratch/VMs/rhel-guest-image-8.5-739.s390x.qcow2
-                ;;
-            fedora35)
-                baseimg=/media/scratch/VMs/Fedora-Cloud-Base-35-1.2.s390x.qcow2
+            centos9)
+                baseimg=/media/scratch/VMs/CentOS-Stream-GenericCloud-9-20220126.0.s390x.qcow2
                 ;;
             *)
                 echo "No ${distro} image for ${arch}"
@@ -148,11 +109,8 @@ case "${arch}" in
         ;;
     ppc64le)
         case "${distro}" in
-            rhel85)
-                baseimg=/media/scratch/VMs/rhel-guest-image-8.5-739.ppc64le.qcow2
-                ;;
-            fedora35)
-                baseimg=/media/scratch/VMs/Fedora-Cloud-Base-35-1.2.ppc64le.qcow2
+            centos9)
+                baseimg=/media/scratch/VMs/CentOS-Stream-GenericCloud-9-20220126.0.ppc64le.qcow2
                 ;;
             *)
                 echo "No ${distro} image for ${arch}"
