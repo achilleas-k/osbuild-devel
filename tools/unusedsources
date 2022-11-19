@@ -18,12 +18,19 @@ def main():
         for stage in pipeline["stages"]:
             # only care about rpm stages for now, but should be extended to check for inputs to other stages as well
             if stage["type"] == "org.osbuild.rpm":
-                input_keys.update(stage["inputs"]["packages"]["references"])
+                for pkg_id in stage["inputs"]["packages"]["references"]:
+                    if isinstance(pkg_id, dict):
+                        pkg_id = pkg_id["id"]
+                    input_keys.add(pkg_id)
 
     diff = source_keys - input_keys
     print(len(source_keys), len(input_keys))
     if diff:
         print(f"{len(diff)} packages found in sources but are never used")
+        for source in manifest["sources"].values():
+            for pkg_id in diff:
+                if pkg_id in source["items"]:
+                    print(source["items"][pkg_id])
 
 
 if __name__ == "__main__":
