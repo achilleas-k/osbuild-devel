@@ -22,21 +22,23 @@ startvmaarch64() {
         -drive file="${1}" \
         -cdrom "${2}" \
         -device virtio-net-pci,netdev=n0,mac="${mac}" \
-        -netdev user,id=n0,net=10.0.2.0/24 \
+        -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::2225-:22 \
         -bios /usr/share/edk2-armvirt/aarch64/QEMU_EFI.fd
 }
 
 startvm() {
-    mac="FE:0B:6E:22:3D:13"
+    mac="FE:0B:6E:22:4D:01"
+    usb=/tmp/qemuusb.qcow2
+    qemu-img create -f qcow2 "${usb}" 1G
     qemu-system-x86_64 \
         -enable-kvm \
         -cpu host \
-        -m 4G \
+        -m 12G \
         -drive file="${1}" \
         -cdrom "${2}" \
+        -usb \
         -device virtio-net-pci,netdev=n0,mac="${mac}" \
-        -netdev user,id=n0,net=10.0.2.0/24 \
-        -bios /usr/share/edk2-ovmf/x64/OVMF.fd
+        -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::2225-:22
 }
 
 imgdir=/media/scratch/osbuild/tests
