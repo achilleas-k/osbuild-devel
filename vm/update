@@ -40,7 +40,7 @@ composerdir=projects/osbuild/osbuild-composer
 cockpitdir=projects/osbuild/cockpit-composer
 
 echo ":: Stopping services"
-sshcmd sudo systemctl stop "osbuild-*.service" || true
+sshcmd sudo systemctl stop "osbuild-*.{service,socket}" || true
 
 if [[ $composer == 1 ]]; then
     sshcmd mkdir -p "${composerdir}"
@@ -75,7 +75,9 @@ if [[ $osbuild == 1 ]]; then
     sshcmd git -C "${osbuilddir}" clean -xdf
 
     echo ":: Building osbuild RPMs"
-    sshcmd git -C "${osbuilddir}" commit . -m wip --allow-empty
+    if ! sshcmd git -C "${osbuilddir}" diff --check; then
+        sshcmd git -C "${osbuilddir}" commit . -m wip
+    fi
     sshcmd sudo dnf -y builddep "${osbuilddir}/osbuild.spec"
     sshcmd make -C "${osbuilddir}" rpm
 
