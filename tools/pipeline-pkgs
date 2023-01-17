@@ -5,8 +5,11 @@ import sys
 
 def main():
     fname = sys.argv[1]
-    with open(fname, encoding="utf-8") as manifest_file:
-        manifest = json.load(manifest_file)
+    if fname == "-":
+        manifest = json.load(sys.stdin)
+    else:
+        with open(fname, encoding="utf-8") as manifest_file:
+            manifest = json.load(manifest_file)
 
     sources = manifest["sources"]["org.osbuild.curl"]["items"]
     pipeline_pkgs = {}
@@ -15,6 +18,8 @@ def main():
             if stage["type"] == "org.osbuild.rpm":
                 pkg_names = []
                 for pkg_id in stage["inputs"]["packages"]["references"]:
+                    if isinstance(pkg_id, dict):
+                        pkg_id = pkg_id["id"]
                     pkg = sources[pkg_id]
                     if isinstance(pkg, dict):
                         pkg = pkg["url"]
