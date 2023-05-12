@@ -5,7 +5,7 @@ set -eu
 cd "$(dirname "$0")"
 
 echo ":: Copying blueprints to VM"
-scp -r blueprints localvm:
+scp -r *.toml localvm:blueprints/
 
 echo ":: Pushing blueprints to composer"
 ssh -q localvm composer-cli blueprints push ./blueprints/*
