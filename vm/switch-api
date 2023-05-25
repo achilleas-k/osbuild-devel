@@ -19,7 +19,7 @@ ssh -q root@localvm mkdir -p /etc/osbuild-composer /etc/osbuild-worker
 rsync -aP --delete "${rundir}"/config/. root@localvm:/etc/osbuild-composer/.
 rsync -aP "${develroot}/config/osbuild-composer/." root@localvm:/etc/osbuild-composer/.
 rsync -aP "${develroot}/config/osbuild-worker/." root@localvm:/etc/osbuild-worker/.
-rsync -aP "${develroot}/docker-image-builder/ib-distributions/." "${rundir}/distributions"  # for IB docker container
+# rsync -aP "${develroot}/docker-image-builder/ib-distributions/." "${rundir}/distributions"  # for IB docker container
 
 ssh -q root@localvm chown root:root -R /etc/osbuild-composer/
 ssh -q root@localvm chmod ugo+rX -R /etc/osbuild-composer/
