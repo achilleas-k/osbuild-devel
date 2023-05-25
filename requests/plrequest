@@ -17,27 +17,30 @@ def toml_load(fname):
 
 def main():
     if len(sys.argv) not in (3, 4):
-        print(f"USAGE: {sys.argv[0]} <distro> <image-type> [arch]")
+        print(f"USAGE: {sys.argv[0]} <blueprint> <distro> <image-type> [arch]")
         sys.exit(1)
-    distro = sys.argv[1]
-    image_type = sys.argv[2]
+    cwd = os.path.dirname(os.path.abspath(sys.argv[0]))
+    bp_file = sys.argv[1]
+    distro = sys.argv[2]
+    image_type = sys.argv[3]
     arch = "x86_64"
-    if len(sys.argv) == 4:
-        arch = sys.argv[3]
-    bp_file = "blueprints/mine-j-ssh.toml"
+    if len(sys.argv) == 5:
+        arch = sys.argv[4]
 
-    repos_path = "../osbuild-composer/test/data/repositories"
-    # repos = json_load("../osbuild-composer/tools/test-case-generators/repos.json")
+    # repos_path = os.path.join(cwd, "../../osbuild-composer/test/data/repositories")
+    # repos_path = os.path.join(cwd, "../../osbuild-composer/repositories")
+    repos_path = os.path.join(cwd, "../../osbuild-composer/tools/test-case-generators/repos.json")
+    repos = json_load(repos_path)
 
-    distro_repos = json_load(os.path.join(repos_path, distro + ".json"))
-    # distro_repos = repos[distro]
+    # distro_repos = json_load(os.path.join(repos_path, distro + ".json"))
+    distro_repos = repos[distro]
     repos = distro_repos[arch]
 
     blueprint = toml_load(bp_file)
     ostree = {
-        "url": "http://ostree.example.com",
-        "ref": "whatever",
-        "parent": "whatever",
+        # "url": "http://localhost:8080/repo",
+        # "ref": "rhel/9/x86_64/edge",
+        # "parent": "bf5462f146647270a0684de8f5d24ae784d5b9cfde11d84c28d9ca1a73d4e0ce"
     }
 
     request = {
