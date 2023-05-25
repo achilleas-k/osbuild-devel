@@ -10,28 +10,29 @@ overlaydir=/media/scratch/VMs/overlays
 mkdir -p "${overlaydir}"
 
 usage() {
-    echo "$0 DISTRO NAME [ARCH]"
+    echo "$0 DISK NAME [ARCH]"
     echo
-    echo "Start a DISTRO vm, install osbuild and osbuild-composer, and start the services."
+    echo "Create an overlay from a given disk, install osbuild and osbuild-composer, and start the services."
     echo "Creates a user account with:"
     echo "  Username: $USER"
     echo "  Password: password42"
     echo "  Public key from:"
     echo "    - ${pubkeyfile}"
     echo
-    echo "DISTRO is a distribution name and version (no dashes or periods, e.g., rhel90)"
+    echo "DISK   path to VM disk to boot"
     echo "NAME   names the VM to start or resume"
+    echo "ARCH   architecture of the machine (default x86_64)"
     exit 1
 }
 
 case $# in
     2)
-        distro="$1"
+        baseimg="$1"
         imgname="$2"
         arch="x86_64"
         ;;
     3)
-        distro="$1"
+        baseimg="$1"
         imgname="$2"
         arch="$3"
         ;;
@@ -52,87 +53,27 @@ echo "Forwarding port ${webport} for https"
 
 case "${arch}" in
     x86_64)
-        case "${distro}" in
-            rhel86)
-                baseimg=/media/scratch/VMs/rhel-guest-image-8.6-1864.x86_64.qcow2
-                ;;
-            rhel90)
-                baseimg=/media/scratch/VMs/rhel-guest-image-9.0-20210914.4.x86_64.qcow2
-                ;;
-            rhel91)
-                baseimg=/media/scratch/VMs/rhel-guest-image-9.1-20220814.1.x86_64.qcow2
-                ;;
-            centos8)
-                baseimg=/media/scratch/VMs/CentOS-Stream-GenericCloud-8-20220125.1.x86_64.qcow2
-                ;;
-            centos9)
-                baseimg=/media/scratch/VMs/CentOS-Stream-GenericCloud-9-20220126.0.x86_64.qcow2
-                ;;
-            fedora36)
-                baseimg=/media/scratch/VMs/Fedora-Cloud-Base-36-1.5.x86_64.qcow2
-                ;;
-            fedora37)
-                baseimg=/media/scratch/VMs/Fedora-37.qcow2
-                ;;
-            *)
-                echo "No ${distro} image for ${arch}"
-                exit 1
-                ;;
-        esac
         arch_args=(
             "-enable-kvm"
             "-cpu" "host"
         )
         ;;
     aarch64)
-        case "${distro}" in
-            rhel90)
-                baseimg=/media/scratch/VMs/rhel-guest-image-9.0-20210920.5.aarch64.qcow2
-                ;;
-            centos9)
-                baseimg=/media/scratch/VMs/CentOS-Stream-GenericCloud-9-20220126.0.aarch64.qcow2
-                ;;
-            fedora36)
-                baseimg=/media/scratch/VMs/Fedora-Cloud-Base-36-1.5.aarch64.qcow2
-                ;;
-            *)
-                echo "No ${distro} image for ${arch}"
-                exit 1
-                ;;
-        esac
         arch_args=(
             "-machine" "virt"
             "-bios" "/usr/share/edk2-armvirt/aarch64/QEMU_EFI.fd"
             "-boot" "efi"
-            "-cpu" "cortex-a57"
+            "-cpu" "max"
         )
         ;;
     s390x)
-        case "${distro}" in
-            centos9)
-                baseimg=/media/scratch/VMs/CentOS-Stream-GenericCloud-9-20220126.0.s390x.qcow2
-                ;;
-            *)
-                echo "No ${distro} image for ${arch}"
-                exit 1
-                ;;
-        esac
         arch_args=()
         ;;
     ppc64le)
-        case "${distro}" in
-            centos9)
-                baseimg=/media/scratch/VMs/CentOS-Stream-GenericCloud-9-20220126.0.ppc64le.qcow2
-                ;;
-            *)
-                echo "No ${distro} image for ${arch}"
-                exit 1
-                ;;
-        esac
         arch_args=()
         ;;
     *)
-        echo "No base images for arch ${arch}"
+        echo "Unknown architecture ${arch}"
         exit 1
 esac
 
@@ -178,58 +119,6 @@ chpasswd:
     ${USER}:password42
   expire: False
 EOF
-
-case "${distro}" in
-    rhel86)
-    cat >> "${rundir}/data/user-data" << EOF
-yum_repos:
-  baseos:
-      name: baseos
-      baseurl: "http://download.eng.brq.redhat.com/rhel-8/nightly/RHEL-8/RHEL-8.6.0-20220420.3/compose/BaseOS/${arch}/os/"
-      enabled: true
-      gpgcheck: false
-  appstream:
-      name: appstream
-      baseurl: "http://download.eng.brq.redhat.com/rhel-8/nightly/RHEL-8/RHEL-8.6.0-20220420.3/compose/AppStream/${arch}/os/"
-      enabled: true
-      gpgcheck: false
-  crb:
-      name: crb
-      baseurl: "http://download.eng.brq.redhat.com/rhel-8/nightly/RHEL-8/RHEL-8.6.0-20220420.3/compose/CRB/${arch}/os/"
-      enabled: true
-      gpgcheck: false
-EOF
-    if [[ "${arch}" == "x86_64" ]]; then
-        cat >> "${rundir}/data/user-data" << EOF
-rt:
-  name: rt
-  baseurl: "http://download.eng.brq.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5/compose/RT/${arch}/os/"
-  enabled: true
-  gpgcheck: false
-EOF
-    fi
-    ;;
-    rhel9*)
-    cat >> "${rundir}/data/user-data" << EOF
-yum_repos:
-  baseos:
-      name: baseos
-      baseurl: "http://download.eng.brq.redhat.com/rhel-9/nightly/RHEL-9/latest-RHEL-9.0/compose/BaseOS/${arch}/os/"
-      enabled: true
-      gpgcheck: false
-  appstream:
-      name: appstream
-      baseurl: "http://download.eng.brq.redhat.com/rhel-9/nightly/RHEL-9/latest-RHEL-9.0/compose/AppStream/${arch}/os/"
-      enabled: true
-      gpgcheck: false
-  crb:
-      name: crb
-      baseurl: "http://download.eng.brq.redhat.com/rhel-9/nightly/RHEL-9/latest-RHEL-9.0/compose/CRB/${arch}/os/"
-      enabled: true
-      gpgcheck: false
-EOF
-;;
-esac
 }
 
 mkmetadata() {
@@ -307,7 +196,7 @@ else
     echo "Setting up new VM using ${baseimg} -> ${image}"
     mkoverlay "${baseimg}" "${image}"
     mkuserdata
-    mkmetadata "${distro}-${imgname}-vm"
+    mkmetadata "${imgname}-vm"
     mkcloudinit composer-init.iso
     startvm "${image}" composer-init.iso
     fixdns
