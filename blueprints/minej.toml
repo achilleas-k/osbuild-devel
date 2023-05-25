@@ -21,7 +21,7 @@ name = "openssh-server"
 version = "*"
 
 [customizations]
-hostname = "jack.vm"
+hostname = "ak.vm"
 
 [[customizations.user]]
 name = "achilleas"
