@@ -5,8 +5,11 @@ import sys
 
 def main():
     fname = sys.argv[1]
-    with open(fname) as mfile:
-        manifest = json.load(mfile)
+    if fname == "-":
+        manifest = json.load(sys.stdin)
+    else:
+        with open(fname) as mfile:
+            manifest = json.load(mfile)
 
     source_keys = set()
     for source in manifest["sources"].values():
