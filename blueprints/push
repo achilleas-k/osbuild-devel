@@ -5,10 +5,11 @@ set -eu
 cd "$(dirname "$0")"
 
 echo ":: Copying blueprints to VM"
-scp -r *.toml localvm:blueprints/
+ssh localvm mkdir -p blueprints
+rsync -aP --delete . localvm:blueprints/.
 
 echo ":: Pushing blueprints to composer"
-ssh -q localvm composer-cli blueprints push ./blueprints/*
+ssh -q localvm composer-cli blueprints push ./blueprints/*.toml
 
 echo ":: Blueprints added:"
 ssh -q localvm composer-cli blueprints list
