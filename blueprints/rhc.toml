@@ -1,0 +1,20 @@
+name = "rhc"
+version = "0.0.1"
+
+[[packages]]
+name = "rhc"
+
+[[packages]]
+name = "rhc-worker-playbook"
+
+[[packages]]
+name = "subscription-manager"
+
+[[packages]]
+name = "subscription-manager-plugin-ostree"
+
+[[packages]]
+name = "insights-client"
+
+[[packages]]
+name = "ansible-core"

@@ -1,0 +1,20 @@
+name = "edge-device"
+description = "No customizations"
+version = "0.0.1"
+
+[customizations]
+installation_device = "/dev/sda"
+
+[customizations.fdo]
+manufacturing_server_url="http://fdo.example.com"
+diun_pub_key_root_certs="""-----BEGIN CERTIFICATE-----
+MIIBTjCB9qADAgECAggIQY0mDR01ZzAKBggqhkjOPQQDAjAuMQ0wCwYDVQQDDARE
+SVVOMRAwDgYDVQQKDAdGRE8gQUlPMQswCQYDVQQGEwJVUzAeFw0yMjEyMDgxMDUy
+NDVaFw0yMzEyMDgxMDUyNDVaMC4xDTALBgNVBAMMBERJVU4xEDAOBgNVBAoMB0ZE
+TyBBSU8xCzAJBgNVBAYTAlVTMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE3V1Q
+rvVxJ0kV3h/erH1w8OKt7cKNj/a9Tni89P43oKSqXIaDfZG6bevQWseK/C9rmrUU
+pMgTGI0+ldvvSTRWMzAKBggqhkjOPQQDAgNHADBEAiB5bDx7VziLy2JoUHOY4uXl
+rM2vVOurb0xcg7bLvmU8jAIgAlQXP/ZjbwrHAtTU10i4N2r0sutJUxhpJa8xnBto
+XHQ=
+-----END CERTIFICATE-----
+"""

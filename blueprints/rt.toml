@@ -1,0 +1,36 @@
+name = "rt"
+description = "My test blueprint with kernel-rt"
+version = "0.0.1"
+modules = []
+groups = []
+
+
+[[packages]]
+name = "vim-enhanced"
+version = "*"
+
+[[packages]]
+name = "tmux"
+version = "*"
+
+[[packages]]
+name = "sudo"
+version = "*"
+
+[[packages]]
+name = "openssh-server"
+version = "*"
+
+[customizations]
+hostname = "ak.vm"
+
+[customizations.kernel]
+name = "kernel-rt"
+
+[[customizations.user]]
+name = "achilleas"
+description = "admin user"
+key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPqEtsCdSozq0DT8sOazpizsBP65Ni6SMqrQA85Wnfs1 achilleas@Jack"
+password = "password42"
+home = "/home/achilleas"
+groups = ["wheel"]

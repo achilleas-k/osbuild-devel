@@ -1,0 +1,37 @@
+name = "container-test"
+description = "Test container embedding"
+version = "0.0.1"
+modules = []
+groups = []
+
+[[packages]]
+name = "sudo"
+version = "*"
+
+[[packages]]
+name = "openssh-server"
+version = "*"
+
+[[packages]]
+name = "podman"
+
+[[packages]]
+name = "containernetworking-plugins"
+
+[customizations]
+hostname = "ak.vm"
+
+[[customizations.user]]
+name = "achilleas"
+description = "admin user"
+key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPqEtsCdSozq0DT8sOazpizsBP65Ni6SMqrQA85Wnfs1 achilleas@Jack"
+password = "password42"
+home = "/home/achilleas"
+groups = ["wheel"]
+
+[[containers]]
+source = "registry.gitlab.com/redhat/services/products/image-builder/ci/osbuild-composer/manifest-list-test"
+name = "localhost/manifest-list-test:v1"
+
+[[containers]]
+source = "quay.io/fedora/fedora"

@@ -1,0 +1,23 @@
+name = "container"
+description = "A base rhel-edge container image"
+version = "0.0.1"
+modules = []
+groups = []
+
+[[packages]]
+name = "python3"
+version = "*"
+
+[[packages]]
+name = "sssd"
+version = "*"
+
+[[customizations.user]]
+name = "admin"
+description = "Administrator account"
+password = "password42"
+home = "/home/admin/"
+groups = ["wheel"]
+
+[[containers]]
+source = "registry.access.redhat.com/ubi8/ubi-minimal:latest"
