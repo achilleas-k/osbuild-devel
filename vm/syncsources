@@ -1,0 +1,38 @@
+#!/usr/bin/bash
+
+set -eu
+
+usage() {
+    echo "$0"
+    echo
+    echo "Sync new project sources to the VM"
+    exit 1
+}
+
+if (( $# != 0 )); then
+    usage
+fi
+
+sshcmd() {
+    ssh -q localvm "$@"
+}
+
+imagessrc=../images
+osbuildsrc=../osbuild
+composersrc=../osbuild-composer
+cockpitsrc=../cockpit-composer
+
+imagesdir=projects/osbuild/images
+osbuilddir=projects/osbuild/osbuild
+composerdir=projects/osbuild/osbuild-composer
+cockpitdir=projects/osbuild/cockpit-composer
+
+sshcmd mkdir -p "${imagesdir}"
+sshcmd mkdir -p "${osbuilddir}"
+sshcmd mkdir -p "${composerdir}"
+sshcmd mkdir -p "${cockpitdir}"
+
+rsync -aP --exclude bin --delete-excluded --delete "${imagessrc}/." localvm:"${imagesdir}/."
+rsync -aP --exclude build --exclude bin --exclude rpmbuild --delete-excluded --delete "${composersrc}/." localvm:"${composerdir}/."
+rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${osbuildsrc}/." localvm:"${osbuilddir}/."
+rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${cockpitsrc}/." localvm:"${cockpitdir}/."
