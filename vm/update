@@ -51,21 +51,24 @@ if [[ $composer == 1 ]]; then
     echo ":: Installing osbuild-composer"
     sshcmd "sudo make -C ${composerdir} install"
 
+    # install dnf-json from repo
+    sshcmd sudo cp -v "${composerdir}/dnf-json" "/usr/libexec/osbuild-composer/dnf-json"
+
+    # add test repositories
     sshcmd sudo rm -vfr /etc/osbuild-composer/repositories/*
     sshcmd sudo mkdir -vp /etc/osbuild-composer/repositories
-    sshcmd sudo cp -vr "${composerdir}/test/data/repositories/." "/etc/osbuild-composer/repositories"
-    sshcmd sudo cp -v "${composerdir}/dnf-json" "/usr/libexec/osbuild-composer/dnf-json"
+    # sshcmd sudo cp -vr "${composerdir}/test/data/repositories/." "/etc/osbuild-composer/repositories"
 
     reposfile="${composerdir}/tools/test-case-generators/repos.json"
     distros=$(sshcmd "jq -r 'to_entries | .[].key' ${reposfile}")
-    # for distro in ${distros}; do
-    #     repos=$(sshcmd "jq '.[\"${distro}\"]' ${reposfile}")
-    #     distrofile="/etc/osbuild-composer/repositories/${distro}.json"
-    #     sshcmd sudo tee "${distrofile}" > /dev/null << EOF
-# ${repos}
-# EOF
-    #     echo "> ${distrofile}"
-    # done
+    for distro in ${distros}; do
+        repos=$(sshcmd "jq '.[\"${distro}\"]' ${reposfile}")
+        distrofile="/etc/osbuild-composer/repositories/${distro}.json"
+        sshcmd sudo tee "${distrofile}" > /dev/null << EOF
+${repos}
+EOF
+        echo "> ${distrofile}"
+    done
 fi
 
 if [[ $osbuild == 1 ]]; then
