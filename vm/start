@@ -145,7 +145,7 @@ startvm() {
         -m 8G \
         -drive file="${1}" \
         -device virtio-net-pci,netdev=n0,mac="${mac}" \
-        -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::"${webport}"-:443 \
+        -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22 \
         "${arch_args[@]}" \
         "${cd_arg[@]}" \
         &
@@ -166,15 +166,12 @@ installcomposer() {
 }
 
 installbuildtools() {
-    # enable crb repo (in case it's disabled, e.g., for CentOS)
-    sshcmd sudo dnf config-manager --set-enabled crb || true
-
     # for building updated binaries and osbuild rpm packages
     sshcmd sudo dnf install -y go-rpm-macros || echo "Failed to install go-rpm-macros. Ignoring."
     sshcmd sudo dnf install -y go-srpm-macros || echo "Failed to install go-srpm-macros. Ignoring."
     sshcmd sudo dnf install -y gpgme-devel || echo "Failed to install gpgme-devel. Ignoring"
 
-    sshcmd sudo dnf install -y go make git rpm-build krb5-devel jq vim
+    sshcmd sudo dnf install -y go make git rpm-build krb5-devel jq vim podman btrfs-progs-devel device-mapper-devel
 
     sshcmd git config --global user.email "testvm@osbuild.org"
     sshcmd git config --global user.name "${USER}"
