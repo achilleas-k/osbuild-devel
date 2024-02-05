@@ -13,7 +13,7 @@ startvm() {
 }
 
 fixdns() {
-    ssh -q root@localvm "cat > /etc/resolv.conf" << EOF
+    ssh -q root@develvm "cat > /etc/resolv.conf" << EOF
 nameserver 10.38.5.26
 nameserver 10.0.2.3
 EOF
@@ -21,7 +21,7 @@ EOF
 
 startvm
 
-while ! ssh -q localvm exit; do
+while ! ssh -q develvm exit; do
     sleep 1
 done
 
@@ -29,24 +29,24 @@ echo "Connected"
 
 fixdns
 
-ssh root@localvm mkdir /rpm
-scp -q ../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-??-*.rpm root@localvm:/rpm
-scp -q ../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-core-??-*.rpm root@localvm:/rpm
-scp -q ../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-worker-??-*.rpm root@localvm:/rpm
-scp -q ../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-tests-??-*.rpm root@localvm:/rpm
-scp -q ../osbuild/rpmbuild/RPMS/noarch/osbuild-??-*.rpm root@localvm:/rpm
-scp -q ../osbuild/rpmbuild/RPMS/noarch/osbuild-ostree-??-*.rpm root@localvm:/rpm
-scp -q ../osbuild/rpmbuild/RPMS/noarch/osbuild-selinux-??-*.rpm root@localvm:/rpm
-scp -q ../osbuild/rpmbuild/RPMS/noarch/python3-osbuild-??-*.rpm root@localvm:/rpm
+ssh root@develvm mkdir /rpm
+scp -q ../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-??-*.rpm root@develvm:/rpm
+scp -q ../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-core-??-*.rpm root@develvm:/rpm
+scp -q ../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-worker-??-*.rpm root@develvm:/rpm
+scp -q ../osbuild-composer/rpmbuild/RPMS/x86_64/osbuild-composer-tests-??-*.rpm root@develvm:/rpm
+scp -q ../osbuild/rpmbuild/RPMS/noarch/osbuild-??-*.rpm root@develvm:/rpm
+scp -q ../osbuild/rpmbuild/RPMS/noarch/osbuild-ostree-??-*.rpm root@develvm:/rpm
+scp -q ../osbuild/rpmbuild/RPMS/noarch/osbuild-selinux-??-*.rpm root@develvm:/rpm
+scp -q ../osbuild/rpmbuild/RPMS/noarch/python3-osbuild-??-*.rpm root@develvm:/rpm
 
-ssh -q root@localvm dnf install -y /rpm/*
+ssh -q root@develvm dnf install -y /rpm/*
 
-ssh -q root@localvm usermod -aG weldr achilleas
-ssh -q root@localvm systemctl start osbuild-composer.socket
+ssh -q root@develvm usermod -aG weldr achilleas
+ssh -q root@develvm systemctl start osbuild-composer.socket
 
-ssh -q localvm composer-cli status show
+ssh -q develvm composer-cli status show
 
-ssh -q root@localvm journalctl -f -u "*osbuild*"
+ssh -q root@develvm journalctl -f -u "*osbuild*"
 
 echo "Ready"
 wait

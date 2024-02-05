@@ -14,7 +14,7 @@ if (( $# != 0 )); then
 fi
 
 sshcmd() {
-    ssh -q localvm "$@"
+    ssh -q develvm "$@"
 }
 
 imagessrc=../images
@@ -32,7 +32,7 @@ sshcmd mkdir -p "${osbuilddir}"
 sshcmd mkdir -p "${composerdir}"
 sshcmd mkdir -p "${cockpitdir}"
 
-rsync -aP --exclude bin --delete-excluded --delete "${imagessrc}/." localvm:"${imagesdir}/."
-rsync -aP --exclude build --exclude bin --exclude rpmbuild --delete-excluded --delete "${composersrc}/." localvm:"${composerdir}/."
-rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${osbuildsrc}/." localvm:"${osbuilddir}/."
-rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${cockpitsrc}/." localvm:"${cockpitdir}/."
+rsync -aP --exclude bin --delete-excluded --delete "${imagessrc}/." develvm:"${imagesdir}/."
+rsync -aP --exclude build --exclude bin --exclude rpmbuild --delete-excluded --delete "${composersrc}/." develvm:"${composerdir}/."
+rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${osbuildsrc}/." develvm:"${osbuilddir}/."
+rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${cockpitsrc}/." develvm:"${cockpitdir}/."

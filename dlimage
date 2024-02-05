@@ -13,7 +13,7 @@ usage() {
 
 list_finished() {
     echo ":: Available composes (finished/failed only)"
-    ssh -q localvm composer-cli compose list finished failed
+    ssh -q develvm composer-cli compose list finished failed
 }
 
 
@@ -35,7 +35,7 @@ uuidarg="$1"
 
 dl() {
     uuid="$1"
-    if ! ssh -q localvm composer-cli compose image "${uuid}"; then
+    if ! ssh -q develvm composer-cli compose image "${uuid}"; then
         list_finished
         exit 1
     fi
@@ -43,12 +43,12 @@ dl() {
     echo ":: Downloading results for ${uuid}"
     # globbing because we don't know the name, but this can get weird if there
     # are other results from the same compose in the directory
-    scp localvm:"${uuid}*" "$destination"
-    ssh -q localvm rm "${uuid}*"
+    scp develvm:"${uuid}*" "$destination"
+    ssh -q develvm rm "${uuid}*"
 }
 
 if [[ "$uuidarg" == "all" ]]; then
-    for id in $(ssh -q localvm composer-cli --json compose list | jq  -r '.body.finished[].id'); do
+    for id in $(ssh -q develvm composer-cli --json compose list | jq  -r '.body.finished[].id'); do
         dl "${id}"
     done
 else

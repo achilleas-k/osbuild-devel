@@ -22,7 +22,7 @@ image_types="$*"
 output_dir="${HOME}/projects/osbuild/osbuild-composer/test/data/manifests"
 
 sshcmd() {
-    ssh -q localvm "$@"
+    ssh -q develvm "$@"
 }
 
 gencmd() {
@@ -34,4 +34,4 @@ gencmd --distro "${distro}" --arch "${arch}"  --image-types "${image_types[@]}" 
 echo "Done"
 echo "Copying test manifests to ./test-manifests"
 mkdir -p ./test-manifests
-rsync -aP --delete localvm:"${output_dir}/." ./test-manifests/.
+rsync -aP --delete develvm:"${output_dir}/." ./test-manifests/.

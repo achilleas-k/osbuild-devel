@@ -3,7 +3,7 @@
 set -eu
 
 usage() {
-    echo "$0 [composer|osbuild|cockpit]"
+    echo "$0 [composer|osbuild|cockpit|bib]"
     echo
     echo "Build projects from source in the running VM."
     echo
@@ -15,29 +15,37 @@ usage() {
 composer=0
 osbuild=0
 cockpit=0
+bib=0
 if (( $# == 0 )); then
     composer=1
     osbuild=1
+    bib=1
 elif (( $# == 1 )) && [[ $1 == "composer" ]]; then
     composer=1
 elif (( $# == 1 )) && [[ $1 == "osbuild" ]]; then
     osbuild=1
 elif (( $# == 1 )) && [[ $1 == "cockpit" ]]; then
     cockpit=1
+elif (( $# == 1 )) && [[ $1 == "bib" ]]; then
+    bib=1
 else
     usage
 fi
 
 sshcmd() {
-    ssh -q localvm "$@"
+    ssh -q develvm "$@"
 }
 
 osbuildsrc=../osbuild
 composersrc=../osbuild-composer
+imagessrc=../osbuild-composer
 cockpitsrc=../cockpit-composer
+bibsrc=../bootc-image-builder
 osbuilddir=projects/osbuild/osbuild
 composerdir=projects/osbuild/osbuild-composer
 cockpitdir=projects/osbuild/cockpit-composer
+bibdir=projects/osbuild/bootc-image-builder
+
 
 echo ":: Stopping services"
 sshcmd sudo systemctl stop "osbuild-*.{service,socket}" || true
@@ -45,7 +53,7 @@ sshcmd sudo systemctl stop "osbuild-*.{service,socket}" || true
 if [[ $composer == 1 ]]; then
     sshcmd mkdir -p "${composerdir}"
     echo ":: Copying osbuild-composer sources to VM"
-    rsync -aP --exclude build --exclude bin --exclude rpmbuild --delete-excluded --delete "${composersrc}/." localvm:"${composerdir}/."
+    rsync -aP --exclude build --exclude bin --exclude rpmbuild --delete-excluded --delete "${composersrc}/." develvm:"${composerdir}/."
     echo "Building osbuild-composer binaries"
     sshcmd "cd ${composerdir} && mkdir -p bin && go build -o bin/ ./cmd/osbuild-{composer,worker}"
     echo ":: Installing osbuild-composer"
@@ -55,26 +63,14 @@ if [[ $composer == 1 ]]; then
     sshcmd sudo cp -v "${composerdir}/dnf-json" "/usr/libexec/osbuild-composer/dnf-json"
 
     # add test repositories
-    sshcmd sudo rm -vfr /etc/osbuild-composer/repositories/*
     sshcmd sudo mkdir -vp /etc/osbuild-composer/repositories
-    # sshcmd sudo cp -vr "${composerdir}/test/data/repositories/." "/etc/osbuild-composer/repositories"
-
-    reposfile="${composerdir}/tools/test-case-generators/repos.json"
-    distros=$(sshcmd "jq -r 'to_entries | .[].key' ${reposfile}")
-    for distro in ${distros}; do
-        repos=$(sshcmd "jq '.[\"${distro}\"]' ${reposfile}")
-        distrofile="/etc/osbuild-composer/repositories/${distro}.json"
-        sshcmd sudo tee "${distrofile}" > /dev/null << EOF
-${repos}
-EOF
-        echo "> ${distrofile}"
-    done
+    rsync -aP --delete "${imagessrc}/test/data/repositories/." root@develvm:/etc/osbuild-composer/repositories/.
 fi
 
 if [[ $osbuild == 1 ]]; then
     sshcmd mkdir -p "${osbuilddir}"
     echo ":: Copying osbuild sources to VM"
-    rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${osbuildsrc}/." localvm:"${osbuilddir}/."
+    rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${osbuildsrc}/." develvm:"${osbuilddir}/."
     sshcmd git -C "${osbuilddir}" clean -xdf
 
     echo ":: Building osbuild RPMs"
@@ -91,7 +87,7 @@ fi
 if [[ $cockpit == 1 ]]; then
     sshcmd mkdir -p "${cockpitdir}"
     echo ":: Copying cockpit sources to VM"
-    rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${cockpitsrc}/." localvm:"${cockpitdir}/."
+    rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${cockpitsrc}/." develvm:"${cockpitdir}/."
 
     echo ":: Building cockpit RPM"
     sshcmd git -C "${cockpitdir}" commit . -m wip --allow-empty
@@ -103,6 +99,16 @@ if [[ $cockpit == 1 ]]; then
     echo ":: Installing cockpit-composer"
     sshcmd sudo dnf install -y "${cockpitdir}"/*.rpm
 fi
+
+if [[ $bib == 1 ]]; then
+    sshcmd mkdir -p "${bibdir}"
+    echo ":: Copying bootc-image-builder sources to VM"
+    rsync -aP --delete "${bibsrc}/." develvm:"${bibdir}/."
+
+    echo ":: Building bootc-image-builder container"
+    sshcmd sudo podman build "${bibdir}" -t localhost/bootc-image-builder:devel
+fi
+
 
 echo ":: Labelling image-info"
 osbuildcon=$(sshcmd matchpathcon -n /usr/bin/osbuild)

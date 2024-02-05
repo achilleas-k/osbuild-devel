@@ -10,12 +10,12 @@ usage() {
 
 list_blueprints() {
     echo ":: Available blueprints"
-    ssh -q localvm composer-cli blueprints list
+    ssh -q develvm composer-cli blueprints list
 }
 
 list_types() {
     echo ":: Available types"
-    ssh -q localvm composer-cli compose types
+    ssh -q develvm composer-cli compose types
 }
 
 
@@ -28,4 +28,4 @@ fi
 
 bp="$1"
 imgtype="$2"
-ssh -q localvm composer-cli --json compose start "${bp}" "${imgtype}"
+ssh -q develvm composer-cli --json compose start "${bp}" "${imgtype}"

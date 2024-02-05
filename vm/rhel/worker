@@ -83,28 +83,28 @@ startvm() {
 }
 
 waitfor() {
-    while ! ssh -q localvm -p "${1}" exit; do
+    while ! ssh -q develvm -p "${1}" exit; do
         sleep 1
     done
 }
 
 installworker() {
     port="${1}"
-    ssh -q -p "${port}" root@localvm dnf install -y osbuild osbuild-composer-worker
-    ssh -q -p "${port}" root@localvm mkdir -p /etc/osbuild-composer
-    scp -P "${port}" -r "${rundir}"/config/* root@localvm:/etc/osbuild-composer/.
-    scp -q -P "${port}" ./config/*.toml root@localvm:/etc/osbuild-composer/.
+    ssh -q -p "${port}" root@develvm dnf install -y osbuild osbuild-composer-worker
+    ssh -q -p "${port}" root@develvm mkdir -p /etc/osbuild-composer
+    scp -P "${port}" -r "${rundir}"/config/* root@develvm:/etc/osbuild-composer/.
+    scp -q -P "${port}" ./config/*.toml root@develvm:/etc/osbuild-composer/.
 
-    ssh -q -p "${port}" root@localvm systemctl enable --now osbuild-remote-worker@10.0.2.2:8700
-    ssh -q -p "${port}" root@localvm systemctl status osbuild-remote-worker@10.0.2.2:8700
+    ssh -q -p "${port}" root@develvm systemctl enable --now osbuild-remote-worker@10.0.2.2:8700
+    ssh -q -p "${port}" root@develvm systemctl status osbuild-remote-worker@10.0.2.2:8700
     # copy source from host, compile binaries, and replace
-    # scp -q -P "${port}" -r ../../osbuild-composer localvm:
+    # scp -q -P "${port}" -r ../../osbuild-composer develvm:
 
-    # ssh -p "${port}" root@localvm journalctl -f -u "*osbuild*"
+    # ssh -p "${port}" root@develvm journalctl -f -u "*osbuild*"
 }
 
 fixdns() {
-    ssh -q -p "${1}" root@localvm "cat > /etc/resolv.conf" << EOF
+    ssh -q -p "${1}" root@develvm "cat > /etc/resolv.conf" << EOF
 nameserver 10.38.5.26
 nameserver 10.0.2.3
 EOF

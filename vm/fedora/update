@@ -17,23 +17,23 @@ set -eu
 
 
 echo "Stopping services"
-ssh -q root@localvm systemctl stop "osbuild*"
+ssh -q root@develvm systemctl stop "osbuild*"
 
 echo "Copying osbuild-composer binaries to VM"
-scp -q ../osbuild-composer/bin/osbuild-{composer,worker} root@localvm:/usr/libexec/osbuild-composer/.
-scp -q ../osbuild-composer/bin/osbuild-image-tests root@localvm:/usr/libexec/osbuild-composer-test/osbuild-image-tests
+scp -q ../osbuild-composer/bin/osbuild-{composer,worker} root@develvm:/usr/libexec/osbuild-composer/.
+scp -q ../osbuild-composer/bin/osbuild-image-tests root@develvm:/usr/libexec/osbuild-composer-test/osbuild-image-tests
 
 echo "Copying osbuild RPMs to VM"
-ssh -q root@localvm rm -rf /rpm
-ssh -q root@localvm mkdir /rpm
-scp -q ../osbuild/rpmbuild/RPMS/noarch/osbuild-??-*.rpm root@localvm:/rpm
-scp -q ../osbuild/rpmbuild/RPMS/noarch/osbuild-ostree-??-*.rpm root@localvm:/rpm
-scp -q ../osbuild/rpmbuild/RPMS/noarch/osbuild-selinux-??-*.rpm root@localvm:/rpm
-scp -q ../osbuild/rpmbuild/RPMS/noarch/python3-osbuild-??-*.rpm root@localvm:/rpm
+ssh -q root@develvm rm -rf /rpm
+ssh -q root@develvm mkdir /rpm
+scp -q ../osbuild/rpmbuild/RPMS/noarch/osbuild-??-*.rpm root@develvm:/rpm
+scp -q ../osbuild/rpmbuild/RPMS/noarch/osbuild-ostree-??-*.rpm root@develvm:/rpm
+scp -q ../osbuild/rpmbuild/RPMS/noarch/osbuild-selinux-??-*.rpm root@develvm:/rpm
+scp -q ../osbuild/rpmbuild/RPMS/noarch/python3-osbuild-??-*.rpm root@develvm:/rpm
 
 echo "Installing osbuild"
-# ssh -q root@localvm dnf -y remove osbuild
-ssh -q root@localvm dnf install -y /rpm/*
+# ssh -q root@develvm dnf -y remove osbuild
+ssh -q root@develvm dnf install -y /rpm/*
 
 echo "Restarting services"
-ssh -q root@localvm systemctl restart osbuild-composer.socket
+ssh -q root@develvm systemctl restart osbuild-composer.socket

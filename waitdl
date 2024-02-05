@@ -13,7 +13,7 @@ composeid="$1"
 destination="$2"
 
 status() {
-    ssh -q localvm composer-cli --json compose info "${1}" | jq -r '.body.queue_status'
+    ssh -q develvm composer-cli --json compose info "${1}" | jq -r '.body.queue_status'
 }
 
 while [[ $(status "${composeid}") == "RUNNING" ]];  do

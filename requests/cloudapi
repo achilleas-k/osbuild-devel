@@ -12,52 +12,44 @@ imagetype="$1"
 rundir="${XDG_RUNTIME_DIR}/osbuild-vm"
 certdir="${rundir}/config"
 
-source <(ssh -q localvm cat /etc/os-release)
-DISTRO="${DISTRO_CODE:-${ID}-${VERSION_ID//./}}"
-arch=$(ssh -q localvm uname -m)
+distro="fedora-39"
+arch=$(ssh -q develvm uname -m)
 for line in $(cat ./config/secrets.env); do
     eval "export ${line}"
 done
 
 
 echo "Reading repos"
-repos=$(jq ".\"$arch\"" ../osbuild-composer/test/data/repositories/"$DISTRO".json)
+repos=$(jq ".\"$arch\"" ../osbuild-composer/test/data/repositories/"$distro".json)
 request_file=$(mktemp -d)/osbuild-request.json
 
 echo "Creating request data in ${request_file}"
 cat > "${request_file}" << EOF
 {
-  "distribution": "${DISTRO}",
+  "distribution": "${distro}",
   "customizations": {
-    "users": [
-      {
-        "name": "achilleas",
-        "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPqEtsCdSozq0DT8sOazpizsBP65Ni6SMqrQA85Wnfs1 achilleas@Jack"
-      }
-    ],
+    "users": [],
     "packages": [
       "tmux",
       "vim",
       "zsh"
-    ],
-    "containers": [
-      {
-        "source": "registry.gitlab.com/redhat/services/products/image-builder/ci/osbuild-composer/fedora-minimal"
-      },
-      {
-        "source": "registry.gitlab.com/redhat/services/products/image-builder/ci/osbuild-composer/manifest-list-test",
-        "name": "manifest-list-test:v1"
-      }
     ]
   },
   "image_request": {
-    "ostree": {},
     "architecture": "${arch}",
     "image_type": "${imagetype}",
     "repositories": ${repos},
     "upload_options": {
-      "region": "${OSBUILD_AWS_REGION}"
-    }
+      "region": "us-east-1"
+    },
+    "upload_targets": [
+      {
+        "type": "aws.s3",
+        "upload_options": {
+          "region": "us-east-1"
+        }
+      }
+    ]
   }
 }
 EOF

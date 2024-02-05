@@ -11,12 +11,12 @@ usage() {
 
 list_blueprints() {
     echo ":: Available blueprints"
-    ssh -q localvm composer-cli blueprints list
+    ssh -q develvm composer-cli blueprints list
 }
 
 list_types() {
     echo ":: Available types"
-    ssh -q localvm composer-cli compose types
+    ssh -q develvm composer-cli compose types
 }
 
 
@@ -37,4 +37,4 @@ podman stop commitsrv || true
 echo "Starting ${container} container (commitsrv)"
 podman run -d --rm -p${port}:8080 --name commitsrv "${container}"
 
-ssh -q localvm composer-cli --json compose start-ostree --url "http://10.0.2.2:${port}/repo" --ref "${ref}" "${bp}" "${imgtype}"
+ssh -q develvm composer-cli --json compose start-ostree --url "http://10.0.2.2:${port}/repo" --ref "${ref}" "${bp}" "${imgtype}"

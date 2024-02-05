@@ -29,4 +29,4 @@ done
 # export the last pipeline
 export=$(jq -r .pipelines[-1].name <<< "${manifest}")
 
-echo "${manifest}" | ssh -q localvm "sudo osbuild --store ~/osbuild-store --output-directory ~/osbuild-output ${checkpointargs[*]} --export ${export} -"
+echo "${manifest}" | ssh -q develvm "sudo osbuild --store ~/osbuild-store --output-directory ~/osbuild-output ${checkpointargs[*]} --export ${export} -"

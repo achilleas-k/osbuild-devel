@@ -78,9 +78,9 @@ The [vm](./vm) directory contains scripts for setting up a VM for developing and
 ### Setting up
 
 Some things to note (and potentially change) before running:
-- All the scripts in this section assume that the VM is reachable at `localvm`.  The following host configuration is assumed.  Add and/or adjust in `$HOME/.ssh/config` as necessary:
+- All the scripts in this section assume that the VM is reachable at `develvm`.  The following host configuration is assumed.  Add and/or adjust in `$HOME/.ssh/config` as necessary:
 ```
-Host localvm
+Host develvm
     Hostname localhost
     StrictHostKeyChecking no
     UserKnownHostsFile /dev/null

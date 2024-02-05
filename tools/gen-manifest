@@ -8,7 +8,7 @@ set -euo pipefail
 bp="${1}"
 imgtype="${2}"
 
-if ! jobout=$(ssh -q localvm composer-cli --json compose start "${bp}" "${imgtype}"); then
+if ! jobout=$(ssh -q develvm composer-cli --json compose start "${bp}" "${imgtype}"); then
     echo "${jobout}"
     exit 1
 fi
@@ -16,10 +16,10 @@ jobid=$(jq -r '.build_id' <<< "${jobout}")
 
 echo "Started new job ${jobid}"
 
-ssh -q localvm composer-cli compose cancel "${jobid}"
+ssh -q develvm composer-cli compose cancel "${jobid}"
 echo "Cancelled ${jobid}"
 
-ssh -q localvm composer-cli compose metadata "${jobid}"
-ssh -q localvm tar xvf "${jobid}-metadata.tar" "${jobid}.json" -O | jq . > "${jobid}.json"
-ssh -q localvm rm "${jobid}-metadata.tar"
+ssh -q develvm composer-cli compose metadata "${jobid}"
+ssh -q develvm tar xvf "${jobid}-metadata.tar" "${jobid}.json" -O | jq . > "${jobid}.json"
+ssh -q develvm rm "${jobid}-metadata.tar"
 echo "Downloaded manifest ${jobid}.json"

@@ -78,7 +78,7 @@ case "${arch}" in
 esac
 
 sshcmd() {
-    ssh -q -p "${sshport}" localvm "$*"
+    ssh -q -p "${sshport}" develvm "$*"
 }
 
 mkoverlay() {
@@ -145,7 +145,7 @@ startvm() {
         -m 8G \
         -drive file="${1}" \
         -device virtio-net-pci,netdev=n0,mac="${mac}" \
-        -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22 \
+        -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::"${webport}"-:443 \
         "${arch_args[@]}" \
         "${cd_arg[@]}" \
         &
@@ -154,7 +154,7 @@ startvm() {
 }
 
 waitfor() {
-    while ! ssh -q localvm -p "${1}" exit; do
+    while ! ssh -q develvm -p "${1}" exit; do
         sleep 1
     done
 }

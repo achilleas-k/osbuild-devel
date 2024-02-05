@@ -80,37 +80,37 @@ startvm() {
 }
 
 waitfor() {
-    while ! ssh -q localvm -p "${1}" exit; do
+    while ! ssh -q develvm -p "${1}" exit; do
         sleep 1
     done
 }
 
 installcomposer() {
     port="${1}"
-    ssh -q -p "${port}" root@localvm dnf install -y osbuild osbuild-composer composer-cli
+    ssh -q -p "${port}" root@develvm dnf install -y osbuild osbuild-composer composer-cli
 
-    ssh -q -p "${port}" root@localvm usermod -aG weldr achilleas
+    ssh -q -p "${port}" root@develvm usermod -aG weldr achilleas
 
-    ssh -q -p "${port}" root@localvm mkdir -p /etc/osbuild-composer/repositories/
-    scp -q -P "${port}" ../osbuild-composer/test/data/repositories/rhel-84.json root@localvm:/etc/osbuild-composer/repositories/rhel-8.json
-    ssh -q -p "${port}" root@localvm ln -sf /etc/osbuild-composer/repositories/rhel-8.json /etc/osbuild-composer/repositories/rhel-8-beta.json
+    ssh -q -p "${port}" root@develvm mkdir -p /etc/osbuild-composer/repositories/
+    scp -q -P "${port}" ../osbuild-composer/test/data/repositories/rhel-84.json root@develvm:/etc/osbuild-composer/repositories/rhel-8.json
+    ssh -q -p "${port}" root@develvm ln -sf /etc/osbuild-composer/repositories/rhel-8.json /etc/osbuild-composer/repositories/rhel-8-beta.json
 
-    ssh -q -p "${port}" root@localvm systemctl start osbuild-composer.socket
+    ssh -q -p "${port}" root@develvm systemctl start osbuild-composer.socket
 
-    ssh -q -p "${port}" localvm composer-cli status show
+    ssh -q -p "${port}" develvm composer-cli status show
 }
 
 installbuildtools() {
     port="${1}"
     # for building updated binaries and osbuild rpm packages
-    ssh -q -p "${port}" root@localvm dnf install -y go make git rpm-build
+    ssh -q -p "${port}" root@develvm dnf install -y go make git rpm-build
 
-    ssh -q -p "${port}" localvm git config --global user.email "testvm@osbuild.org"
-    ssh -q -p "${port}" localvm git config --global user.name "vm"
+    ssh -q -p "${port}" develvm git config --global user.email "testvm@osbuild.org"
+    ssh -q -p "${port}" develvm git config --global user.name "vm"
 }
 
 fixdns() {
-    ssh -q -p "${1}" root@localvm "cat > /etc/resolv.conf" << EOF
+    ssh -q -p "${1}" root@develvm "cat > /etc/resolv.conf" << EOF
 nameserver 10.38.5.26
 nameserver 10.0.2.3
 EOF
@@ -138,4 +138,4 @@ installbuildtools "${port1}"
 installcomposer "${port1}"
 # installcomposer "${port2}"
 
-ssh -q -p "${port1}" root@localvm journalctl -f -u "*osbuild*"
+ssh -q -p "${port1}" root@develvm journalctl -f -u "*osbuild*"
