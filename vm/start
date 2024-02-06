@@ -5,9 +5,17 @@ lowhost="$(hostname | tr "[:upper:]" "[:lower:]")"
 pubkeyfile="${HOME}/.ssh/${lowhost}.pub"
 sshport=2222
 webport=10443
-rundir="${XDG_RUNTIME_DIR}/osbuild-vm"
-overlaydir=/media/scratch/VMs/overlays
+rundir="${XDG_RUNTIME_DIR:-${HOME}/.cache}/osbuild-vm"
+overlaydir=${HOME}/VMs/overlays
 mkdir -p "${overlaydir}"
+
+
+hostarch="$(uname -m)"
+if [[ "${hostarch}" == "arm64" ]]; then
+    hostarch="aarch64"
+elif [[ "${arch}" == "ppc64le" ]]; then
+    arch="ppc64"
+fi
 
 usage() {
     echo "$0 DISK NAME [ARCH]"
@@ -21,7 +29,7 @@ usage() {
     echo
     echo "DISK   path to VM disk to boot"
     echo "NAME   names the VM to start or resume"
-    echo "ARCH   architecture of the machine (default x86_64)"
+    echo "ARCH   architecture of the machine (default ${hostarch})"
     exit 1
 }
 
@@ -29,7 +37,7 @@ case $# in
     2)
         baseimg="$1"
         imgname="$2"
-        arch="x86_64"
+        arch="${hostarch}"
         ;;
     3)
         baseimg="$1"
@@ -61,9 +69,9 @@ case "${arch}" in
     aarch64)
         arch_args=(
             "-machine" "virt"
-            "-bios" "/usr/share/edk2-armvirt/aarch64/QEMU_EFI.fd"
-            "-boot" "efi"
-            "-cpu" "max"
+            "-bios" /opt/homebrew/Cellar/qemu/*/share/qemu/edk2-aarch64-code.fd
+            "-accel" "hvf"
+            "-cpu" "host"
         )
         ;;
     s390x)
@@ -95,54 +103,20 @@ mkcloudinit() {
 }
 
 pubkey="$(cat "${pubkeyfile}")"
-mkuserdata() {
-    mkdir -p "${rundir}/data"
-    cat > "${rundir}/data/user-data" << EOF
-#cloud-config
-users:
-  - default
-  - name: ${USER}
-    gecos: AK
-    sudo: 'ALL=(ALL) NOPASSWD:ALL'
-    ssh_pwauth: True
-    ssh_authorized_keys:
-      - ${pubkey}
-  - name: root
-    gecos: AK
-    ssh_pwauth: True
-    ssh_authorized_keys:
-      - ${pubkey}
-timezone: CET
-chpasswd:
-  list: |
-    root:r
-    ${USER}:password42
-  expire: False
-EOF
-}
-
-mkmetadata() {
-    mkdir -p "${rundir}/data"
-    cat > "${rundir}/data/meta-data" << EOF
-instance-id: nocloud
-local-hostname: ${1}
-EOF
-}
 
 startvm() {
     mac="FE:0B:6E:22:3D:00"
+    cd_arg=("")
+    echo "${cd_arg}"
     if (( $# == 2 )); then
         cd_arg=("-cdrom" "${rundir}/${2}")
     fi
     # NOTE: Bridge doesn't work with (my) wireless adapter or driver
     # https://www.linux-kvm.org/page/Networking
-    if [[ "${arch}" == "ppc64le" ]]; then
-        arch="ppc64"
-    fi
     "qemu-system-${arch}"  \
         -nographic \
-        -smp cpus=8 \
-        -m 8G \
+        -smp cpus=4 \
+        -m 4G \
         -drive file="${1}" \
         -device virtio-net-pci,netdev=n0,mac="${mac}" \
         -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::"${webport}"-:443 \
@@ -194,10 +168,7 @@ if [[ -e "${image}" ]]; then
 else
     echo "Setting up new VM using ${baseimg} -> ${image}"
     mkoverlay "${baseimg}" "${image}"
-    mkuserdata
-    mkmetadata "${imgname}-vm"
-    mkcloudinit composer-init.iso
-    startvm "${image}" composer-init.iso
+    startvm "${image}" ./cloudinit.iso
     fixdns
 
     installbuildtools
