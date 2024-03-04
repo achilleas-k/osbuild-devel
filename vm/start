@@ -106,10 +106,10 @@ pubkey="$(cat "${pubkeyfile}")"
 
 startvm() {
     mac="FE:0B:6E:22:3D:00"
-    cd_arg=("")
-    echo "${cd_arg}"
     if (( $# == 2 )); then
         cd_arg=("-cdrom" "${rundir}/${2}")
+    else
+        cd_arg=("-cdrom" /dev/null)
     fi
     # NOTE: Bridge doesn't work with (my) wireless adapter or driver
     # https://www.linux-kvm.org/page/Networking
