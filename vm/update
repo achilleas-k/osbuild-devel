@@ -65,6 +65,10 @@ if [[ $composer == 1 ]]; then
     # add test repositories
     sshcmd sudo mkdir -vp /etc/osbuild-composer/repositories
     rsync -aP --delete "${imagessrc}/test/data/repositories/." root@develvm:/etc/osbuild-composer/repositories/.
+
+    echo ":: Labelling image-info"
+    osbuildcon=$(sshcmd matchpathcon -n /usr/bin/osbuild)
+    sshcmd sudo chcon "${osbuildcon}" "${composerdir}/tools/image-info"
 fi
 
 if [[ $osbuild == 1 ]]; then
@@ -109,10 +113,6 @@ if [[ $bib == 1 ]]; then
     sshcmd sudo podman build "${bibdir}" -t localhost/bootc-image-builder:devel
 fi
 
-
-echo ":: Labelling image-info"
-osbuildcon=$(sshcmd matchpathcon -n /usr/bin/osbuild)
-sshcmd sudo chcon "${osbuildcon}" "${composerdir}/tools/image-info"
 
 echo ":: Restarting services"
 sshcmd sudo systemctl restart osbuild-composer.socket
