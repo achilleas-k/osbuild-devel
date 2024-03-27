@@ -1,0 +1,21 @@
+{
+  "command": "depsolve",
+  "arch": "x86_64",
+  "module_platform_id": "f39",
+  "cachedir": "/media/scratch/rpmmd",
+  "arguments": {
+    "repos": [
+      {
+        "id": "fedora",
+        "baseurl": "https://dl01.fedoraproject.org/pub/fedora/linux/releases/39/Everything/x86_64/os/"
+      }
+    ],
+    "transactions": [
+      {
+        "package-specs": [
+          "filesystem"
+        ]
+      }
+    ]
+  }
+}
