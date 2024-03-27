@@ -19,7 +19,7 @@ bib=0
 if (( $# == 0 )); then
     composer=1
     osbuild=1
-    bib=1
+    bib=0
 elif (( $# == 1 )) && [[ $1 == "composer" ]]; then
     composer=1
 elif (( $# == 1 )) && [[ $1 == "osbuild" ]]; then
