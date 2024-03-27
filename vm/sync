@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+
+set -euo pipefail
+
+ssh -q develvm "mkdir -pv ~/projects/osbuild"
+rsync -aP --delete ~/projects/osbuild/. develvm:projects/osbuild/.
