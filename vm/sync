@@ -4,3 +4,5 @@ set -euo pipefail
 
 ssh -q develvm "mkdir -pv ~/projects/osbuild"
 rsync -aP --delete ~/projects/osbuild/. develvm:projects/osbuild/.
+ssh -q develvm "mkdir -pv ~/projects/scratch"
+rsync -aP --delete ~/projects/scratch/. develvm:projects/scratch/.
