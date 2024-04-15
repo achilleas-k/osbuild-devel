@@ -59,9 +59,6 @@ if [[ $composer == 1 ]]; then
     echo ":: Installing osbuild-composer"
     sshcmd "sudo make -C ${composerdir} install"
 
-    # install dnf-json from repo
-    sshcmd sudo cp -v "${composerdir}/dnf-json" "/usr/libexec/osbuild-composer/dnf-json"
-
     # add test repositories
     sshcmd sudo mkdir -vp /etc/osbuild-composer/repositories
     rsync -aP --delete "${imagessrc}/test/data/repositories/." root@develvm:/etc/osbuild-composer/repositories/.
