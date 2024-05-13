@@ -31,22 +31,23 @@ esac
 
 
 cd "$(dirname "$0")/.." || exit
+username=image-builder-achilleas-6
 pw=$(cat config/stagepw)
 
 if [[ -z $data ]]; then
-    echo curl -s --user "image-builder-achilleas:[password]" -k \
+    echo curl -s --user "${username}:[password]" -k \
         --proxy http://squid.corp.redhat.com:3128 \
             https://cloud.stage.redhat.com/api/image-builder/v1/"${path}" 1>&2
-    curl -s --user "image-builder-achilleas:${pw}" -k \
+    curl -s --user "${username}:${pw}" -k \
         --header 'Content-Type: application/json' \
         --proxy http://squid.corp.redhat.com:3128 \
             https://cloud.stage.redhat.com/api/image-builder/v1/"${path}"
 else
-    echo curl -s --user "image-builder-achilleas:[password]" -k \
+    echo curl -s --user "${username}:[password]" -k \
         --proxy http://squid.corp.redhat.com:3128 \
         --request POST --data @"${data}" \
             https://cloud.stage.redhat.com/api/image-builder/v1/"${path}" 1>&2
-    curl -s --user "image-builder-achilleas:${pw}" -k \
+    curl -s --user "${username}:${pw}" -k \
         --header 'Content-Type: application/json' \
         --proxy http://squid.corp.redhat.com:3128 \
         --request POST --data @"${data}" \
