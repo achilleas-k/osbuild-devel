@@ -2,7 +2,7 @@
   "command": "depsolve",
   "arch": "x86_64",
   "module_platform_id": "f39",
-  "cachedir": "/media/scratch/rpmmd",
+  "cachedir": "/scratch/rpmmd",
   "arguments": {
     "repos": [
       {

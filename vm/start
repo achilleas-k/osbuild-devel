@@ -6,7 +6,7 @@ pubkeyfile="${HOME}/.ssh/${lowhost}.pub"
 sshport=2222
 webport=10443
 rundir="${XDG_RUNTIME_DIR}/osbuild-vm"
-overlaydir=/media/scratch/VMs/overlays
+overlaydir=/scratch/VMs/overlays
 mkdir -p "${overlaydir}"
 
 usage() {

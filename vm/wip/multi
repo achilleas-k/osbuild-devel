@@ -97,7 +97,7 @@ installcomposer() {
 }
 
 # 1. Composer VM
-image=/media/scratch/osbuild/VMs/Fedora-Cloud-Base-33-1.2.x86_64.qcow2
+image=/scratch/osbuild/VMs/Fedora-Cloud-Base-33-1.2.x86_64.qcow2
 mkuserdata
 mkmetadata composer-vm
 mkcloudinit composer-init.iso

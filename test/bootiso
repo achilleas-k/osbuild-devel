@@ -39,7 +39,7 @@ startvm() {
         -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::2225-:22
 }
 
-imgdir=/media/scratch/osbuild/tests
+imgdir=/scratch/osbuild/tests
 mkdir -p "${imgdir}"
 drive="$(mktemp -p "${imgdir}" -t install-test-XXX.qcow2)"
 qemu-img create -f qcow2 "${drive}" 20G
