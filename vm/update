@@ -50,6 +50,23 @@ bibdir=projects/osbuild/bootc-image-builder
 echo ":: Stopping services"
 sshcmd sudo systemctl stop "osbuild-*.{service,socket}" || true
 
+if [[ $osbuild == 1 ]]; then
+    sshcmd mkdir -p "${osbuilddir}"
+    echo ":: Copying osbuild sources to VM"
+    rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${osbuildsrc}/." develvm:"${osbuilddir}/."
+    sshcmd git -C "${osbuilddir}" clean -xdf
+
+    echo ":: Building osbuild RPMs"
+    if ! sshcmd git -C "${osbuilddir}" diff --check; then
+        sshcmd git -C "${osbuilddir}" commit . -m wip
+    fi
+    sshcmd sudo dnf -y builddep "${osbuilddir}/osbuild.spec"
+    sshcmd make -C "${osbuilddir}" rpm
+
+    echo ":: Installing osbuild"
+    sshcmd sudo dnf install -y "${osbuilddir}"/rpmbuild/RPMS/noarch/*.rpm
+fi
+
 if [[ $composer == 1 ]]; then
     sshcmd mkdir -p "${composerdir}"
     echo ":: Copying osbuild-composer sources to VM"
@@ -66,23 +83,10 @@ if [[ $composer == 1 ]]; then
     echo ":: Labelling image-info"
     osbuildcon=$(sshcmd matchpathcon -n /usr/bin/osbuild)
     sshcmd sudo chcon "${osbuildcon}" "${composerdir}/tools/image-info"
-fi
 
-if [[ $osbuild == 1 ]]; then
-    sshcmd mkdir -p "${osbuilddir}"
-    echo ":: Copying osbuild sources to VM"
-    rsync -aP --exclude build --exclude rpmbuild --delete-excluded --delete "${osbuildsrc}/." develvm:"${osbuilddir}/."
-    sshcmd git -C "${osbuilddir}" clean -xdf
 
-    echo ":: Building osbuild RPMs"
-    if ! sshcmd git -C "${osbuilddir}" diff --check; then
-        sshcmd git -C "${osbuilddir}" commit . -m wip
-    fi
-    sshcmd sudo dnf -y builddep "${osbuilddir}/osbuild.spec"
-    sshcmd make -C "${osbuilddir}" rpm
-
-    echo ":: Installing osbuild"
-    sshcmd sudo dnf install -y "${osbuilddir}"/rpmbuild/RPMS/noarch/*.rpm
+    echo ":: Restarting services"
+    sshcmd sudo systemctl restart osbuild-composer.socket
 fi
 
 if [[ $cockpit == 1 ]]; then
@@ -109,7 +113,3 @@ if [[ $bib == 1 ]]; then
     echo ":: Building bootc-image-builder container"
     sshcmd sudo podman build "${bibdir}" -t localhost/bootc-image-builder:devel
 fi
-
-
-echo ":: Restarting services"
-sshcmd sudo systemctl restart osbuild-composer.socket
