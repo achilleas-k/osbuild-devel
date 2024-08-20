@@ -3,6 +3,6 @@
 set -euo pipefail
 
 ssh -q develvm "mkdir -pv ~/projects/osbuild"
-rsync -aP --delete ~/projects/osbuild/. develvm:projects/osbuild/.
+rsync -aP --delete ~/projects/osbuild/. root@develvm:~achilleas/projects/osbuild/.
 ssh -q develvm "mkdir -pv ~/projects/scratch"
-rsync -aP --delete ~/projects/scratch/. develvm:projects/scratch/.
+rsync -aP --delete ~/projects/scratch/. root@develvm:~achilleas/projects/scratch/.
