@@ -37,6 +37,12 @@
       },
       {
         "name": "device-mapper-devel"
+      },
+      {
+        "name": "python3-mako"
+      },
+      {
+        "name": "python3-pytest"
       }
     ],
     "customizations": {
