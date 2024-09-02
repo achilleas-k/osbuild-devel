@@ -119,7 +119,10 @@ nameserver 10.0.2.3
 EOF
 }
 
-baseimgfname=$(basename "${baseimg}")
+# The last three components of the base image path are:
+# <distro>_<arch>_<image type>_<config name>/<pipeline name>/disk.qcow2
+# Use the third-to-last component to name the overlay image
+baseimgfname=$(basename "$(dirname "$(dirname "${baseimg}")")")
 image="${overlaydir}/${baseimgfname%.*}-${imgname}.qcow2"
 
 if [[ -e "${image}" ]]; then
