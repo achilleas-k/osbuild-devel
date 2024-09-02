@@ -1,0 +1,19 @@
+#!/usr/bin/bash
+
+set -euo pipefail
+
+scriptloc=$(realpath "$(dirname "$0")")
+echo "${scriptloc}"
+distro="$1"
+outputdir=/scratch/VMs/
+
+pushd ~/projects/osbuild/images
+go build -o ./bin/build ./cmd/build
+
+sudo ./bin/build \
+    --distro "$distro" \
+    --type qcow2 \
+    --rpmmd /scratch/rpmmd \
+    --store /scratch/osbuild-store \
+    --output "$outputdir" \
+    --config "${scriptloc}/buildconfig.json"
