@@ -64,10 +64,16 @@
       ],
       "directories": [
         {
+          "path": "/home/achilleas/.config",
+          "user": "achilleas",
+          "group": "achilleas",
+          "ensure_parents": false
+        },
+        {
           "path": "/home/achilleas/.config/git",
           "user": "achilleas",
           "group": "achilleas",
-          "ensure_parents": true
+          "ensure_parents": false
         }
       ],
       "files": [
