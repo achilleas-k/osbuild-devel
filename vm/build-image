@@ -9,11 +9,13 @@ outputdir=/scratch/VMs/
 
 pushd ~/projects/osbuild/images
 go build -o ./bin/build ./cmd/build
+popd
 
-sudo ./bin/build \
+sudo ~/projects/osbuild/images/bin/build \
     --distro "$distro" \
     --type qcow2 \
     --rpmmd /scratch/rpmmd \
     --store /scratch/osbuild-store \
+    --repositories ./repos \
     --output "$outputdir" \
     --config "${scriptloc}/buildconfig.json"
