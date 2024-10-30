@@ -43,6 +43,12 @@
       },
       {
         "name": "python3-pytest"
+      },
+      {
+        "name": "htop"
+      },
+      {
+        "name": "tree"
       }
     ],
     "customizations": {
