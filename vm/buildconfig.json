@@ -57,12 +57,12 @@
         {
           "name": "root",
           "password": "root",
-          "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPqEtsCdSozq0DT8sOazpizsBP65Ni6SMqrQA85Wnfs1 achilleas@Jack\nssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAYU2wzSk9r1l3iOwsvaJXCsfQIUga3xzShZJAM1zHv achilleas@Ruby\n"
+          "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+4pso8s0M0hKFW6XoEvM6loZp0C7D9ZlmwXQbhxyV0 achilleas@inigo\nssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAYU2wzSk9r1l3iOwsvaJXCsfQIUga3xzShZJAM1zHv achilleas@Ruby\n"
         },
         {
           "name": "achilleas",
           "password": "password42",
-          "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPqEtsCdSozq0DT8sOazpizsBP65Ni6SMqrQA85Wnfs1 achilleas@Jack\nssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAYU2wzSk9r1l3iOwsvaJXCsfQIUga3xzShZJAM1zHv achilleas@Ruby\n",
+          "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+4pso8s0M0hKFW6XoEvM6loZp0C7D9ZlmwXQbhxyV0 achilleas@inigo\nssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAYU2wzSk9r1l3iOwsvaJXCsfQIUga3xzShZJAM1zHv achilleas@Ruby\n",
           "groups": [
             "wheel"
           ]
