@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+iso="$1"
+
+sudo dnf install -y libvirt libvirt-daemon-kvm virt-install httpd firewalld
+sudo systemctl enable --now libvirtd httpd firewalld
+sudo firewall-cmd --add-port 80/tcp
+sudo firewall-cmd --permanent --add-port 80/tcp
+
+sudo setsebool -P httpd_read_user_content 1
+sudo ln -vf "${iso}" /var/www/html/installer.iso
+
+# sudo mkdir /mnt/iso
+# sudo mount -o loop,ro "${iso}" /mnt/iso
+
+sudo virt-install --graphics none --name virt-test --boot uefi --memory 2048 --import --disk size=10
