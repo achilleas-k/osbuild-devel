@@ -49,6 +49,9 @@
       },
       {
         "name": "tree"
+      },
+      {
+        "name": "skopeo"
       }
     ],
     "customizations": {
