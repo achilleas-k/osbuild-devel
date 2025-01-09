@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+scp "dummy/dummy.spec" develvm:"/tmp/dummy.spec"
+ssh -q develvm mkdir -p "rpmdir/rpmbuild"
+ssh -q develvm 'rpmbuild --quiet --define "_topdir rpmdir/rpmbuild" -bb "/tmp/dummy.spec"'
+
+ssh -q develvm mkdir -p "rpmdir/repo"
+ssh -q develvm cp -v "rpmdir/rpmbuild/RPMS/noarch/*rpm rpmdir/repo"
+ssh -q develvm createrepo -s sha512 "rpmdir/repo"
+
+scp dummy/source.toml develvm:source.toml
+ssh -q develvm composer-cli sources add ./source.toml
+ssh -q develvm composer-cli sources info dummy
+
+ssh develvm python3 -m http.server -d  "rpmdir/repo" 9999

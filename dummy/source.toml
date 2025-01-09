@@ -1,0 +1,9 @@
+id = "dummy"
+name = "dummy"
+rhsm = false
+system = false
+type = "yum-baseurl"
+url = "http://localhost:9999"
+check_gpg = false
+check_repogpg = false
+check_ssl = false
