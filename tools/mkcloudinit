@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+tmpdir="$(mktemp -d)"
+outputfile="$1"
+
+cleanup() {
+    rm -r "${tmpdir}"
+}
+trap cleanup EXIT
+
+lowhost="$(hostname | tr "[:upper:]" "[:lower:]")"
+pubkeyfile="${HOME}/.ssh/${lowhost}.pub"
+
+mkcloudinit() {
+    genisoimage -input-charset utf-8 -output "${1}" -volid cidata -joliet -rock -quiet "${tmpdir}/data/user-data" "${tmpdir}/data/meta-data"
+}
+
+pubkey="$(cat "${pubkeyfile}")"
+mkuserdata() {
+    mkdir -p "${tmpdir}/data"
+    cat > "${tmpdir}/data/user-data" << EOF
+#cloud-config
+users:
+  - default
+  - name: ${USER}
+    gecos: AK
+    sudo: 'ALL=(ALL) NOPASSWD:ALL'
+    ssh_pwauth: True
+    ssh_authorized_keys:
+      - ${pubkey}
+  - name: root
+    gecos: AK
+    ssh_pwauth: True
+    ssh_authorized_keys:
+      - ${pubkey}
+timezone: CET
+chpasswd:
+  list: |
+    root:r
+    ${USER}:password42
+  expire: False
+EOF
+}
+
+mkmetadata() {
+    mkdir -p "${tmpdir}/data"
+    cat > "${tmpdir}/data/meta-data" << EOF
+instance-id: nocloud
+EOF
+}
+
+echo "Writing user data"
+mkuserdata
+
+echo "Writing metadata"
+mkmetadata
+
+echo "Generating ISO: ${outputfile}"
+mkcloudinit "${outputfile}"
+
+echo "Done!"
