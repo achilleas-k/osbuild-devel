@@ -95,7 +95,7 @@ startvm() {
     "qemu-system-${arch}"  \
         -nographic \
         -smp cpus=8 \
-        -m 8G \
+        -m 12G \
         -drive file="${1}" \
         -device virtio-net-pci,netdev=n0,mac="${mac}" \
         -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::"${webport}"-:443 \
