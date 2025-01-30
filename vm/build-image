@@ -16,6 +16,6 @@ sudo ~/projects/osbuild/images/bin/build \
     --type qcow2 \
     --rpmmd /scratch/rpmmd \
     --store /scratch/osbuild-store \
-    --repositories ./repos \
+    --repositories ./repositories \
     --output "$outputdir" \
     --config "${scriptloc}/buildconfig.json"
