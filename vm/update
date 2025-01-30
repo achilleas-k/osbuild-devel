@@ -80,11 +80,6 @@ if [[ $composer == 1 ]]; then
     sshcmd sudo mkdir -vp /etc/osbuild-composer/repositories
     rsync -aP --delete "${imagessrc}/test/data/repositories/." root@develvm:/etc/osbuild-composer/repositories/.
 
-    echo ":: Labelling image-info"
-    osbuildcon=$(sshcmd matchpathcon -n /usr/bin/osbuild)
-    sshcmd sudo chcon "${osbuildcon}" "${composerdir}/tools/image-info"
-
-
     echo ":: Restarting services"
     sshcmd sudo systemctl restart osbuild-composer.socket
 fi
