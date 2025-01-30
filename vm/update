@@ -79,6 +79,7 @@ if [[ $composer == 1 ]]; then
     # add test repositories
     sshcmd sudo mkdir -vp /etc/osbuild-composer/repositories
     rsync -aP --delete "${imagessrc}/test/data/repositories/." root@develvm:/etc/osbuild-composer/repositories/.
+    sshcmd sudo chmod o+rX -Rc /etc/osbuild-composer/repositories
 
     echo ":: Restarting services"
     sshcmd sudo systemctl restart osbuild-composer.socket
