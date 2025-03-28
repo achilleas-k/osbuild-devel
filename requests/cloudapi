@@ -14,9 +14,9 @@ certdir="${rundir}/config"
 
 distro="fedora-41"
 arch=$(ssh -q develvm uname -m)
-for line in $(cat ./config/secrets.env); do
+while read -r line; do
     eval "export ${line}"
-done
+done < <(cat ./config/secrets.env)
 
 
 echo "Reading repos"
@@ -56,4 +56,4 @@ EOF
 
 cat "${request_file}"
 
-curl -k --cert ${certdir}/client-crt.pem --cacert ${certdir}/ca-crt.pem --key ${certdir}/client-key.pem --request POST --header 'Content-Type: application/json' --data @"${request_file}" https://localhost:10443/api/image-builder-composer/v2/compose | jq
+curl -k --cert "${certdir}/client-crt.pem" --cacert "${certdir}/ca-crt.pem" --key "${certdir}/client-key.pem" --request POST --header 'Content-Type: application/json' --data @"${request_file}" https://localhost:10443/api/image-builder-composer/v2/compose
