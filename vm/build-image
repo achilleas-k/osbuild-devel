@@ -7,15 +7,15 @@ echo "${scriptloc}"
 distro="$1"
 outputdir=/scratch/VMs/
 
-pushd ~/projects/osbuild/images
+pushd ../images
 go build -o ./bin/build ./cmd/build
 popd
 
-sudo ~/projects/osbuild/images/bin/build \
+sudo ../images/bin/build \
     --distro "$distro" \
     --type qcow2 \
     --rpmmd /scratch/rpmmd \
     --store /scratch/osbuild-store \
-    --repositories ~/projects/osbuild/images/data/repositories  \
+    --repositories ../images/data/repositories  \
     --output "$outputdir" \
     --config "${scriptloc}/buildconfig.json"
