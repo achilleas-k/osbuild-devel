@@ -49,6 +49,7 @@ case "${arch}" in
         arch_args=(
             "-enable-kvm"
             "-cpu" "host"
+            "-bios" "/usr/share/edk2-ovmf/x64/OVMF.4m.fd"
         )
         ;;
     aarch64)
