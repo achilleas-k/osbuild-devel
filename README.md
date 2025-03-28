@@ -1,1 +1,1 @@
-# Development VM scripts for osbuild and osbuild-composer
+# Development VM scripts for osbuild projects
