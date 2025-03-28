@@ -12,7 +12,7 @@ imagetype="$1"
 rundir="${XDG_RUNTIME_DIR}/osbuild-vm"
 certdir="${rundir}/config"
 
-distro="fedora-39"
+distro="fedora-41"
 arch=$(ssh -q develvm uname -m)
 for line in $(cat ./config/secrets.env); do
     eval "export ${line}"
@@ -20,7 +20,7 @@ done
 
 
 echo "Reading repos"
-repos=$(jq ".\"$arch\"" ../osbuild-composer/test/data/repositories/"$distro".json)
+repos=$(jq ".\"$arch\"" ../images/test/data/repositories/"$distro".json)
 request_file=$(mktemp -d)/osbuild-request.json
 
 echo "Creating request data in ${request_file}"
