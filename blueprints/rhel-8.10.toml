@@ -1,0 +1,14 @@
+name = "rhel-8.10"
+description = "RHEL 8.10 Base Image"
+version = "0.0.1"
+distro = "rhel-8.10"
+
+[customizations]
+hostname = "rhel84vm"
+
+[[customizations.user]]
+name = "achilleas"
+description = "admin user"
+key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPqEtsCdSozq0DT8sOazpizsBP65Ni6SMqrQA85Wnfs1 achilleas@Jack"
+password = "password42"
+groups = ["wheel"]
