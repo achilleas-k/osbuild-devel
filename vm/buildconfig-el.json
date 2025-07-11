@@ -1,0 +1,93 @@
+{
+  "name": "osbuild-devel",
+  "blueprint": {
+    "packages": [
+      {
+        "name": "vim"
+      },
+      {
+        "name": "git"
+      },
+      {
+        "name": "make"
+      },
+      {
+        "name": "go"
+      },
+      {
+        "name": "rpm-build"
+      },
+      {
+        "name": "krb5-devel"
+      },
+      {
+        "name": "jq"
+      },
+      {
+        "name": "podman"
+      },
+      {
+        "name": "go-rpm-macros"
+      },
+      {
+        "name": "python3-mako"
+      },
+      {
+        "name": "tree"
+      },
+      {
+        "name": "skopeo"
+      }
+    ],
+    "customizations": {
+      "hostname": "osbuild.devel",
+      "user": [
+        {
+          "name": "root",
+          "password": "root",
+          "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+4pso8s0M0hKFW6XoEvM6loZp0C7D9ZlmwXQbhxyV0 achilleas@inigo\nssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAYU2wzSk9r1l3iOwsvaJXCsfQIUga3xzShZJAM1zHv achilleas@Ruby\n"
+        },
+        {
+          "name": "achilleas",
+          "password": "password42",
+          "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+4pso8s0M0hKFW6XoEvM6loZp0C7D9ZlmwXQbhxyV0 achilleas@inigo\nssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAYU2wzSk9r1l3iOwsvaJXCsfQIUga3xzShZJAM1zHv achilleas@Ruby\n",
+          "groups": [
+            "wheel"
+          ]
+        }
+      ],
+      "directories": [
+        {
+          "path": "/home/achilleas/.config",
+          "user": "achilleas",
+          "group": "achilleas",
+          "ensure_parents": false
+        },
+        {
+          "path": "/home/achilleas/.config/git",
+          "user": "achilleas",
+          "group": "achilleas",
+          "ensure_parents": false
+        }
+      ],
+      "files": [
+        {
+          "path": "/home/achilleas/.config/git/config",
+          "user": "achilleas",
+          "group": "achilleas",
+          "data": "[user]\nname = achilleas\nemail = testvm@osbuild.org\n"
+        },
+        {
+          "path": "/etc/sudoers.d/wheelnopass",
+          "data": "%wheel ALL=(ALL) NOPASSWD: ALL"
+        }
+      ],
+      "filesystem": [
+        {
+          "mountpoint": "/",
+          "minsize": "100 GiB"
+        }
+      ]
+    }
+  }
+}
