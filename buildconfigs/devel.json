@@ -73,6 +73,9 @@
       },
       {
         "name": "rhpkg-stage"
+      },
+      {
+        "name": "krb5-workstation"
       }
     ],
     "customizations": {
