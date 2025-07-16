@@ -52,6 +52,12 @@
       },
       {
         "name": "skopeo"
+      },
+      {
+        "name": "tig"
+      },
+      {
+        "koji-osbuild-cli"
       }
     ],
     "customizations": {
