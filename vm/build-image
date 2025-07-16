@@ -5,6 +5,7 @@ set -euo pipefail
 scriptloc=$(realpath "$(dirname "$0")")
 echo "${scriptloc}"
 distro="$1"
+config="$2"
 outputdir=/scratch/VMs/
 
 pushd ../images
@@ -18,4 +19,4 @@ sudo ../images/bin/build \
     --store /scratch/osbuild-store \
     --repositories ../images/data/repositories  \
     --output "$outputdir" \
-    --config "${scriptloc}/buildconfig.json"
+    --config "${config}"
