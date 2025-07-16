@@ -1,5 +1,5 @@
 {
-  "name": "osbuild-devel",
+  "name": "osbuild-devel-el",
   "blueprint": {
     "packages": [
       {

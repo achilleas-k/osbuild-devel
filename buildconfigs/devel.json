@@ -57,7 +57,7 @@
         "name": "tig"
       },
       {
-        "koji-osbuild-cli"
+        "name": "koji-osbuild-cli"
       }
     ],
     "customizations": {
