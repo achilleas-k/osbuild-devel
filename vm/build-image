@@ -17,6 +17,6 @@ sudo -E ../images/bin/build \
     --type qcow2 \
     --rpmmd /scratch/rpmmd \
     --store /scratch/osbuild-store \
-    --repositories ../images/data/repositories  \
+    --repositories ../images/test/data/repositories  \
     --output "$outputdir" \
     --config "${config}"
