@@ -58,6 +58,21 @@
       },
       {
         "name": "koji-osbuild-cli"
+      },
+      {
+        "name": "brew-tools"
+      },
+      {
+        "name": "brewkoji"
+      },
+      {
+        "name": "brewkoji-stage"
+      },
+      {
+        "name": "rhpkg"
+      },
+      {
+        "name": "rhpkg-stage"
       }
     ],
     "customizations": {
@@ -107,6 +122,19 @@
         {
           "mountpoint": "/",
           "minsize": "100 GiB"
+        }
+      ],
+      "repositories": [
+        {
+          "id": "rcm",
+          "baseurls": [
+            "https://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-F-$releasever/compose/Everything/$basearch/os/"
+          ],
+          "gpgkeys": [
+            "-----BEGIN PGP PUBLIC KEY BLOCK-----\nVersion: GnuPG v2.0.22 (GNU/Linux)\n\nmQINBFO+epgBEADNQEdzLIB+Rcb00CfTIT7VQ9dfepNALk+48FOgoXVUxT8Xkk3F\n539YVddhgm2Il4pMOFCqYmuz2MqaD9/nFccCQS5v7/EahFg9jvMyp4ksSNm48UK9\nMKqRWZmDQdFmZXd8tnGj7Up9mxINlJro0Y4AYknNeZ1Tr9v+VtpCdyGbjtUFZZMh\nrAiGXQCBEg8RDugjOitZlpM1G4/O/66kPYTz65+D7dp33S2Z/LUNsZuKMVIyo4U5\naTe0w/dRaoYQF15NNOhpXwAahsyIQZwUSFQX4U0Rrw2UHYKSdrYjSfMm0eO8OvTd\nSknSM2dgEgxwVsxMmIN/4moFzcJhutZ+Mbo+RDybv8Tkb8e2Rjb5ZgN1gegn5UGy\n1r2ov8AdmIrGzbz2gXC9W45/VRofK5prEe8KUgt/D+BATj4RHpH+vCt+ngxj+hBB\nWpmc9OYlPBJAJu6bLCwRo4CqY0qNT4lGfvg1Veu19NBxbR9Fg/j5tlTTS988QlaL\nTqhobPkiBgq1MF2ECjYNiQbGFUjOdmmdI32W0A0gq88Vz4kZQGy+cMBnKTOy7wV5\nFL+fgtXz7O4VGVbGv4nkc0k+FVVV1DCNp7oQ0PxDcWZq0ih9QLEt+7P3nQvEBunQ\n5XOhhf/gZGzFUeZfIe6hO3lCr7ByKr3KTqT/0AIqJ6aNopjqv9nHa+2R1wARAQAB\ntEtSZWQgSGF0IFJlbGVhc2UgRW5naW5lZXJpbmcgKGludGVybmFsIGtleSkgPHJl\nbGVhc2UtZW5naW5lZXJpbmdAcmVkaGF0LmNvbT6JAjUEEwEIAB8CGwMGCwkIBwMC\nBBUCCAMDFgIBAh4BAheABQJTvnqZAAoJEKhCf/N+C2bo1f4QALIg3xQi1dWtmmzS\n+xdZDiG96Csn+/m9kxHuscETsJV6epaYCsIGMoDW/6XN9WdOhYMdgYjct9JbS055\noflHtxXvcaJVKl2X1IqGIvLXNn08wv9Wz7czmW5GdSi3tnavF2mjLmJu+9DzWVuK\nzIZYpwVQInZwzjhXIgDZgbzt6nzjJHwYZF536ZiHuGD8VM7MDjOMLOn+83Iv+/fy\nHuxdggGIF1yU6EezAk9T5eKCmrXLA0FsDgBUn9Z5rfPQOaa/rbzg1RqeiX9sCmsW\n5Ed8UdKr5urCH/DJHZJ3JEloTHUqBnzxE7rG8Ll8Oq1E+yIITk02kdfVZ44TNgOT\nejSBYpkklfSOJjBzGcquXcCiEcURDBZsjyrfNEmzCxBg9Ax+A+mKsFH2JSfgNztC\nbhFkJV+DpNBh3UX2WNwb9A6Mic1ZDs9IwgJhF04IK4arqj8GHVpruLX7jop0DeA0\nagKv5Msp/XHDeIUaXVmv/TnmP5j9k/G+SUWtTHbMY8lO4XNeR8iicJmdvRtty1b2\nd5rI603TNJl4hMVddDiuQyVwPxKW2bwJiiBoMARGQcJLV2vLp5t8HygB2DGUkZUq\nWASqWidSFHjzplTI8KcnAteXFJnRaxivV9QDwWMntLas+q8CxDVO+J/hDsllzn64\nsw7ud2dbJIwn5AhaQFRx2Mi1hmjO\n=mj1e\n-----END PGP PUBLIC KEY BLOCK-----\n"
+          ],
+          "gpgcheck": true,
+          "sslverify": false
         }
       ]
     }
