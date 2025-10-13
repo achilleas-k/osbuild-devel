@@ -56,4 +56,9 @@ EOF
 
 cat "${request_file}"
 
-curl -k --cert "${certdir}/client-crt.pem" --cacert "${certdir}/ca-crt.pem" --key "${certdir}/client-key.pem" --request POST --header 'Content-Type: application/json' --data @"${request_file}" https://localhost:10443/api/image-builder-composer/v2/compose
+# curl -k --cert "${certdir}/client-crt.pem" --cacert "${certdir}/ca-crt.pem" --key "${certdir}/client-key.pem" --request POST --header 'Content-Type: application/json' --data @"${request_file}" https://localhost:10443/api/image-builder-composer/v2/compose
+
+ssh -q develvm mkdir -vp certs
+rsync -aP "${certdir}" develvm:certs/.
+rsync -aP "${request_file}" develvm:request.json
+ssh -q develvm 'curl -k --cert "./certs/client-crt.pem" --cacert "./certs/ca-crt.pem" --key "./certs/client-key.pem" --request POST --header "Content-Type: application/json" --data @request.json https://localhost:443/api/image-builder-composer/v2/compose'
