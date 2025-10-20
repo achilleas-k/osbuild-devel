@@ -28,8 +28,4 @@ ssh -q root@develvm chmod ugo+rX -R /etc/osbuild-composer/
 
 ssh -q develvm sudo systemctl start osbuild-composer-api.socket osbuild-remote-worker.socket
 
-# curl -k --cert "${rundir}/config/client-crt.pem" --cacert "${rundir}/config/ca-crt.pem" --key "${rundir}/config/client-key.pem" https://localhost:10443/api/image-builder-composer/v2/openapi | jq '.paths | keys'
-
-ssh -q develvm mkdir -vp certs
-rsync -aP "${rundir}/config/." develvm:certs/.
-ssh -q develvm curl -k --cert "./certs/client-crt.pem" --cacert "./certs/ca-crt.pem" --key "./certs/client-key.pem" https://localhost:443/api/image-builder-composer/v2/openapi | jq '.paths | keys'
+curl -k --cert "${rundir}/config/client-crt.pem" --cacert "${rundir}/config/ca-crt.pem" --key "${rundir}/config/client-key.pem" https://127.0.0.1:10443/api/image-builder-composer/v2/openapi | jq '.paths | keys'
