@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+path="${1}"
+rundir="${XDG_RUNTIME_DIR}/osbuild-vm"
+certdir="${rundir}/config"
+
+curl -k \
+    --cert "${certdir}/client-crt.pem" \
+    --cacert "${certdir}/ca-crt.pem" \
+    --key "${certdir}/client-key.pem" \
+    --request GET \
+    --header 'Content-Type: application/json' \
+    "https://127.0.0.1:10443/api/image-builder-composer/v2/${path}"
