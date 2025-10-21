@@ -1,0 +1,265 @@
+[
+  {
+    "name": "rhel-azure-3p",
+    "version": "9.6",
+    "distro": "rhel-9.6",
+    "image_types": [
+      "azure-rhui"
+    ],
+    "target": "guest-rhel-9.6.0-image",
+    "arches": [
+      "x86_64"
+    ],
+    "repo": [
+      "BaseOS",
+      "AppStream",
+      "https://download.devel.redhat.com/devel/stratosphere-rhui-sync/rhui-microsoft-azure-rhel9/"
+    ],
+    "customizations": {
+      "packages": [
+        "rhui-azure-rhel9",
+        "redhat-cloud-client-configuration-cdn",
+        "system-reinstall-bootc"
+      ],
+      "files": [
+        {
+          "path": "/etc/rhccc-firstboot-run"
+        }
+      ],
+      "rpm": {
+        "import_keys": {
+          "files": [
+            "/etc/pki/rpm-gpg/RPM-GPG-KEY-microsoft-azure-release"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "rhel-azure-3p-aarch64",
+    "version": "9.6",
+    "distro": "rhel-9.6",
+    "image_types": [
+      "azure-rhui"
+    ],
+    "target": "guest-rhel-9.6.0-image",
+    "arches": [
+      "aarch64"
+    ],
+    "repo": [
+      "BaseOS",
+      "AppStream",
+      "https://download.devel.redhat.com/devel/stratosphere-rhui-sync/rhui-microsoft-azure-rhel9-arm64/"
+    ],
+    "customizations": {
+      "packages": [
+        "rhui-azure-rhel9-arm64",
+        "redhat-cloud-client-configuration-cdn",
+        "system-reinstall-bootc"
+      ],
+      "files": [
+        {
+          "path": "/etc/rhccc-firstboot-run"
+        }
+      ],
+      "rpm": {
+        "import_keys": {
+          "files": [
+            "/etc/pki/rpm-gpg/RPM-GPG-KEY-microsoft-azure-release"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "rhel-lvm-azure",
+    "version": "9.6",
+    "distro": "rhel-9.6",
+    "image_types": [
+      "azure-rhui"
+    ],
+    "target": "guest-rhel-9.6.0-image",
+    "arches": [
+      "x86_64"
+    ],
+    "repo": [
+      "BaseOS",
+      "AppStream",
+      "https://download.devel.redhat.com/devel/stratosphere-rhui-sync/rhui-microsoft-azure-rhel9/"
+    ],
+    "subvariant": "azure",
+    "customizations": {
+      "packages": [
+        "rhui-azure-rhel9",
+        "redhat-cloud-client-configuration",
+        "system-reinstall-bootc"
+      ],
+      "kernel": {
+        "append": "net.ifnames=0"
+      },
+      "rpm": {
+        "import_keys": {
+          "files": [
+            "/etc/pki/rpm-gpg/RPM-GPG-KEY-microsoft-azure-release"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "rhel-lvm-azure-aarch64",
+    "version": "9.6",
+    "distro": "rhel-9.6",
+    "image_types": [
+      "azure-rhui"
+    ],
+    "target": "guest-rhel-9.6.0-image",
+    "arches": [
+      "aarch64"
+    ],
+    "repo": [
+      "BaseOS",
+      "AppStream",
+      "https://download.devel.redhat.com/devel/stratosphere-rhui-sync/rhui-microsoft-azure-rhel9-arm64/"
+    ],
+    "customizations": {
+      "packages": [
+        "rhui-azure-rhel9-arm64",
+        "redhat-cloud-client-configuration",
+        "system-reinstall-bootc"
+      ],
+      "kernel": {
+        "append": "net.ifnames=0"
+      },
+      "rpm": {
+        "import_keys": {
+          "files": [
+            "/etc/pki/rpm-gpg/RPM-GPG-KEY-microsoft-azure-release"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "rhel-raw-azure",
+    "version": "9.6",
+    "distro": "rhel-9.6",
+    "image_types": [
+      "azure-rhui"
+    ],
+    "target": "guest-rhel-9.6.0-image",
+    "arches": [
+      "x86_64"
+    ],
+    "repo": [
+      "BaseOS",
+      "AppStream",
+      "https://download.devel.redhat.com/devel/stratosphere-rhui-sync/rhui-microsoft-azure-rhel9/"
+    ],
+    "customizations": {
+      "packages": [
+        "rhui-azure-rhel9",
+        "redhat-cloud-client-configuration",
+        "system-reinstall-bootc"
+      ],
+      "kernel": {
+        "append": "net.ifnames=0"
+      },
+      "rpm": {
+        "import_keys": {
+          "files": [
+            "/etc/pki/rpm-gpg/RPM-GPG-KEY-microsoft-azure-release"
+          ]
+        }
+      },
+      "disk": {
+        "minsize": "32 GiB",
+        "partitions": [
+          {
+            "type": "plain",
+            "minsize": "1 GiB",
+            "mountpoint": "/boot",
+            "fs_type": "xfs"
+          },
+          {
+            "type": "plain",
+            "mountpoint": "/",
+            "fs_type": "xfs"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "rhel-sap-ha-azure",
+    "version": "9.6",
+    "distro": "rhel-9.6",
+    "image_types": [
+      "azure-sap-rhui"
+    ],
+    "target": "guest-rhel-9.6.0-image",
+    "arches": [
+      "x86_64"
+    ],
+    "repo": [
+      "BaseOS",
+      "AppStream",
+      "HighAvailability",
+      "SAP",
+      "SAPHANA",
+      "https://download.devel.redhat.com/devel/stratosphere-rhui-sync/rhui-microsoft-azure-rhel9-sap-ha"
+    ],
+    "customizations": {
+      "packages": [
+        "rhui-azure-rhel9-sap-ha",
+        "redhat-cloud-client-configuration",
+        "system-reinstall-bootc"
+      ],
+      "kernel": {
+        "append": "net.ifnames=0"
+      },
+      "rpm": {
+        "import_keys": {
+          "files": [
+            "/etc/pki/rpm-gpg/RPM-GPG-KEY-microsoft-azure-release"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "rhel-sap-ha-azure-3p",
+    "version": "9.6",
+    "distro": "rhel-9.6",
+    "target": "guest-rhel-9.6.0-image",
+    "image_types": [
+      "azure-sap-rhui"
+    ],
+    "arches": [
+      "x86_64"
+    ],
+    "repo": [
+      "BaseOS",
+      "AppStream",
+      "HighAvailability",
+      "SAP",
+      "SAPHANA",
+      "https://download.devel.redhat.com/devel/stratosphere-rhui-sync/rhui-microsoft-azure-rhel9-sap-ha"
+    ],
+    "subvariant": "SAPHANA-3p",
+    "customizations": {
+      "packages": [
+        "rhui-azure-rhel9-sap-ha",
+        "redhat-cloud-client-configuration-cdn",
+        "system-reinstall-bootc"
+      ],
+      "rpm": {
+        "import_keys": {
+          "files": [
+            "/etc/pki/rpm-gpg/RPM-GPG-KEY-microsoft-azure-release"
+          ]
+        }
+      }
+    }
+  }
+]

@@ -1,0 +1,36 @@
+[
+  {
+    "name": "rhel-sap-apps-azure",
+    "release": "20250731.manual.1",
+    "version": "9.6",
+    "distro": "rhel-9.6",
+    "image_types": [
+      "azure-sapapps-rhui"
+    ],
+    "target": "guest-rhel-9.6.0-image",
+    "arches": [
+      "x86_64"
+    ],
+    "repo": [
+      "http://download-01.beak-001.prod.iad2.dc.redhat.com/odcs/prod/odcs-4345023/compose/BaseOS/$arch/os",
+      "http://download-01.beak-001.prod.iad2.dc.redhat.com/odcs/prod/odcs-4345023/compose/AppStream/$arch/os",
+      "http://download-01.beak-001.prod.iad2.dc.redhat.com/odcs/prod/odcs-4345023/compose/SAP/$arch/os",
+      "https://download.devel.redhat.com/devel/stratosphere-rhui-sync/rhui-microsoft-azure-rhel9-sapapps",
+      "http://download-01.beak-001.prod.iad2.dc.redhat.com/odcs/prod/odcs-4345023/compose/SAPHANA/$arch/os"
+    ],
+    "customizations": {
+      "packages": [
+        "rhui-azure-rhel9-sapapps",
+        "redhat-cloud-client-configuration",
+        "system-reinstall-bootc"
+      ],
+      "rpm": {
+        "import_keys": {
+          "files": [
+            "/etc/pki/rpm-gpg/RPM-GPG-KEY-microsoft-azure-release"
+          ]
+        }
+      }
+    }
+  }
+]

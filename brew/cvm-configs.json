@@ -1,0 +1,64 @@
+[
+  {
+    "name": "rhel-cvm-azure",
+    "version": "9.6",
+    "distro": "rhel-9.6",
+    "image_types": [
+      "azure-cvm"
+    ],
+    "target": "guest-rhel-9.6.0-image",
+    "arches": [
+      "x86_64"
+    ],
+    "repo": [
+      "BaseOS",
+      "AppStream",
+      "https://download.devel.redhat.com/devel/stratosphere-rhui-sync/rhui-microsoft-azure-rhel9/"
+    ],
+    "customizations": {
+      "packages": [
+        "rhui-azure-rhel9",
+        "redhat-cloud-client-configuration",
+        "system-reinstall-bootc"
+      ],
+      "rpm": {
+        "import_keys": {
+          "files": [
+            "/etc/pki/rpm-gpg/RPM-GPG-KEY-microsoft-azure-release"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "rhel-cvm-azure",
+    "version": "10.0",
+    "distro": "rhel-10.0",
+    "image_types": [
+      "azure-cvm"
+    ],
+    "target": "guest-rhel-10.0-image",
+    "arches": [
+      "x86_64"
+    ],
+    "repo": [
+      "BaseOS",
+      "AppStream",
+      "https://download.devel.redhat.com/devel/stratosphere-rhui-sync/rhui-microsoft-azure-rhel10/"
+    ],
+    "customizations": {
+      "packages": [
+        "rhui-azure-rhel10",
+        "redhat-cloud-client-configuration",
+        "system-reinstall-bootc"
+      ],
+      "rpm": {
+        "import_keys": {
+          "files": [
+            "/etc/pki/rpm-gpg/RPM-GPG-KEY-microsoft-azure-release"
+          ]
+        }
+      }
+    }
+  }
+]
