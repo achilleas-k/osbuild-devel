@@ -14,7 +14,20 @@ def _mk_customizations_file(customizations):
         yield tmpfile.name
 
 
-def start_build(config):
+def _repourl(repo, version):
+    if repo[:4] == "http":
+        return repo
+
+    composes = {
+        "9.6": "https://download.devel.redhat.com/rhel-9/composes/RHEL-9/RHEL-9.6.0-updates-20251020.1",
+    }
+
+    compose = composes[version]
+
+    return f"{compose}/compose/{repo}/$arch/os/"
+
+
+def start_build(config, release):
     name = config["name"]
     version = config["version"]
     distro = config["distro"]
@@ -22,11 +35,10 @@ def start_build(config):
     image_types = config["image_types"]
     repos = config["repo"]
     target = config["target"]
-    release = config["release"]
 
     cmd = ["brew", "osbuild-image"]
     for repo in repos:
-        cmd += ["--repo", repo]
+        cmd += ["--repo", _repourl(repo, version)]
 
     cmd += ["--release", release]
 
@@ -44,11 +56,12 @@ def start_build(config):
 
 def main():
     config_path = sys.argv[1]
+    release = sys.argv[2]
     with open(config_path, encoding="utf-8") as config_file:
         configs = json.load(config_file)
 
     for config in configs:
-        start_build(config)
+        start_build(config, release)
 
 
 if __name__ == "__main__":
