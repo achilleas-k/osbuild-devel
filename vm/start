@@ -97,7 +97,7 @@ startvm() {
         -drive file="${1}" \
         -device virtio-net-pci,netdev=n0,mac="${mac}" \
         -netdev user,id=n0,net=10.0.2.0/24,hostfwd=tcp::"${sshport}"-:22,hostfwd=tcp::"${webport}"-:443 \
-        "${arch_args[@]}" \
+        "${arch_args[@]}" > /dev/null \
         &
     waitfor "${sshport}"
     echo "VM started"
