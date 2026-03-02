@@ -120,7 +120,7 @@ EOF
 # <distro>_<arch>_<image type>_<config name>/<pipeline name>/disk.qcow2
 # Use the third-to-last component to name the overlay image
 baseimgfname=$(basename "$(dirname "$(dirname "${baseimg}")")")
-image="${overlaydir}/${baseimgfname%.*}-${imgname}.qcow2"
+image="${overlaydir}/${baseimgfname}-${imgname}.qcow2"
 
 if [[ -e "${image}" ]]; then
     echo "Booting existing VM ${image}"
