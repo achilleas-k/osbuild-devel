@@ -72,14 +72,15 @@ if [[ $composer == 1 ]]; then
     echo ":: Copying osbuild-composer sources to VM"
     rsync -aP --delete "${composersrc}/." develvm:"${composerdir}/."
     echo "Building osbuild-composer binaries"
-    sshcmd "cd ${composerdir} && mkdir -p bin && go build -o bin/ ./cmd/osbuild-{composer,worker}"
+    sshcmd "cd ${composerdir} && mkdir -p bin && go build -tags=exclude_graphdriver_btrfs -o bin/ ./cmd/osbuild-{composer,worker}"
     echo ":: Installing osbuild-composer"
-    sshcmd "sudo make -C ${composerdir} install"
+    # sshcmd "sudo make -C ${composerdir} install"
+    sshcmd "cd ${composerdir} && sudo install bin/osbuild-composer /usr/libexec/osbuild-composer/osbuild-composer && sudo install bin/osbuild-worker /usr/libexec/osbuild-composer/osbuild-worker"
 
     # add test repositories
-    sshcmd sudo mkdir -vp /etc/osbuild-composer/repositories
-    rsync -aP --delete "${imagessrc}/test/data/repositories/." root@develvm:/etc/osbuild-composer/repositories/.
-    sshcmd sudo chmod o+rX -Rc /etc/osbuild-composer/repositories
+    # sshcmd sudo mkdir -vp /etc/osbuild-composer/repositories
+    # rsync -aP --delete "${imagessrc}/test/data/repositories/." root@develvm:/etc/osbuild-composer/repositories/.
+    # sshcmd sudo chmod o+rX -Rc /etc/osbuild-composer/repositories
 
     echo ":: Restarting services"
     sshcmd sudo systemctl restart osbuild-composer.socket
