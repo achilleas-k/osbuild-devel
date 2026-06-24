@@ -8,11 +8,11 @@ distro="$1"
 config="$2"
 outputdir=/scratch/VMs/
 
-pushd ../images
+pushd ../image-builder
 go build -o ./bin/build ./cmd/build
 popd
 
-sudo -E ../images/bin/build \
+sudo -E ../image-builder/bin/build \
     --distro "$distro" \
     --type qcow2 \
     --rpmmd /scratch/rpmmd \
