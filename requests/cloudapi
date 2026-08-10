@@ -12,7 +12,7 @@ imagetype="$1"
 rundir="${XDG_RUNTIME_DIR}/osbuild-vm"
 certdir="${rundir}/config"
 
-distro="fedora-42"
+distro="fedora-44"
 arch=$(ssh -q develvm uname -m)
 while read -r line; do
     eval "export ${line}"
@@ -20,7 +20,7 @@ done < <(cat ./config/secrets.env)
 
 
 echo "Reading repos"
-repos=$(jq ".\"$arch\"" ../osbuild-composer/test/data/repositories/"$distro".json)
+repos=$(jq ".\"$arch\"" ../image-builder/data/repositories/"$distro".json)
 request_file=$(mktemp -d)/osbuild-request.json
 
 echo "Creating request data in ${request_file}"
@@ -56,4 +56,9 @@ EOF
 
 cat "${request_file}"
 
-curl -k --cert "${certdir}/client-crt.pem" --cacert "${certdir}/ca-crt.pem" --key "${certdir}/client-key.pem" --request POST --header 'Content-Type: application/json' --data @"${request_file}" https://127.0.0.1:10443/api/image-builder-composer/v2/compose
+# curl -k --cert "${certdir}/client-crt.pem" --cacert "${certdir}/ca-crt.pem" --key "${certdir}/client-key.pem" --request POST --header 'Content-Type: application/json' --data @"${request_file}" https://localhost:10443/api/image-builder-composer/v2/compose
+
+ssh -q develvm mkdir -vp certs
+rsync -aP "${certdir}" develvm:certs/.
+rsync -aP "${request_file}" develvm:request.json
+ssh -q develvm 'curl -k --cert "./certs/client-crt.pem" --cacert "./certs/ca-crt.pem" --key "./certs/client-key.pem" --request POST --header "Content-Type: application/json" --data @request.json https://localhost:443/api/image-builder-composer/v2/compose'
