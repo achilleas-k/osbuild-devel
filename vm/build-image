@@ -9,14 +9,15 @@ config="$2"
 outputdir=/scratch/VMs/
 
 pushd ../image-builder
-go build -o ./bin/build ./cmd/build
+go build -o ./bin/image-builder ./cmd/image-builder
 popd
 
-sudo -E ../image-builder/bin/build \
+sudo -E ../image-builder/bin/image-builder \
+    build \
     --distro "$distro" \
-    --type qcow2 \
-    --rpmmd /scratch/rpmmd \
-    --store /scratch/osbuild-store \
-    --repositories ./repositories \
-    --output "$outputdir" \
-    --config "${config}"
+    --rpmmd-cache /scratch/rpmmd \
+    --cache /scratch/osbuild-store \
+    --force-repo-dir ./repositories \
+    --output-dir "$outputdir" \
+    --blueprint "${config}" \
+    qcow2
