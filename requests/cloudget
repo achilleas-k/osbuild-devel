@@ -7,10 +7,10 @@ path="${1}"
 rundir="${XDG_RUNTIME_DIR}/osbuild-vm"
 certdir="${rundir}/config"
 
-curl -k \
-    --cert "${certdir}/client-crt.pem" \
-    --cacert "${certdir}/ca-crt.pem" \
-    --key "${certdir}/client-key.pem" \
+ssh -q develvm curl -s -k \
+    --cert "./certs/client-crt.pem" \
+    --cacert "./certs/ca-crt.pem" \
+    --key "./certs/client-key.pem" \
     --request GET \
     --header 'Content-Type: application/json' \
-    "https://127.0.0.1:10443/api/image-builder-composer/v2/${path}"
+    "https://127.0.0.1:443/api/image-builder-composer/v2/${path}"
