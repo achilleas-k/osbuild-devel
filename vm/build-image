@@ -14,6 +14,7 @@ popd
 
 sudo -E ../image-builder/bin/image-builder \
     build \
+    --verbose \
     --distro "$distro" \
     --rpmmd-cache /scratch/rpmmd \
     --cache /scratch/osbuild-store \
