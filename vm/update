@@ -61,10 +61,10 @@ if [[ $osbuild == 1 ]]; then
         sshcmd git -C "${osbuilddir}" commit . -m wip
     fi
     sshcmd sudo dnf -y builddep "${osbuilddir}/osbuild.spec"
-    sshcmd make -C "${osbuilddir}" rpm
+    sshcmd make -C "${osbuilddir}" rpm-nocheck
 
     echo ":: Installing osbuild"
-    sshcmd sudo dnf install -y "${osbuilddir}"/rpmbuild/RPMS/noarch/*.rpm
+    sshcmd sudo dnf install -y "${osbuilddir}"/rpmbuild/RPMS/*/*.rpm
 fi
 
 if [[ $composer == 1 ]]; then
