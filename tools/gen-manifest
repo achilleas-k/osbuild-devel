@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 #
 # Starts a compose, cancels it immediately, and extracts the manifest from the
 # cancelled job.

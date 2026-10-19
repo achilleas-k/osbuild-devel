@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 if [[ $# != 1 ]]; then
     echo "Need an iso image"

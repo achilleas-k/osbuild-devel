@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 #
 # Build an osbuild-composer test manifest inside the currently running VM
 

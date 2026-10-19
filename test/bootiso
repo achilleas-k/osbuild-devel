@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 #
 # Sets up and boots an installer ISO with an empty drive to install to
 

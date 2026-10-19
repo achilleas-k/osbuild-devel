@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 if (( $# != 2 )); then
     echo "$0 UUID DESTINATION"

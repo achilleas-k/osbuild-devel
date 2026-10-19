@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 usage() {
     echo "Usage: $0 FILE MOUNTPOINT"

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 
 if ! ssh -q develvm rpm -q cockpit-composer; then
